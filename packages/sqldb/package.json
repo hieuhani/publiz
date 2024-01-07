@@ -1,0 +1,19 @@
+{
+  "name": "@publiz/sqldb",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild"
+  },
+  "dependencies": {
+    "kysely": "^0.27.1"
+  },
+  "devDependencies": {
+    "unbuild": "^2.0.0"
+  }
+}

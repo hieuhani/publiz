@@ -1,0 +1,9 @@
+{
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
+  "cSpell.words": ["dbmigration", "kysely", "publiz", "usecase"],
+  "editor.formatOnSave": true
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@publiz/dbmigration",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "unbuild"
+  },
+  "dependencies": {
+    "kysely": "^0.27.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "unbuild": "^2.0.0"
+  }
+}
