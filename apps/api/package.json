@@ -1,22 +1,21 @@
 {
   "name": "@publiz/api",
   "scripts": {
-    "dev": "wrangler dev src/index.ts",
-    "deploy": "wrangler deploy --minify src/index.ts"
+    "dev": "bun run --hot src/index.ts"
   },
   "dependencies": {
     "@fiboup/google-identify-toolkit": "^1.0.1",
     "@fiboup/hono-firebase-auth": "^1.0.4",
     "@hono/zod-validator": "^0.1.11",
     "@publiz/core": "workspace:0.0.0",
-    "@tidbcloud/kysely": "^0.0.4",
-    "@tidbcloud/serverless": "^0.0.10",
     "hono": "^3.12.0",
     "kysely": "^0.27.1",
+    "pg": "^8.11.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20231218.0",
+    "@types/pg": "^8.10.9",
     "wrangler": "^3.22.3"
   }
 }

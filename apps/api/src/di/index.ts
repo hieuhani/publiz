@@ -6,7 +6,10 @@ export const useDi = (): MiddlewareHandler => {
   return async (c, next) => {
     c.set("container", {
       sqlDb: getDatabaseModule({
-        databaseUrl: c.env.DATABASE_URL,
+        host: "localhost",
+        user: "fibotree",
+        database: "publiz",
+        password: "fibotree_password",
       }),
     });
     await next();
