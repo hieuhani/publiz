@@ -8,5 +8,5 @@ export default defineBuildConfig({
       outDir: "./dist",
     },
   ],
-  outDir: "build",
+  declaration: true,
 });

@@ -1,30 +1,29 @@
-import { enumSql, withMySqlV8, withTimestamps } from "../sql";
-import type { Kysely } from "kysely";
+import { withTimestamps } from "../sql";
+import { sql, type Kysely } from "kysely";
 
 export async function up(db: Kysely<any>) {
   await db.schema
+    .createType("tag_type")
+    .asEnum(["SYSTEM", "DEFAULT"])
+    .execute();
+
+  await db.schema
     .createTable("tags")
-    .addColumn("id", "bigint", (col) =>
-      col.unsigned().autoIncrement().primaryKey()
-    )
+    .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("name", "varchar(512)", (col) => col.notNull())
     .addColumn("slug", "varchar(512)", (col) => col.notNull().unique())
-    .addColumn("type", enumSql("SYSTEM", "DEFAULT"), (col) =>
+    .addColumn("type", sql`"tag_type"`, (col) =>
       col.notNull().defaultTo("DEFAULT")
     )
     .$call(withTimestamps)
-    .$call(withMySqlV8)
     .execute();
 
   await db.schema
     .createTable("posts_tags")
-    .addColumn("id", "bigint", (col) =>
-      col.unsigned().autoIncrement().primaryKey()
-    )
-    .addColumn("post_id", "bigint", (col) => col.references("posts.id"))
-    .addColumn("tag_id", "bigint", (col) => col.references("tags.id"))
+    .addColumn("id", "serial", (col) => col.primaryKey())
+    .addColumn("post_id", "integer", (col) => col.references("posts.id"))
+    .addColumn("tag_id", "integer", (col) => col.references("tags.id"))
     .$call(withTimestamps)
-    .$call(withMySqlV8)
     .execute();
 }
 

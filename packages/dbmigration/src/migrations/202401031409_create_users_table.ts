@@ -1,26 +1,29 @@
-import { enumSql, withMySqlV8, withTimestamps } from "../sql";
-import type { Kysely } from "kysely";
+import { withTimestamps } from "../sql";
+import { sql, type Kysely } from "kysely";
 
 export async function up(db: Kysely<any>) {
   await db.schema
+    .createType("user_gender")
+    .asEnum(["UNSPECIFIED", "MALE", "FEMALE"])
+    .execute();
+
+  await db.schema
     .createTable("users")
-    .addColumn("id", "bigint", (col) =>
-      col.unsigned().autoIncrement().primaryKey()
-    )
+    .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("auth_id", "varchar(255)", (col) => col.notNull().unique())
     .addColumn("display_name", "varchar(100)", (col) => col.notNull())
     .addColumn("dob", "date")
     .addColumn("bio", "text")
     .addColumn("avatar_url", "text")
     .addColumn("cover_url", "text")
-    .addColumn("gender", enumSql("UNSPECIFIED", "MALE", "FEMALE"), (col) =>
+    .addColumn("gender", sql`"user_gender"`, (col) =>
       col.notNull().defaultTo("UNSPECIFIED")
     )
     .$call(withTimestamps)
-    .$call(withMySqlV8)
     .execute();
 }
 
 export async function down(db: Kysely<any>) {
+  await db.schema.dropType("user_gender").execute();
   await db.schema.dropTable("users").execute();
 }
