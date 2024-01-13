@@ -3,9 +3,36 @@ import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { type AppEnv } from "../global";
 import { useCurrentAppUser } from "../user/middleware";
-import { deleteTagById, getMyTagById, updateTag } from "@publiz/core";
+import {
+  createTag,
+  deleteTagById,
+  getMyTagById,
+  updateTag,
+} from "@publiz/core";
 
 export const myTagRouter = new Hono<AppEnv>();
+
+const createTagSchema = z.object({
+  name: z.string().min(1).max(100),
+  slug: z.string().min(1).max(100),
+});
+
+myTagRouter.post(
+  "/",
+  useCurrentAppUser({ required: true }),
+  zValidator("json", createTagSchema),
+  async (c) => {
+    const payload = c.req.valid("json");
+    const currentUser = c.get("currentAppUser");
+    const container = c.get("container");
+    const tag = await createTag(container, {
+      ...payload,
+      type: "DEFAULT",
+      userId: currentUser.id,
+    });
+    return c.json(tag, 201);
+  }
+);
 
 myTagRouter.delete("/:id", useCurrentAppUser({ required: true }), async (c) => {
   const currentUser = c.get("currentAppUser");
@@ -17,8 +44,8 @@ myTagRouter.delete("/:id", useCurrentAppUser({ required: true }), async (c) => {
 });
 
 const updateTagSchema = z.object({
-  name: z.string(),
-  slug: z.string(),
+  name: z.string().min(1).max(100),
+  slug: z.string().min(1).max(100),
 });
 
 myTagRouter.put(

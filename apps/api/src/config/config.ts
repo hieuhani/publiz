@@ -13,6 +13,9 @@ export const zConfig = z.object({
     apiKey: z.string(),
     projectId: z.string(),
   }),
+  admin: z.object({
+    authIds: z.array(z.string()),
+  }),
 });
 
 export type Config = z.infer<typeof zConfig>;
@@ -28,5 +31,8 @@ export const config: Config = {
   firebase: {
     apiKey: getEnvVar("FIREBASE_API_KEY"),
     projectId: getEnvVar("FIREBASE_PROJECT_ID"),
+  },
+  admin: {
+    authIds: getEnvVar("ADMIN_AUTH_IDS", "").split(","),
   },
 };
