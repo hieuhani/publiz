@@ -15,19 +15,36 @@ export async function up(db: Kysely<any>) {
     .addColumn("type", sql`"tag_type"`, (col) =>
       col.notNull().defaultTo("DEFAULT")
     )
+    .addColumn("organization_id", "integer", (col) =>
+      col.references("organizations.id")
+    )
+    .addColumn("user_id", "integer", (col) =>
+      col.references("users.id").notNull()
+    )
     .$call(withTimestamps)
     .execute();
 
   await db.schema
     .createTable("posts_tags")
     .addColumn("id", "serial", (col) => col.primaryKey())
-    .addColumn("post_id", "integer", (col) => col.references("posts.id"))
-    .addColumn("tag_id", "integer", (col) => col.references("tags.id"))
+    .addColumn("post_id", "integer", (col) =>
+      col.references("posts.id").notNull()
+    )
+    .addColumn("tag_id", "integer", (col) =>
+      col.references("tags.id").notNull()
+    )
     .$call(withTimestamps)
+    .execute();
+
+  await db.schema
+    .createIndex("posts_tags")
+    .on("posts_tags_post_id_tag_id_idx")
+    .columns(["post_id", "tag_id"])
     .execute();
 }
 
 export async function down(db: Kysely<any>) {
+  await db.schema.dropType("tag_type").execute();
   await db.schema.dropTable("posts_tags").execute();
   await db.schema.dropTable("tags").execute();
 }

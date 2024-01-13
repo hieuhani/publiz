@@ -10,6 +10,7 @@ export async function up(db: Kysely<any>) {
     .addColumn("organization_id", "integer", (col) =>
       col.references("organizations.id")
     )
+    .addColumn("user_id", "integer", (col) => col.references("users.id"))
     .$call(withTimestamps)
     .execute();
 

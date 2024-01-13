@@ -4,6 +4,13 @@
       "mode": "auto"
     }
   ],
-  "cSpell.words": ["dbmigration", "kysely", "publiz", "usecase"],
+  "cSpell.words": [
+    "dbmigration",
+    "Insertable",
+    "kysely",
+    "publiz",
+    "Updateable",
+    "usecase"
+  ],
   "editor.formatOnSave": true
 }

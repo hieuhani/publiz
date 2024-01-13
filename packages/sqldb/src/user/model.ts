@@ -8,7 +8,7 @@ export type UserTable = {
   bio?: string;
   avatarUrl?: string;
   coverUrl?: string;
-  gender: string;
+  gender?: string;
 };
 
 export type UserRow = Selectable<UserTable>;
