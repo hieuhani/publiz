@@ -1,9 +1,14 @@
-import { findUserByAuthId } from "@publiz/sqldb";
+import {
+  type InsertableUserRow,
+  createUserCrudRepository,
+  findUserByAuthId,
+} from "@publiz/sqldb";
 import { Container } from "../container";
 
 type GetMyProfileInput = {
   authId: string;
 };
+
 export const getMyProfile = async (
   container: Container,
   { authId }: GetMyProfileInput
@@ -14,3 +19,10 @@ export const getMyProfile = async (
   }
   return user;
 };
+
+type CreateUserInput = InsertableUserRow;
+
+export const createUser = async (
+  container: Container,
+  input: CreateUserInput
+) => createUserCrudRepository(container.sqlDb).create(input);

@@ -1,15 +1,16 @@
 import { MiddlewareHandler } from "hono";
 import { getDatabaseModule } from "../database";
 import { type Container } from "@publiz/core";
+import { config } from "../config";
 
 export const useDi = (): MiddlewareHandler => {
   return async (c, next) => {
     c.set("container", {
       sqlDb: getDatabaseModule({
-        host: "localhost",
-        user: "fibotree",
-        database: "publiz",
-        password: "fibotree_password",
+        host: config.db.host,
+        user: config.db.username,
+        database: config.db.database,
+        password: config.db.password,
       }),
     });
     await next();
