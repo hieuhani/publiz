@@ -9,6 +9,7 @@ import { authRouter } from "./auth";
 import { tagRouter, myTagRouter } from "./tag";
 import { requireAdmin } from "./admin/middleware";
 import { adminTagRouter } from "./admin";
+import { myPostRouter } from "./post/my-post-router";
 
 const app = new Hono<AppEnv>();
 
@@ -21,9 +22,13 @@ app.use(
 );
 
 app.route("/api/v1/auth", authRouter);
+
 app.route("/api/v1/users", userRouter);
+
 app.route("/api/v1/tags", tagRouter);
 app.route("/api/v1/my_tags", myTagRouter);
+
+app.route("/api/v1/my_posts", myPostRouter);
 
 app.use("/admin/*", requireAdmin());
 app.route("/admin/api/v1/tags", adminTagRouter);

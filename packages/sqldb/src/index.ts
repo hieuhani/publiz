@@ -4,3 +4,4 @@ export * from "./file";
 export * from "./user";
 export * from "./tag";
 export * from "./post-tag";
+export * from "./post";

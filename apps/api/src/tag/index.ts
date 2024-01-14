@@ -1,2 +1,2 @@
-export * from "./my_tag_router";
+export * from "./my-tag-router";
 export * from "./router";
