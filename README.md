@@ -1,9 +1,10 @@
 # Publiz
 
-Yet another content management platform, but trying to do the best on 2 points:
+Yet another content management platform, but trying to do the best on 3 points:
 
-- Integration with theses existing system
+- Integration with your existing system
 - Multi-purposed usages from a simple blog site to a social network
+- Automated content management
 
 ## Technical specifications
 
