@@ -12,11 +12,12 @@ export function createCrudRepository<R>(db: SqlDatabase, table: Table) {
         .executeTakeFirstOrThrow() as R;
     },
     async create(row: Insertable<Table>): Promise<R> {
-      const { insertId } = await db
+      const { id } = await db
         .insertInto(table)
         .values(row)
+        .returning("id")
         .executeTakeFirstOrThrow();
-      return this.findById(Number(insertId!));
+      return this.findById(id);
     },
 
     async createMulti(rows: Insertable<Table>[]) {

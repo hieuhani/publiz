@@ -30,7 +30,7 @@ userRouter.get("/my_profile", useCurrentAppUser(), async (c) => {
 
     const container = c.get("container") as Container;
     const localId = get(firebaseAccount, "users[0].localId");
-    const newUser = createUser(container, {
+    const newUser = await createUser(container, {
       authId: localId,
       displayName: "",
     });

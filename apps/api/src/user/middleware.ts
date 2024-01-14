@@ -17,7 +17,7 @@ export const useCurrentAppUser = (
     }
     const container = c.get("container") as Container;
 
-    const appUser = await getMyProfile(container, currentUser.sub);
+    const appUser = await getMyProfile(container, { authId: currentUser.sub });
 
     if (options.required && !appUser) {
       throw new AppError(401_002, "Not found user on app database");

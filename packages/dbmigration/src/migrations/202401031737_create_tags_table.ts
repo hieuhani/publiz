@@ -37,8 +37,8 @@ export async function up(db: Kysely<any>) {
     .execute();
 
   await db.schema
-    .createIndex("posts_tags")
-    .on("posts_tags_post_id_tag_id_idx")
+    .createIndex("posts_tags_post_id_tag_id_idx")
+    .on("posts_tags")
     .columns(["post_id", "tag_id"])
     .execute();
 }
