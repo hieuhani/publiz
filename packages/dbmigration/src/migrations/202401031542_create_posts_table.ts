@@ -32,12 +32,20 @@ export async function up(db: Kysely<any>) {
     .addColumn("status", sql`"post_status"`, (col) =>
       col.notNull().defaultTo("DRAFT")
     )
-    .addColumn("metadata", "json")
+    .addColumn("metadata", "jsonb")
     .$call(withTimestamps)
+    .execute();
+
+  await db.schema
+    .createIndex("posts_metadata_gin")
+    .on("posts")
+    .column("metadata")
+    .using("gin")
     .execute();
 }
 
 export async function down(db: Kysely<any>) {
+  await db.schema.dropIndex("post_metadata_gin").execute();
   await db.schema.dropType("post_type").execute();
   await db.schema.dropType("post_status").execute();
   await db.schema.dropTable("posts").execute();

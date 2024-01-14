@@ -11,6 +11,29 @@ services:
       - POSTGRESQL_USERNAME=fibotree
       - POSTGRESQL_PASSWORD=fibotree_password
       - POSTGRESQL_DATABASE=publiz
+  minio:
+    image: bitnami/minio:latest
+    environment:
+      - MINIO_ROOT_USER=minio_access_key
+      - MINIO_ROOT_PASSWORD=minio_secret_key
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - "minio_data:/data"
+
+  create_default_minio_bucket:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set fibotree_minio http://minio:9000 minio_access_key minio_secret_key;
+      /usr/bin/mc mb fibotree_minio/publiz;
+      /usr/bin/mc policy set public fibotree_minio/publiz;
+      exit 0;
+      "
 
 volumes:
   postgresql_data: {}
+  minio_data: {}

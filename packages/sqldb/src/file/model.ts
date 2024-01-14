@@ -2,12 +2,13 @@ import { Generated, Insertable, Selectable, Updateable } from "kysely";
 
 export type FileTable = {
   id: Generated<number>;
-  modelName?: string;
-  modelId?: number;
   contentType: string;
   fileName: string;
   filePath: string;
   metadata?: any;
+  title?: string;
+  description?: string;
+  userId: number;
 };
 
 export type FileRow = Selectable<FileTable>;

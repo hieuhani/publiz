@@ -9,6 +9,7 @@
     "Insertable",
     "kysely",
     "publiz",
+    "sqldb",
     "Updateable",
     "usecase"
   ],

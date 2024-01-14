@@ -1,9 +1,13 @@
-import { deleteByModelNameAndModelId } from "@publiz/sqldb";
+import {
+  InsertableFileRow,
+  createFileCrudRepository,
+  deleteByModelNameAndModelId,
+} from "@publiz/sqldb";
 import { Container } from "../container";
 
 type DeleteModelRelatedFilesInput = {
   modelName: string;
-  modelId: number;
+  modelId: string;
 };
 
 export const deleteModelRelatedFiles = async (
@@ -17,3 +21,10 @@ export const deleteModelRelatedFiles = async (
   );
   return result.numDeletedRows;
 };
+
+type CreateFileInput = InsertableFileRow;
+
+export const createFile = async (
+  container: Container,
+  input: CreateFileInput
+) => createFileCrudRepository(container.sqlDb).create(input);

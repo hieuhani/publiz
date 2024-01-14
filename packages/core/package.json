@@ -12,6 +12,8 @@
     "build": "unbuild"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.490.0",
+    "@aws-sdk/s3-request-presigner": "^3.490.0",
     "@publiz/sqldb": "workspace:0.0.0",
     "kysely": "^0.27.1"
   },

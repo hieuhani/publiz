@@ -1,5 +1,6 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
+import { JsonValue } from "../kysely";
 import { FileRow, FileTable } from "./model";
 
 export const createFileCrudRepository = (db: SqlDatabase) =>
@@ -8,23 +9,21 @@ export const createFileCrudRepository = (db: SqlDatabase) =>
 export async function findByModelNameAndModelId(
   db: SqlDatabase,
   modelName: string,
-  modelId: number
+  modelId: string
 ): Promise<FileRow[]> {
   return db
     .selectFrom("files")
     .selectAll()
-    .where("modelName", "=", modelName)
-    .where("modelId", "=", modelId)
+    .where("metadata", "@>", new JsonValue({ modelName, modelId }))
     .execute();
 }
 export async function deleteByModelNameAndModelId(
   db: SqlDatabase,
   modelName: string,
-  modelId: number
+  modelId: string
 ) {
   return db
     .deleteFrom("files")
-    .where("modelName", "=", modelName)
-    .where("modelId", "=", modelId)
+    .where("metadata", "@>", new JsonValue({ modelName, modelId }))
     .executeTakeFirst();
 }
