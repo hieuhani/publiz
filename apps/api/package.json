@@ -2,6 +2,8 @@
   "name": "@publiz/api",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
+    "start": "bun run src/index.ts",
+    "build": "bun build --target=bun --minify --outdir=./dist src/index.ts",
     "migrate:dev:latest": "bun ./migrate.ts dev latest"
   },
   "dependencies": {
