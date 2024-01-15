@@ -6,8 +6,9 @@
   },
   "private": true,
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
+    "build:types": "turbo build",
+    "dev": "bun run --cwd apps/api dev",
+    "migrate:dev:latest": "bun run --cwd apps/api migrate:dev:latest",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
