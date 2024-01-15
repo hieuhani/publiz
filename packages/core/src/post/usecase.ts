@@ -1,6 +1,6 @@
 import {
   type InsertablePostRow,
-  createUserCrudRepository,
+  createPostCrudRepository,
   getPostByIdAndUserId,
   UpdateablePostRow,
 } from "@publiz/sqldb";
@@ -10,7 +10,7 @@ type CreatePostInput = InsertablePostRow;
 export const createPost = async (
   container: Container,
   input: CreatePostInput
-) => createUserCrudRepository(container.sqlDb).create(input);
+) => createPostCrudRepository(container.sqlDb).create(input);
 
 export const getMyPostById = async (
   container: Container,
@@ -25,4 +25,4 @@ export const updatePost = async (
   container: Container,
   id: number,
   input: UpdatePostInput
-) => createUserCrudRepository(container.sqlDb).update(id, input);
+) => createPostCrudRepository(container.sqlDb).update(id, input);

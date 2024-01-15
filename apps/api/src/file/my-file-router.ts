@@ -47,11 +47,21 @@ myFileRouter.post(
       metadata.size = file.size;
     }
 
+    const fileBuffer = await file.arrayBuffer();
+
     await uploadFile(container, {
       bucket: config.s3.bucket,
       key,
-      body: file,
-      metadata,
+      body: fileBuffer as any,
+      metadata: Object.keys(metadata).reduce((prev, current) => {
+        if (!metadata[current]) {
+          return prev;
+        }
+        return {
+          ...prev,
+          [current]: `${metadata[current]}`,
+        };
+      }, {}),
     });
 
     const createdFile = await createFile(container, {

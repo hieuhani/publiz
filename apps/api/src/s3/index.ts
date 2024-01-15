@@ -9,5 +9,6 @@ export const getS3Client = () => {
       accessKeyId: config.s3.accessKeyId,
       secretAccessKey: config.s3.secretAccessKey,
     },
+    forcePathStyle: true,
   });
 };
