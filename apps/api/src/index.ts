@@ -22,6 +22,8 @@ app.use(
   })
 );
 
+app.get("/", (c) => c.json({ message: "Hello World!" }));
+
 // auth api
 app.route("/api/v1/auth", authRouter);
 
