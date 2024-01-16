@@ -22,7 +22,7 @@ app.use(
   })
 );
 
-app.get("/", (c) => c.json({ message: "Hello World!" }));
+app.get("/", (c) => c.json({ status: "ok" }));
 
 // auth api
 app.route("/api/v1/auth", authRouter);
