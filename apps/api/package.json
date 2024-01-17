@@ -3,8 +3,8 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "start": "bun run src/index.ts",
-    "build": "bun build --target=bun --minify --outdir=./dist src/index.ts",
-    "migrate:dev:latest": "bun ./migrate.ts dev latest"
+    "build": "bun build --target=bun --minify --outdir=./dist src/index.ts && bun build --target=bun --minify --outdir=./dist migrate.ts",
+    "migrate:dev:latest": "bun run ./migrate.ts dev latest"
   },
   "dependencies": {
     "@fiboup/google-identify-toolkit": "^1.0.1",

@@ -10,6 +10,7 @@ export async function up(db: Kysely<any>) {
     .addColumn("description", "text")
     .addColumn("logo_url", "text")
     .addColumn("cover_url", "text")
+    .addColumn("verified", "boolean", (col) => col.notNull().defaultTo(false))
     .addColumn("owner_id", "integer", (col) =>
       col.references("users.id").onDelete("set null")
     )

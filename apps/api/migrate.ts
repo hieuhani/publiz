@@ -2,14 +2,10 @@ import { buildMigrator } from "@publiz/dbmigration";
 import { NO_MIGRATIONS, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 import { createSqlDb } from "@publiz/core";
+import { config } from "./src/config";
 
 const dialect = new PostgresDialect({
-  pool: new Pool({
-    database: "publiz",
-    host: "localhost",
-    user: "fibotree",
-    password: "fibotree_password",
-  }),
+  pool: new Pool(config.db),
 });
 
 const db = createSqlDb(dialect);
