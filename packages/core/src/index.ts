@@ -6,3 +6,4 @@ export * from "./tag";
 export * from "./post";
 export * from "./s3";
 export * from "./file";
+export * from "./organization";

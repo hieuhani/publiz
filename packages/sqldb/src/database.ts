@@ -4,6 +4,7 @@ import { FileTable } from "./file/model";
 import { TagTable } from "./tag";
 import { PostTagTable } from "./post-tag";
 import { PostTable } from "./post";
+import { OrganizationTable } from "./organization";
 
 export interface Database {
   users: UserTable;
@@ -11,6 +12,7 @@ export interface Database {
   tags: TagTable;
   posts_tags: PostTagTable;
   posts: PostTable;
+  organizations: OrganizationTable;
 }
 
 export const createDatabase = (dialect: Dialect) => {

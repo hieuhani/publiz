@@ -8,9 +8,10 @@ import { userRouter } from "./user";
 import { authRouter } from "./auth";
 import { tagRouter, myTagRouter } from "./tag";
 import { requireAdmin } from "./admin/middleware";
-import { adminTagRouter } from "./admin";
+import { adminOrganizationRouter, adminTagRouter } from "./admin";
 import { myPostRouter } from "./post/my-post-router";
 import { myFileRouter } from "./file";
+import { organizationRouter } from "./organization";
 
 const app = new Hono<AppEnv>();
 
@@ -40,9 +41,13 @@ app.route("/api/v1/my_files", myFileRouter);
 // post api
 app.route("/api/v1/my_posts", myPostRouter);
 
+// organizations api
+app.route("/api/v1/organizations", organizationRouter);
+
 // admin api
 app.use("/admin/*", requireAdmin());
 app.route("/admin/api/v1/tags", adminTagRouter);
+app.route("/admin/api/v1/organizations", adminOrganizationRouter);
 
 app.onError(globalErrorHandler);
 
