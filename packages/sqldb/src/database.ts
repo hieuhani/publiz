@@ -5,6 +5,8 @@ import { TagTable } from "./tag";
 import { PostTagTable } from "./post-tag";
 import { PostTable } from "./post";
 import { OrganizationTable } from "./organization";
+import { OrganizationRoleTable } from "./organization-role";
+import { OrganizationUserTable } from "./organization-user";
 
 export interface Database {
   users: UserTable;
@@ -13,6 +15,8 @@ export interface Database {
   posts_tags: PostTagTable;
   posts: PostTable;
   organizations: OrganizationTable;
+  organization_roles: OrganizationRoleTable;
+  organizations_users: OrganizationUserTable;
 }
 
 export const createDatabase = (dialect: Dialect) => {

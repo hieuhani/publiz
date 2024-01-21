@@ -6,3 +6,5 @@ export * from "./tag";
 export * from "./post-tag";
 export * from "./post";
 export * from "./organization";
+export * from "./organization-role";
+export * from "./organization-user";

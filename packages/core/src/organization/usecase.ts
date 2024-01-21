@@ -1,7 +1,10 @@
 import {
   type InsertableOrganizationRow,
+  type UpdateableOrganizationRow,
   createOrganizationCrudRepository,
   getOrganizationBySlug as getOrganizationBySlugRepo,
+  createOrganizationRoleCrudRepository,
+  createOrganizationUserCrudRepository,
 } from "@publiz/sqldb";
 import { Container } from "../container";
 
@@ -22,7 +25,23 @@ export const createOrganization = async (
   container: Container,
   input: CreateOrganizationInput
 ) => {
-  return createOrganizationCrudRepository(container.sqlDb).create(input);
+  return container.sqlDb.transaction().execute(async (trx) => {
+    const newOrganization =
+      await createOrganizationCrudRepository(trx).create(input);
+    const organizationRoleAdmin = await createOrganizationRoleCrudRepository(
+      trx
+    ).create({
+      organizationId: newOrganization.id,
+      name: "Administrator",
+    });
+    await createOrganizationUserCrudRepository(trx).create({
+      organizationId: newOrganization.id,
+      userId: input.ownerId,
+      organizationRoleId: organizationRoleAdmin.id,
+    });
+
+    return newOrganization;
+  });
 };
 
 export const deleteOrganizationById = async (
@@ -30,7 +49,7 @@ export const deleteOrganizationById = async (
   id: number
 ) => createOrganizationCrudRepository(container.sqlDb).delete(id);
 
-type UpdateOrganizationInput = InsertableOrganizationRow;
+type UpdateOrganizationInput = UpdateableOrganizationRow;
 
 export const updateOrganization = async (
   container: Container,
