@@ -6,7 +6,10 @@ import {
 } from "@publiz/core";
 import { useCurrentAppUser } from "../user";
 import { useCheckOrganizationUser } from "./middleware";
-import { findOrganizationRoles } from "@publiz/core/src/organization-user/usecase";
+import {
+  findOrganizationRoles,
+  findOrganizationMetaSchemas,
+} from "@publiz/core";
 
 export const myOrganizationRouter = new Hono<AppEnv>();
 
@@ -49,6 +52,19 @@ myOrganizationRouter.get(
       container,
       +organizationId
     );
+    return c.json(organizationUsers);
+  }
+);
+
+myOrganizationRouter.get(
+  "/:organization_id/meta_schemas",
+  useCurrentAppUser({ required: true }),
+  async (c) => {
+    const organizationId = c.req.param("organization_id");
+    const container = c.get("container");
+    const organizationUsers = await findOrganizationMetaSchemas(container, {
+      organizationId: +organizationId,
+    });
     return c.json(organizationUsers);
   }
 );

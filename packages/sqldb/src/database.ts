@@ -7,6 +7,7 @@ import { PostTable } from "./post";
 import { OrganizationTable } from "./organization";
 import { OrganizationRoleTable } from "./organization-role";
 import { OrganizationUserTable } from "./organization-user";
+import { MetaSchemaTable } from "./meta-schema";
 
 export interface Database {
   users: UserTable;
@@ -17,6 +18,7 @@ export interface Database {
   organizations: OrganizationTable;
   organization_roles: OrganizationRoleTable;
   organizations_users: OrganizationUserTable;
+  meta_schemas: MetaSchemaTable;
 }
 
 export const createDatabase = (dialect: Dialect) => {

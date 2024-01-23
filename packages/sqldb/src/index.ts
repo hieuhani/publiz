@@ -8,3 +8,4 @@ export * from "./post";
 export * from "./organization";
 export * from "./organization-role";
 export * from "./organization-user";
+export * from "./meta-schema";

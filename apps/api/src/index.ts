@@ -12,6 +12,7 @@ import { adminOrganizationRouter, adminTagRouter } from "./admin";
 import { myPostRouter } from "./post/my-post-router";
 import { myFileRouter } from "./file";
 import { myOrganizationRouter, organizationRouter } from "./organization";
+import { adminMetaSchemaRouter } from "./admin/meta-schema-router";
 
 const app = new Hono<AppEnv>();
 
@@ -49,6 +50,7 @@ app.route("/api/v1/my_organizations", myOrganizationRouter);
 app.use("/admin/*", requireAdmin());
 app.route("/admin/api/v1/tags", adminTagRouter);
 app.route("/admin/api/v1/organizations", adminOrganizationRouter);
+app.route("/admin/api/v1/meta_schemas", adminMetaSchemaRouter);
 
 app.onError(globalErrorHandler);
 
