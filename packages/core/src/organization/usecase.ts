@@ -5,6 +5,8 @@ import {
   getOrganizationBySlug as getOrganizationBySlugRepo,
   createOrganizationRoleCrudRepository,
   createOrganizationUserCrudRepository,
+  findOrganizationWorkingUsers as findOrganizationWorkingUsersRepo,
+  findWorkingOrganizationsByUserId,
 } from "@publiz/sqldb";
 import { Container } from "../container";
 
@@ -61,3 +63,17 @@ export const updateOrganization = async (
 
 export const getOrganizations = async (container: Container) =>
   createOrganizationCrudRepository(container.sqlDb).find();
+
+export const getUserWorkingOrganizations = async (
+  container: Container,
+  userId: number
+) => {
+  return findWorkingOrganizationsByUserId(container.sqlDb, userId);
+};
+
+export const findOrganizationWorkingUsers = async (
+  container: Container,
+  organizationId: number
+) => {
+  return findOrganizationWorkingUsersRepo(container.sqlDb, organizationId);
+};

@@ -16,8 +16,15 @@ export async function up(db: Kysely<any>) {
     )
     .$call(withTimestamps)
     .execute();
+
+  await db.schema
+    .createIndex("organizations_owner_id")
+    .on("organizations")
+    .column("owner_id")
+    .execute();
 }
 
 export async function down(db: Kysely<any>) {
+  await db.schema.dropIndex("organizations_owner_id").execute();
   await db.schema.dropTable("organizations").execute();
 }

@@ -33,7 +33,7 @@ export const deleteOrganizationRoleById = async (
 
 type UpdateOrganizationInput = UpdateableOrganizationRoleRow;
 
-export const updateOrganization = async (
+export const updateOrganizationRole = async (
   container: Container,
   id: number,
   input: UpdateOrganizationInput

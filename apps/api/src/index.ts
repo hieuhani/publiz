@@ -11,7 +11,7 @@ import { requireAdmin } from "./admin/middleware";
 import { adminOrganizationRouter, adminTagRouter } from "./admin";
 import { myPostRouter } from "./post/my-post-router";
 import { myFileRouter } from "./file";
-import { organizationRouter } from "./organization";
+import { myOrganizationRouter, organizationRouter } from "./organization";
 
 const app = new Hono<AppEnv>();
 
@@ -43,6 +43,7 @@ app.route("/api/v1/my_posts", myPostRouter);
 
 // organizations api
 app.route("/api/v1/organizations", organizationRouter);
+app.route("/api/v1/my_organizations", myOrganizationRouter);
 
 // admin api
 app.use("/admin/*", requireAdmin());
