@@ -23,7 +23,7 @@ myOrganizationRouter.get(
       container,
       currentUser.id
     );
-    return c.json(organizations);
+    return c.json({ data: organizations });
   }
 );
 
@@ -37,7 +37,7 @@ myOrganizationRouter.get(
     const organizationRoles = await findOrganizationRoles(container, {
       organizationId: +organizationId,
     });
-    return c.json(organizationRoles);
+    return c.json({ data: organizationRoles });
   }
 );
 
@@ -52,7 +52,7 @@ myOrganizationRouter.get(
       container,
       +organizationId
     );
-    return c.json(organizationUsers);
+    return c.json({ data: organizationUsers });
   }
 );
 
@@ -65,6 +65,6 @@ myOrganizationRouter.get(
     const organizationUsers = await findOrganizationMetaSchemas(container, {
       organizationId: +organizationId,
     });
-    return c.json(organizationUsers);
+    return c.json({ data: organizationUsers });
   }
 );

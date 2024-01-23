@@ -26,7 +26,7 @@ adminMetaSchemaRouter.post(
     const payload = c.req.valid("json");
     const container = c.get("container");
     const metaSchema = await createMetaSchema(container, payload);
-    return c.json(metaSchema, 201);
+    return c.json({ data: metaSchema }, 201);
   }
 );
 
@@ -39,7 +39,7 @@ adminMetaSchemaRouter.put(
     const id = c.req.param("id");
     const payload = c.req.valid("json");
     const metaSchema = await updateMetaSchema(container, +id, payload);
-    return c.json(metaSchema);
+    return c.json({ data: metaSchema });
   }
 );
 

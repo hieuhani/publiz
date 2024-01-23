@@ -13,6 +13,7 @@ import { myPostRouter } from "./post/my-post-router";
 import { myFileRouter } from "./file";
 import { myOrganizationRouter, organizationRouter } from "./organization";
 import { adminMetaSchemaRouter } from "./admin/meta-schema-router";
+import { metaSchemaRouter } from "./meta-schema";
 
 const app = new Hono<AppEnv>();
 
@@ -24,7 +25,7 @@ app.use(
   })
 );
 
-app.get("/", (c) => c.json({ status: "ok" }));
+app.get("/", (c) => c.json({ data: "ok" }));
 
 // auth api
 app.route("/api/v1/auth", authRouter);
@@ -35,6 +36,9 @@ app.route("/api/v1/users", userRouter);
 // tags api
 app.route("/api/v1/tags", tagRouter);
 app.route("/api/v1/my_tags", myTagRouter);
+
+// meta schemas api
+app.route("/api/v1/meta_schemas", metaSchemaRouter);
 
 // files api
 app.route("/api/v1/my_files", myFileRouter);

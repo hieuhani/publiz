@@ -25,7 +25,7 @@ adminTagRouter.post(
       type: "SYSTEM",
       userId: currentUser.id,
     });
-    return c.json(tag, 201);
+    return c.json({ data: tag }, 201);
   }
 );
 

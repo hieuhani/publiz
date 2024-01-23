@@ -23,6 +23,6 @@ authRouter.post(
     const authResponse = await withFirebaseConfig(
       googleAccountSignInWithPassword
     )({ ...signInPayload, returnSecureToken: true });
-    return c.json(authResponse);
+    return c.json({ data: authResponse });
   }
 );

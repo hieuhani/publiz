@@ -34,8 +34,8 @@ userRouter.get("/my_profile", useCurrentAppUser(), async (c) => {
       authId: localId,
       displayName: "",
     });
-    return c.json(newUser);
+    return c.json({ data: newUser });
   }
 
-  return c.json(currentAppUser);
+  return c.json({ data: currentAppUser });
 });

@@ -74,6 +74,6 @@ myFileRouter.post(
       userId: currentUser.id,
     });
 
-    return c.json(createdFile);
+    return c.json({ data: createdFile });
   }
 );

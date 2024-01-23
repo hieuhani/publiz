@@ -28,7 +28,7 @@ adminOrganizationRouter.post(
 
     const container = c.get("container");
     const tag = await createOrganization(container, payload);
-    return c.json(tag, 201);
+    return c.json({ data: tag }, 201);
   }
 );
 
@@ -41,7 +41,7 @@ adminOrganizationRouter.put(
     const payload = c.req.valid("json");
     const id = c.req.param("id");
     const updatedTag = await updateOrganization(container, +id, payload);
-    return c.json(updatedTag);
+    return c.json({ data: updatedTag });
   }
 );
 

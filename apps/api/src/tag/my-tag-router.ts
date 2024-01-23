@@ -30,7 +30,7 @@ myTagRouter.post(
       type: "DEFAULT",
       userId: currentUser.id,
     });
-    return c.json(tag, 201);
+    return c.json({ data: tag }, 201);
   }
 );
 
@@ -59,6 +59,6 @@ myTagRouter.put(
     const id = c.req.param("id");
     const myTag = await getMyTagById(container, currentUser.id, +id);
     const updatedTag = await updateTag(container, myTag.id, payload);
-    return c.json(updatedTag);
+    return c.json({ data: updatedTag });
   }
 );

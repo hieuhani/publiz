@@ -15,3 +15,13 @@ export const findMetaSchemasByOrganizationId = (
     .where("organizationId", "=", organizationId)
     .execute();
 };
+
+export const findSystemMetaSchemas = (
+  db: SqlDatabase
+): Promise<MetaSchemaRow[]> => {
+  return db
+    .selectFrom("meta_schemas")
+    .selectAll()
+    .where("organizationId", "is", null)
+    .execute();
+};

@@ -3,6 +3,7 @@ import {
   type UpdateableMetaSchemaRow,
   createMetaSchemaCrudRepository,
   findMetaSchemasByOrganizationId,
+  findSystemMetaSchemas as findSystemMetaSchemasRepo,
 } from "@publiz/sqldb";
 import { Container } from "../container";
 
@@ -37,4 +38,8 @@ export const updateMetaSchema = async (
   input: UpdateMetaSchemaInput
 ) => {
   return createMetaSchemaCrudRepository(container.sqlDb).update(id, input);
+};
+
+export const findSystemMetaSchemas = async (container: Container) => {
+  return findSystemMetaSchemasRepo(container.sqlDb);
 };

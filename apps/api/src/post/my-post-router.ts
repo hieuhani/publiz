@@ -27,7 +27,7 @@ myPostRouter.post(
       authorId: currentUser.id,
       type: "POST",
     });
-    return c.json(post);
+    return c.json({ data: post });
   }
 );
 
@@ -42,6 +42,6 @@ myPostRouter.put(
     const id = c.req.param("id");
     const myPost = await getMyPostById(container, currentUser.id, +id);
     const updatedPost = await updatePost(container, myPost.id, payload);
-    return c.json(updatedPost);
+    return c.json({ data: updatedPost });
   }
 );
