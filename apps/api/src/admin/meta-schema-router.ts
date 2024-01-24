@@ -6,6 +6,7 @@ import { zValidator } from "@hono/zod-validator";
 import {
   createMetaSchema,
   deleteMetaSchemaById,
+  setDefaultMetaSchemaForOrganizationByTarget,
   updateMetaSchema,
 } from "@publiz/core";
 
@@ -39,6 +40,29 @@ adminMetaSchemaRouter.put(
     const id = c.req.param("id");
     const payload = c.req.valid("json");
     const metaSchema = await updateMetaSchema(container, +id, payload);
+    return c.json({ data: metaSchema });
+  }
+);
+
+const updateDefaultMetaSchemaSchema = z.object({
+  organizationId: z.number().optional(),
+});
+
+adminMetaSchemaRouter.patch(
+  "/:id/update_default_meta_schema",
+  useCurrentAppUser({ required: true }),
+  zValidator("json", updateDefaultMetaSchemaSchema),
+  async (c) => {
+    const container = c.get("container");
+    const id = c.req.param("id");
+    const { organizationId } = c.req.valid("json");
+    const metaSchema = await setDefaultMetaSchemaForOrganizationByTarget(
+      container,
+      {
+        organizationId: organizationId ?? null,
+        metaSchemaId: +id,
+      }
+    );
     return c.json({ data: metaSchema });
   }
 );

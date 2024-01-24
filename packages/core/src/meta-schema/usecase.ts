@@ -4,6 +4,7 @@ import {
   createMetaSchemaCrudRepository,
   findMetaSchemasByOrganizationId,
   findSystemMetaSchemas as findSystemMetaSchemasRepo,
+  updateIsDefaultValueAllMetaSchemasByOrganizationIdTarget,
 } from "@publiz/sqldb";
 import { Container } from "../container";
 
@@ -42,4 +43,37 @@ export const updateMetaSchema = async (
 
 export const findSystemMetaSchemas = async (container: Container) => {
   return findSystemMetaSchemasRepo(container.sqlDb);
+};
+
+type SetDefaultMetaSchemaForOrganizationByTargetInput = {
+  organizationId: number | null;
+  metaSchemaId: number;
+};
+
+export const setDefaultMetaSchemaForOrganizationByTarget = async (
+  container: Container,
+  {
+    organizationId,
+    metaSchemaId,
+  }: SetDefaultMetaSchemaForOrganizationByTargetInput
+) => {
+  const metaSchema = await createMetaSchemaCrudRepository(
+    container.sqlDb
+  ).findById(metaSchemaId);
+  if (metaSchema.organizationId !== organizationId) {
+    throw new Error(
+      "This schema is not belong to this organization and target"
+    );
+  }
+  return container.sqlDb.transaction().execute(async (trx) => {
+    await updateIsDefaultValueAllMetaSchemasByOrganizationIdTarget(
+      trx,
+      organizationId,
+      metaSchema.target,
+      false
+    );
+    return createMetaSchemaCrudRepository(trx).update(metaSchemaId, {
+      isDefault: true,
+    });
+  });
 };

@@ -25,3 +25,17 @@ export const findSystemMetaSchemas = (
     .where("organizationId", "is", null)
     .execute();
 };
+
+export const updateIsDefaultValueAllMetaSchemasByOrganizationIdTarget = (
+  db: SqlDatabase,
+  organizationId: number | null,
+  target: string,
+  value: boolean
+) => {
+  return db
+    .updateTable("meta_schemas")
+    .set("isDefault", value)
+    .where("organizationId", "=", organizationId)
+    .where("target", "=", target)
+    .execute();
+};

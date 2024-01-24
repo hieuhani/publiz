@@ -5,6 +5,7 @@ export type MetaSchemaTable = {
   name: string;
   schema: string;
   target: string;
+  isDefault?: boolean;
   organizationId?: number;
 };
 

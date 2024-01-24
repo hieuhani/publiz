@@ -7,6 +7,7 @@ export async function up(db: Kysely<any>) {
     .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("name", "varchar(155)", (col) => col.notNull())
     .addColumn("target", "varchar(16)", (col) => col.notNull())
+    .addColumn("is_default", "boolean", (col) => col.notNull().defaultTo(false))
     .addColumn("schema", "jsonb", (col) => col.notNull())
     .addColumn("organization_id", "integer", (col) =>
       col.references("organizations.id")
