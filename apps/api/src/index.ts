@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { validateFirebaseAuth } from "@fiboup/hono-firebase-auth";
 import { useDi } from "./di";
 import { AppEnv } from "./global";
@@ -22,6 +23,22 @@ app.use(
   "*",
   validateFirebaseAuth({
     projectId: config.firebase.projectId,
+  })
+);
+
+app.use(
+  "/api/*",
+  cors({
+    origin: ["http://localhost:5173"],
+    allowHeaders: [
+      "Authorization",
+      "Access-Control-Allow-Origin",
+      "Content-Type",
+    ],
+
+    allowMethods: ["POST", "GET", "PUT", "DELETE", "OPTIONS"],
+    maxAge: 600,
+    credentials: true,
   })
 );
 
