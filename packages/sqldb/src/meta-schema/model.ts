@@ -3,7 +3,7 @@ import { Generated, Insertable, Selectable, Updateable } from "kysely";
 export type MetaSchemaTable = {
   id: Generated<number>;
   name: string;
-  schema: string;
+  schema: object;
   target: string;
   isDefault?: boolean;
   organizationId?: number;

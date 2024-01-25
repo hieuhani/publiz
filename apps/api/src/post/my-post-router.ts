@@ -12,6 +12,8 @@ export const createPostSchema = z.object({
   content: z.string(),
   excerpt: z.string().max(255),
   status: z.enum(["DRAFT", "PUBLISHED"]),
+  metadata: z.object({}).passthrough().optional(),
+  metaSchemaId: z.number().optional(),
 });
 
 myPostRouter.post(

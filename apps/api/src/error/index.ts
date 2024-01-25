@@ -49,6 +49,7 @@ const makeAppErrorResponse = (error: AppError) =>
     JSON.stringify({
       message: error.message,
       code: error.code,
+      extra: error.extra,
     }),
     {
       status: error.code / 1000,

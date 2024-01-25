@@ -77,3 +77,7 @@ export const setDefaultMetaSchemaForOrganizationByTarget = async (
     });
   });
 };
+
+export const getMetaSchemaById = async (container: Container, id: number) => {
+  return createMetaSchemaCrudRepository(container.sqlDb).findById(id);
+};
