@@ -5,7 +5,9 @@ import { useCurrentAppUser } from "./middleware";
 import { authorizationHeader, tokenPrefix } from "./constant";
 import { withFirebaseConfig } from "../identity";
 import { get } from "../lib/get";
-import { AppError, Container, createUser } from "@publiz/core";
+import { AppError, Container, createUser, updateUser } from "@publiz/core";
+import { zValidator } from "@hono/zod-validator";
+import { updateProfileSchema } from "./schema";
 
 export const userRouter = new Hono<AppEnv>();
 
@@ -39,3 +41,23 @@ userRouter.get("/my_profile", useCurrentAppUser(), async (c) => {
 
   return c.json({ data: currentAppUser });
 });
+
+userRouter.put(
+  "/my_profile",
+  zValidator("json", updateProfileSchema),
+  useCurrentAppUser({ required: true }),
+  async (c) => {
+    const currentAppUser = c.get("currentAppUser");
+    const container = c.get("container") as Container;
+
+    const userPayload = c.req.valid("json");
+
+    const updatedUser = await updateUser(
+      container,
+      currentAppUser.id,
+      userPayload
+    );
+
+    return c.json(updatedUser);
+  }
+);
