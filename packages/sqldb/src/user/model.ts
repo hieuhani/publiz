@@ -4,11 +4,8 @@ export type UserTable = {
   id: Generated<number>;
   authId: string;
   displayName: string;
-  dob?: string;
-  bio?: string;
   avatarUrl?: string;
-  coverUrl?: string;
-  gender?: string;
+  metadata: any;
 };
 
 export type UserRow = Selectable<UserTable>;

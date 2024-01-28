@@ -17,3 +17,16 @@ export const getPostByIdAndUserId = async (
     .where("authorId", "=", authorId)
     .executeTakeFirstOrThrow();
 };
+
+export const getPostByIdAndOrganizationId = async (
+  db: SqlDatabase,
+  postId: number,
+  organizationId: number
+) => {
+  return db
+    .selectFrom("posts")
+    .selectAll()
+    .where("id", "=", postId)
+    .where("organizationId", "=", organizationId)
+    .executeTakeFirstOrThrow();
+};

@@ -4,6 +4,7 @@ export type MetaSchemaTable = {
   id: Generated<number>;
   name: string;
   schema: object;
+  version: number;
   target: string;
   isDefault?: boolean;
   organizationId?: number;

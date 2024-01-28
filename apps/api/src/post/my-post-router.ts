@@ -1,20 +1,11 @@
 import { Hono } from "hono";
 import { type AppEnv } from "../global";
-import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { useCurrentAppUser } from "../user";
 import { createPost, updatePost, getMyPostById } from "@publiz/core";
+import { createPostSchema, updatePostSchema } from "./schema";
 
 export const myPostRouter = new Hono<AppEnv>();
-
-export const createPostSchema = z.object({
-  title: z.string().max(255),
-  content: z.string(),
-  excerpt: z.string().max(255),
-  status: z.enum(["DRAFT", "PUBLISHED"]),
-  metadata: z.object({}).passthrough().optional(),
-  metaSchemaId: z.number().optional(),
-});
 
 myPostRouter.post(
   "/",
@@ -36,7 +27,7 @@ myPostRouter.post(
 myPostRouter.put(
   "/:id",
   useCurrentAppUser({ required: true }),
-  zValidator("json", createPostSchema),
+  zValidator("json", updatePostSchema),
   async (c) => {
     const currentUser = c.get("currentAppUser");
     const container = c.get("container");

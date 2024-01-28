@@ -1,15 +1,19 @@
 import { Hono } from "hono";
 import { type AppEnv } from "../global";
 import {
+  createPost,
   findOrganizationWorkingUsers,
+  getOrganizationPostById,
   getUserWorkingOrganizations,
-} from "@publiz/core";
-import { useCurrentAppUser } from "../user";
-import { useCheckOrganizationUser } from "./middleware";
-import {
+  updatePost,
   findOrganizationRoles,
   findOrganizationMetaSchemas,
 } from "@publiz/core";
+import { useCurrentAppUser } from "../user";
+import { useCheckOrganizationUser } from "./middleware";
+
+import { zValidator } from "@hono/zod-validator";
+import { createPostSchema, updatePostSchema } from "../post";
 
 export const myOrganizationRouter = new Hono<AppEnv>();
 
@@ -66,5 +70,45 @@ myOrganizationRouter.get(
       organizationId: +organizationId,
     });
     return c.json({ data: organizationUsers });
+  }
+);
+
+myOrganizationRouter.post(
+  "/:organization_id/posts",
+  zValidator("json", createPostSchema),
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser(),
+  async (c) => {
+    const payload = c.req.valid("json");
+    const currentUser = c.get("currentAppUser");
+    const organizationId = c.req.param("organization_id");
+    const container = c.get("container");
+    const post = await createPost(container, {
+      ...payload,
+      authorId: currentUser.id,
+      organizationId: +organizationId,
+      type: "POST",
+    });
+    return c.json({ data: post });
+  }
+);
+
+myOrganizationRouter.put(
+  "/:organization_id/posts/:id",
+  zValidator("json", updatePostSchema),
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser(),
+  async (c) => {
+    const payload = c.req.valid("json");
+    const currentUser = c.get("currentAppUser");
+    const id = c.req.param("id");
+    const container = c.get("container");
+    const myPost = await getOrganizationPostById(
+      container,
+      currentUser.id,
+      +id
+    );
+    const updatedPost = await updatePost(container, myPost.id, payload);
+    return c.json({ data: updatedPost });
   }
 );

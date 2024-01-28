@@ -3,6 +3,7 @@ import {
   createPostCrudRepository,
   getPostByIdAndUserId,
   UpdateablePostRow,
+  getPostByIdAndOrganizationId,
 } from "@publiz/sqldb";
 import Ajv from "ajv";
 import { Container } from "../container";
@@ -25,6 +26,7 @@ export const createPost = async (
     if (!validate(input.metadata)) {
       throw new AppError(400_102, "Invalid metadata", validate.errors);
     }
+    (input.metadata as any).metaSchemaId = metaSchemaId;
   }
   return createPostCrudRepository(container.sqlDb).create(input);
 };
@@ -35,6 +37,14 @@ export const getMyPostById = async (
   postId: number
 ) => {
   return getPostByIdAndUserId(container.sqlDb, postId, userId);
+};
+
+export const getOrganizationPostById = async (
+  container: Container,
+  organizationId: number,
+  postId: number
+) => {
+  return getPostByIdAndOrganizationId(container.sqlDb, postId, organizationId);
 };
 
 type UpdatePostInput = UpdateablePostRow & {
