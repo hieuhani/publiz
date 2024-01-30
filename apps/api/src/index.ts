@@ -17,6 +17,18 @@ import { adminMetaSchemaRouter } from "./admin/meta-schema-router";
 import { metaSchemaRouter } from "./meta-schema";
 
 const app = new Hono<AppEnv>();
+const corsMiddleware = cors({
+  origin: ["http://localhost:5173"],
+  allowHeaders: [
+    "Authorization",
+    "Access-Control-Allow-Origin",
+    "Content-Type",
+  ],
+
+  allowMethods: ["POST", "GET", "PUT", "DELETE", "OPTIONS"],
+  maxAge: 600,
+  credentials: true,
+});
 
 app.use("*", useDi());
 app.use(
@@ -26,21 +38,8 @@ app.use(
   })
 );
 
-app.use(
-  "/api/*",
-  cors({
-    origin: ["http://localhost:5173"],
-    allowHeaders: [
-      "Authorization",
-      "Access-Control-Allow-Origin",
-      "Content-Type",
-    ],
-
-    allowMethods: ["POST", "GET", "PUT", "DELETE", "OPTIONS"],
-    maxAge: 600,
-    credentials: true,
-  })
-);
+app.use("/api/*", corsMiddleware);
+app.use("/admin/api/*", corsMiddleware);
 
 app.get("/", (c) => c.json({ data: "ok" }));
 
