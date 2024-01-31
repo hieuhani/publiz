@@ -8,12 +8,16 @@ import { globalErrorHandler } from "./error";
 import { userRouter } from "./user";
 import { authRouter } from "./auth";
 import { tagRouter, myTagRouter } from "./tag";
-import { requireAdmin } from "./admin/middleware";
-import { adminOrganizationRouter, adminTagRouter } from "./admin";
+import {
+  adminOrganizationRouter,
+  adminTagRouter,
+  adminUserRouter,
+  adminMetaSchemaRouter,
+  requireAdmin,
+} from "./admin";
 import { myPostRouter } from "./post/my-post-router";
 import { myFileRouter } from "./file";
 import { myOrganizationRouter, organizationRouter } from "./organization";
-import { adminMetaSchemaRouter } from "./admin/meta-schema-router";
 import { metaSchemaRouter } from "./meta-schema";
 
 const app = new Hono<AppEnv>();
@@ -71,7 +75,7 @@ app.use("/admin/*", requireAdmin());
 app.route("/admin/api/v1/tags", adminTagRouter);
 app.route("/admin/api/v1/organizations", adminOrganizationRouter);
 app.route("/admin/api/v1/meta_schemas", adminMetaSchemaRouter);
-
+app.route("/admin/api/v1/users", adminUserRouter);
 app.onError(globalErrorHandler);
 
 export default app;

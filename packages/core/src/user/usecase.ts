@@ -52,3 +52,6 @@ export const updateUser = async (
   }
   return createUserCrudRepository(container.sqlDb).update(id, input);
 };
+
+export const getUsers = async (container: Container) =>
+  createUserCrudRepository(container.sqlDb).find();
