@@ -17,6 +17,7 @@ const createMetaSchemaSchema = z.object({
   schema: z.object({}).passthrough(),
   target: z.enum(["post", "user"]),
   organizationId: z.number().optional(),
+  version: z.number(),
 });
 
 adminMetaSchemaRouter.post(

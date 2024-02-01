@@ -65,3 +65,7 @@ export const updatePost = async (
   }
   return createPostCrudRepository(container.sqlDb).update(id, input);
 };
+
+export const getPostById = async (container: Container, id: number) => {
+  return createPostCrudRepository(container.sqlDb).findById(id);
+};

@@ -19,6 +19,7 @@ import { myPostRouter } from "./post/my-post-router";
 import { myFileRouter } from "./file";
 import { myOrganizationRouter, organizationRouter } from "./organization";
 import { metaSchemaRouter } from "./meta-schema";
+import { postRouter } from "./post";
 
 const app = new Hono<AppEnv>();
 const corsMiddleware = cors({
@@ -65,6 +66,7 @@ app.route("/api/v1/my_files", myFileRouter);
 
 // post api
 app.route("/api/v1/my_posts", myPostRouter);
+app.route("/api/v1/posts", postRouter);
 
 // organizations api
 app.route("/api/v1/organizations", organizationRouter);
