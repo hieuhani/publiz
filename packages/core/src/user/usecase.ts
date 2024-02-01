@@ -49,6 +49,7 @@ export const updateUser = async (
     if (!validate(input.metadata)) {
       throw new AppError(400_102, "Invalid metadata", validate.errors);
     }
+    (input.metadata as any).metaSchemaId = metaSchemaId;
   }
   return createUserCrudRepository(container.sqlDb).update(id, input);
 };

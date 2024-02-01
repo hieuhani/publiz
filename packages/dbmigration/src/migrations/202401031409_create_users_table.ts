@@ -11,8 +11,16 @@ export async function up(db: Kysely<any>) {
     .addColumn("metadata", "jsonb")
     .$call(withTimestamps)
     .execute();
+
+  await db.schema
+    .createIndex("users_metadata_gin")
+    .on("users")
+    .column("metadata")
+    .using("gin")
+    .execute();
 }
 
 export async function down(db: Kysely<any>) {
+  await db.schema.dropIndex("users_metadata_gin").execute();
   await db.schema.dropTable("users").execute();
 }
