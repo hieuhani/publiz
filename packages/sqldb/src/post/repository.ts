@@ -30,3 +30,14 @@ export const getPostByIdAndOrganizationId = async (
     .where("organizationId", "=", organizationId)
     .executeTakeFirstOrThrow();
 };
+
+export const findPostsByOrganizationId = async (
+  db: SqlDatabase,
+  organizationId: number
+) => {
+  return db
+    .selectFrom("posts")
+    .selectAll()
+    .where("organizationId", "=", organizationId)
+    .execute();
+};

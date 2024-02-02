@@ -8,6 +8,7 @@ import {
   updatePost,
   findOrganizationRoles,
   findOrganizationMetaSchemas,
+  getPostComments,
 } from "@publiz/core";
 import { useCurrentAppUser } from "../user";
 import { useCheckOrganizationUser } from "./middleware";
@@ -110,5 +111,26 @@ myOrganizationRouter.put(
     );
     const updatedPost = await updatePost(container, myPost.id, payload);
     return c.json({ data: updatedPost });
+  }
+);
+
+myOrganizationRouter.get(
+  "/:organization_id/posts/:id/comments",
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser(),
+  async (c) => {
+    const currentUser = c.get("currentAppUser");
+    const id = c.req.param("id");
+    const container = c.get("container");
+    // this function guarantees that this post is from the organization
+    const myPost = await getOrganizationPostById(
+      container,
+      currentUser.id,
+      +id
+    );
+
+    const comments = await getPostComments(container, myPost.id);
+
+    return c.json({ data: comments });
   }
 );

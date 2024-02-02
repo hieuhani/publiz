@@ -4,6 +4,7 @@ import {
   getPostByIdAndUserId,
   UpdateablePostRow,
   getPostByIdAndOrganizationId,
+  findPostsByOrganizationId as findPostsByOrganizationIdRepo,
 } from "@publiz/sqldb";
 import Ajv from "ajv";
 import { Container } from "../container";
@@ -68,4 +69,11 @@ export const updatePost = async (
 
 export const getPostById = async (container: Container, id: number) => {
   return createPostCrudRepository(container.sqlDb).findById(id);
+};
+
+export const findPostsByOrganizationId = async (
+  container: Container,
+  organizationId: number
+) => {
+  return findPostsByOrganizationIdRepo(container.sqlDb, organizationId);
 };
