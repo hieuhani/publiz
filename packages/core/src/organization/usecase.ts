@@ -77,3 +77,6 @@ export const findOrganizationWorkingUsers = async (
 ) => {
   return findOrganizationWorkingUsersRepo(container.sqlDb, organizationId);
 };
+
+export const getOrganizationById = async (container: Container, id: number) =>
+  createOrganizationCrudRepository(container.sqlDb).findById(id);
