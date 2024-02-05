@@ -22,18 +22,7 @@ import { metaSchemaRouter } from "./meta-schema";
 import { postRouter } from "./post";
 
 const app = new Hono<AppEnv>();
-const corsMiddleware = cors({
-  origin: ["http://localhost:5173"],
-  allowHeaders: [
-    "Authorization",
-    "Access-Control-Allow-Origin",
-    "Content-Type",
-  ],
-
-  allowMethods: ["POST", "GET", "PUT", "DELETE", "OPTIONS"],
-  maxAge: 600,
-  credentials: true,
-});
+const corsMiddleware = cors(config.cors);
 
 app.use("*", useDi());
 app.use(

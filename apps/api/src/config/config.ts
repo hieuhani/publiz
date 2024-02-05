@@ -23,6 +23,13 @@ export const zConfig = z.object({
     region: z.string().optional(),
     endpoint: z.string().optional(),
   }),
+  cors: z.object({
+    origin: z.array(z.string()),
+    allowHeaders: z.array(z.string()),
+    allowMethods: z.array(z.string()),
+    maxAge: z.number(),
+    credentials: z.boolean(),
+  }),
 });
 
 export type Config = z.infer<typeof zConfig>;
@@ -48,5 +55,17 @@ export const config: Config = {
     secretAccessKey: getEnvVar("S3_SECRET_ACCESS_KEY"),
     endpoint: getEnvVar("S3_ENDPOINT", "http://s3.amazonaws.com"),
     region: getEnvVar("S3_REGION", "ap-southeast-1"),
+  },
+  cors: {
+    origin: getEnvVar("CORS_ORIGIN", "*").split(","),
+    allowHeaders: getEnvVar(
+      "CORS_ALLOW_HEADERS",
+      "Content-Type, Authorization"
+    ).split(","),
+    allowMethods: getEnvVar("CORS_ALLOW_METHODS", "GET,POST,PUT,DELETE").split(
+      ","
+    ),
+    maxAge: parseInt(getEnvVar("CORS_MAX_AGE", "600"), 10),
+    credentials: getEnvVar("CORS_CREDENTIALS", "true") === "true",
   },
 };
