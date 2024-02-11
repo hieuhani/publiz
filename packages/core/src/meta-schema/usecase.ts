@@ -7,6 +7,9 @@ import {
   updateIsDefaultValueAllMetaSchemasByOrganizationIdTarget,
 } from "@publiz/sqldb";
 import { Container } from "../container";
+import { MetaSchema } from "./model";
+import { extractMetaSchemaIdentifier } from "./utils";
+import { getOrganizationBySlug } from "../organization";
 
 type GetOrganizationMetaSchemas = {
   organizationId: number;
@@ -80,4 +83,42 @@ export const setDefaultMetaSchemaForOrganizationByTarget = async (
 
 export const getMetaSchemaById = async (container: Container, id: number) => {
   return createMetaSchemaCrudRepository(container.sqlDb).findById(id);
+};
+
+/**
+ *
+ * @param container
+ * @param identifier meta schema identity. It can be `name:version` for system meta schema level or with namespace `organization/name:version`
+ * @returns
+ */
+export const getMetaSchemaByIdentifier = async (
+  container: Container,
+  identifier: string
+): Promise<MetaSchema> => {
+  const [part1, part2] = identifier.split("/");
+  // when part2 is not exist, it means it is system level meta schema
+  if (!part2) {
+    const { name, version } = extractMetaSchemaIdentifier(part1);
+
+    return container.sqlDb
+      .selectFrom("meta_schemas")
+      .selectAll()
+      .where("name", "=", name)
+      .where("version", "=", +version)
+      .executeTakeFirstOrThrow();
+  }
+
+  const organizationSlug = part1;
+  const organization = await getOrganizationBySlug(container, {
+    slug: organizationSlug,
+  });
+  const { name, version } = extractMetaSchemaIdentifier(part2);
+
+  return container.sqlDb
+    .selectFrom("meta_schemas")
+    .selectAll()
+    .where("organizationId", "=", organization?.id)
+    .where("name", "=", name)
+    .where("version", "=", version)
+    .executeTakeFirstOrThrow();
 };
