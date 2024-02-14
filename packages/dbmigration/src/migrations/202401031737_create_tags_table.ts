@@ -18,6 +18,9 @@ export async function up(db: Kysely<any>) {
     .addColumn("organization_id", "integer", (col) =>
       col.references("organizations.id")
     )
+    .addColumn("parent_id", "integer", (col) =>
+      col.references("tags.id").onDelete("set null")
+    )
     .addColumn("user_id", "integer", (col) =>
       col.references("users.id").notNull()
     )

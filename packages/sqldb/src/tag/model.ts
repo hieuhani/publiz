@@ -7,6 +7,7 @@ export type TagTable = {
   slug: string;
   type: TagType;
   organizationId?: number;
+  parentId?: number;
   userId: number;
 };
 

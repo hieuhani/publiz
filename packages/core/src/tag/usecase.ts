@@ -1,8 +1,9 @@
 import {
   type InsertableTagRow,
+  type UpdateableTagRow,
   createTagCrudRepository,
-  UpdateableTagRow,
   getTagByIdAndUserId,
+  findSystemTags as findSystemTagsRepo,
 } from "@publiz/sqldb";
 import { Container } from "../container";
 
@@ -35,3 +36,6 @@ export const getMyTagById = async (
 ) => {
   return getTagByIdAndUserId(container.sqlDb, tagId, userId);
 };
+
+export const findSystemTags = async (container: Container) =>
+  findSystemTagsRepo(container.sqlDb);

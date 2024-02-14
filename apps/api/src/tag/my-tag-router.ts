@@ -15,6 +15,7 @@ export const myTagRouter = new Hono<AppEnv>();
 const createTagSchema = z.object({
   name: z.string().min(1).max(100),
   slug: z.string().min(1).max(100),
+  parentId: z.number().optional(),
 });
 
 myTagRouter.post(
@@ -46,6 +47,7 @@ myTagRouter.delete("/:id", useCurrentAppUser({ required: true }), async (c) => {
 const updateTagSchema = z.object({
   name: z.string().min(1).max(100),
   slug: z.string().min(1).max(100),
+  parentId: z.number().optional(),
 });
 
 myTagRouter.put(

@@ -36,3 +36,11 @@ export const findTagsByOrganizationId = async (
     .where("organizationId", "=", organizationId)
     .execute();
 };
+
+export const findSystemTags = async (db: SqlDatabase) => {
+  return db
+    .selectFrom("tags")
+    .selectAll()
+    .where("type", "=", "SYSTEM")
+    .execute();
+};
