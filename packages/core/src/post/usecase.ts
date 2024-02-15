@@ -5,6 +5,7 @@ import {
   UpdateablePostRow,
   getPostByIdAndOrganizationId,
   findPostsByOrganizationId as findPostsByOrganizationIdRepo,
+  findMyPostsByMetaSchemaId as findMyPostsByMetaSchemaIdRRepo,
 } from "@publiz/sqldb";
 import Ajv from "ajv";
 import { Container } from "../container";
@@ -38,6 +39,14 @@ export const getMyPostById = async (
   postId: number
 ) => {
   return getPostByIdAndUserId(container.sqlDb, postId, userId);
+};
+
+export const getMyPostsByMetaSchemaId = async (
+  container: Container,
+  userId: number,
+  metaSchemaId: number
+) => {
+  return findMyPostsByMetaSchemaIdRRepo(container.sqlDb, userId, metaSchemaId);
 };
 
 export const getOrganizationPostById = async (

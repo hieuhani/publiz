@@ -1,5 +1,6 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
+import { JsonValue } from "../kysely";
 import { PostTable } from "./model";
 
 export const createPostCrudRepository = (db: SqlDatabase) =>
@@ -39,5 +40,18 @@ export const findPostsByOrganizationId = async (
     .selectFrom("posts")
     .selectAll()
     .where("organizationId", "=", organizationId)
+    .execute();
+};
+
+export const findMyPostsByMetaSchemaId = async (
+  db: SqlDatabase,
+  userId: number,
+  metaSchemaId: number
+) => {
+  return db
+    .selectFrom("posts")
+    .selectAll()
+    .where("authorId", "=", userId)
+    .where("metadata", "@>", new JsonValue({ metaSchemaId }))
     .execute();
 };

@@ -2,7 +2,13 @@ import { Hono } from "hono";
 import { type AppEnv } from "../global";
 import { zValidator } from "@hono/zod-validator";
 import { useCurrentAppUser } from "../user";
-import { createPost, updatePost, getMyPostById } from "@publiz/core";
+import {
+  createPost,
+  updatePost,
+  getMyPostById,
+  getMetaSchemaByIdentifier,
+  getMyPostsByMetaSchemaId,
+} from "@publiz/core";
 import { createPostSchema, updatePostSchema } from "./schema";
 
 export const myPostRouter = new Hono<AppEnv>();
@@ -38,3 +44,22 @@ myPostRouter.put(
     return c.json({ data: updatedPost });
   }
 );
+
+myPostRouter.get("/", useCurrentAppUser({ required: true }), async (c) => {
+  const schema = c.req.query("schema");
+  const container = c.get("container");
+  const currentUser = c.get("currentAppUser");
+  if (schema) {
+    const metaSchema = await getMetaSchemaByIdentifier(container, schema);
+    if (!metaSchema) {
+      return c.json({ data: [] });
+    }
+    const posts = await getMyPostsByMetaSchemaId(
+      container,
+      currentUser.id,
+      metaSchema.id
+    );
+    return c.json({ data: posts });
+  }
+  return c.json({ data: [] });
+});
