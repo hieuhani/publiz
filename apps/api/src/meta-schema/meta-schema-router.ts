@@ -17,7 +17,7 @@ metaSchemaRouter.get("/", async (c) => {
 metaSchemaRouter.get("/:identity", async (c) => {
   const container = c.get("container");
   const identity = c.req.param("identity");
-  if (!isNaN(parseInt(identity, 10))) {
+  if (Number.isInteger(Number(identity))) {
     const metaSchema = await getMetaSchemaById(container, +identity);
     return c.json({ data: metaSchema });
   }

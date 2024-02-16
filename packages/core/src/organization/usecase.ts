@@ -78,5 +78,14 @@ export const findOrganizationWorkingUsers = async (
   return findOrganizationWorkingUsersRepo(container.sqlDb, organizationId);
 };
 
-export const getOrganizationById = async (container: Container, id: number) =>
-  createOrganizationCrudRepository(container.sqlDb).findById(id);
+export const getOrganizationById = async (
+  container: Container,
+  idOrSlug: number | string
+) => {
+  if (Number.isInteger(Number(idOrSlug))) {
+    return createOrganizationCrudRepository(container.sqlDb).findById(
+      +idOrSlug
+    );
+  }
+  return getOrganizationBySlugRepo(container.sqlDb, idOrSlug + "");
+};

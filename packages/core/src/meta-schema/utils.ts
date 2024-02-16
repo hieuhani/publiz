@@ -1,5 +1,4 @@
 import { AppError } from "../error";
-import { MetaSchema } from "./model";
 
 export const extractMetaSchemaIdentifier = (identifier: string) => {
   const [name, version] = identifier.split(":");

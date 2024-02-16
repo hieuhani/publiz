@@ -24,6 +24,6 @@ organizationRouter.get("/:organization_id/posts", async (c) => {
 organizationRouter.get("/:organization_id", async (c) => {
   const id = c.req.param("organization_id");
   const container = c.get("container");
-  const posts = await getOrganizationById(container, +id);
+  const posts = await getOrganizationById(container, id);
   return c.json({ data: posts });
 });
