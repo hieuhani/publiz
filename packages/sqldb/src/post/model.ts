@@ -5,6 +5,7 @@ export type PostTable = {
   title: string;
   excerpt: string;
   content: string;
+  contentJson: any;
   parentId?: number;
   authorId: number;
   organizationId?: number;

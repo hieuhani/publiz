@@ -16,7 +16,8 @@ export async function up(db: Kysely<any>) {
     .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("title", "varchar(512)", (col) => col.notNull())
     .addColumn("excerpt", "text", (col) => col.notNull())
-    .addColumn("content", "text", (col) => col.notNull())
+    .addColumn("content", "text", (col) => col.notNull().defaultTo(""))
+    .addColumn("content_json", "jsonb", (col) => col.notNull().defaultTo("{}"))
     .addColumn("parent_id", "integer", (col) =>
       col.references("posts.id").onDelete("set null")
     )
