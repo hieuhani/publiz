@@ -6,6 +6,7 @@ import { slugify } from "../lib/slugify";
 import { uploadFile, createFile } from "@publiz/core";
 import { config } from "../config";
 import { useCurrentAppUser } from "../user";
+import { getGcsImageServingUrl } from "@publiz/core";
 
 export const myFileRouter = new Hono<AppEnv>();
 
@@ -63,6 +64,17 @@ myFileRouter.post(
         };
       }, {}),
     });
+
+    if (file.type.startsWith("image/")) {
+      const imageServingEndpoint = config.s3.getGcsImageServingEndpoint;
+      if (imageServingEndpoint) {
+        metadata.gcsImageServingUrl = await getGcsImageServingUrl({
+          bucket: config.s3.bucket,
+          key,
+          endpoint: imageServingEndpoint,
+        });
+      }
+    }
 
     const createdFile = await createFile(container, {
       contentType: file.type,

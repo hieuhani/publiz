@@ -22,6 +22,7 @@ export const zConfig = z.object({
     secretAccessKey: z.string(),
     region: z.string().optional(),
     endpoint: z.string().optional(),
+    getGcsImageServingEndpoint: z.string().optional(),
   }),
   cors: z.object({
     origin: z.array(z.string()),
@@ -55,6 +56,7 @@ export const config: Config = {
     secretAccessKey: getEnvVar("S3_SECRET_ACCESS_KEY"),
     endpoint: getEnvVar("S3_ENDPOINT", "http://s3.amazonaws.com"),
     region: getEnvVar("S3_REGION", "ap-southeast-1"),
+    getGcsImageServingEndpoint: getEnvVar("GET_GCS_IMAGE_SERVING_ENDPOINT", ""),
   },
   cors: {
     origin: getEnvVar("CORS_ORIGIN", "*").split(","),

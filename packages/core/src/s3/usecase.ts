@@ -36,3 +36,27 @@ export const getPresignedUrl = async (
   const command = new PutObjectCommand({ Bucket: bucket, Key: key });
   return getSignedUrl(container.s3, command, { expiresIn: expires });
 };
+
+type GetGcsImageServingUrlInput = {
+  bucket: string;
+  key: string;
+  endpoint: string;
+};
+export const getGcsImageServingUrl = async ({
+  bucket,
+  key,
+  endpoint,
+}: GetGcsImageServingUrlInput) => {
+  try {
+    const params = new URLSearchParams({ image: key, bucket });
+
+    const response = await fetch(
+      `${endpoint}/get_serving_url?${params.toString()}`
+    );
+    const { image } = (await response.json()) as { image: string };
+    return image;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};

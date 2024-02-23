@@ -17,13 +17,17 @@ organizationRouter.get("/", async (c) => {
 organizationRouter.get("/:organization_id/posts", async (c) => {
   const id = c.req.param("organization_id");
   const container = c.get("container");
-  const posts = await findPostsByOrganizationId(container, +id);
+  const organization = await getOrganizationById(container, id);
+  const posts = await findPostsByOrganizationId(
+    container,
+    organization.id as number
+  );
   return c.json({ data: posts });
 });
 
 organizationRouter.get("/:organization_id", async (c) => {
   const id = c.req.param("organization_id");
   const container = c.get("container");
-  const posts = await getOrganizationById(container, id);
-  return c.json({ data: posts });
+  const organization = await getOrganizationById(container, id);
+  return c.json({ data: organization });
 });

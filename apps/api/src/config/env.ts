@@ -9,7 +9,8 @@ export const getEnvVar = <T extends string>(
   defaultValue?: any
 ) => {
   if (!(variableName in process.env)) {
-    if (defaultValue) return defaultValue;
+    if (defaultValue || defaultValue === "" || defaultValue === 0)
+      return defaultValue;
     console.error(
       `Cannot find ${variableName} in environment variables. Died.`
     );

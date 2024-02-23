@@ -3,7 +3,6 @@ import { Generated, Insertable, Selectable, Updateable } from "kysely";
 export type PostTable = {
   id: Generated<number>;
   title: string;
-  excerpt: string;
   content: string;
   contentJson: any;
   parentId?: number;

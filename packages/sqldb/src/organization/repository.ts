@@ -8,12 +8,12 @@ export const createOrganizationCrudRepository = (db: SqlDatabase) =>
 export const getOrganizationBySlug = (
   db: SqlDatabase,
   slug: string
-): Promise<OrganizationRow | undefined> => {
+): Promise<OrganizationRow> => {
   return db
     .selectFrom("organizations")
     .selectAll()
     .where("slug", "=", slug)
-    .executeTakeFirst();
+    .executeTakeFirstOrThrow();
 };
 
 export const findWorkingOrganizationsByUserId = async (
