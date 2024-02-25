@@ -5,6 +5,7 @@ export type FileTable = {
   contentType: string;
   fileName: string;
   filePath: string;
+  bucket: string;
   metadata?: any;
   title?: string;
   description?: string;

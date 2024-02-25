@@ -8,6 +8,7 @@ export async function up(db: Kysely<any>) {
     .addColumn("title", "varchar(512)")
     .addColumn("description", "text")
     .addColumn("content_type", "varchar(32)", (col) => col.notNull())
+    .addColumn("bucket", "varchar(255)", (col) => col.defaultTo(""))
     .addColumn("file_name", "varchar(255)", (col) => col.notNull())
     .addColumn("file_path", "text", (col) => col.notNull())
     .addColumn("metadata", "jsonb")

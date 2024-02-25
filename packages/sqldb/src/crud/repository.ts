@@ -1,30 +1,33 @@
 import { Database, SqlDatabase } from "../database";
-import { Insertable, Updateable } from "kysely";
+import { Insertable, Selectable, Updateable } from "kysely";
 
 type Table = keyof Database;
 export function createCrudRepository<R>(db: SqlDatabase, table: Table) {
   return {
-    async findById(id: number): Promise<R> {
+    async findById(id: number): Promise<Selectable<R>> {
       return db
         .selectFrom(table)
         .selectAll()
         .where("id", "=", id)
-        .executeTakeFirstOrThrow() as R;
+        .executeTakeFirstOrThrow() as Selectable<R>;
     },
-    async create(row: Insertable<Table>): Promise<R> {
+    async create(row: Insertable<Table>): Promise<Selectable<R>> {
       const { id } = await db
         .insertInto(table)
         .values(row)
         .returning("id")
         .executeTakeFirstOrThrow();
-      return this.findById(id);
+      return this.findById(id) as Selectable<R>;
     },
 
     async createMulti(rows: Insertable<Table>[]) {
       await db.insertInto(table).values(rows).execute();
     },
 
-    async update(id: number, payload: Updateable<Table>): Promise<R> {
+    async update(
+      id: number,
+      payload: Updateable<Table>
+    ): Promise<Selectable<R>> {
       await db
         .updateTable(table)
         .set(payload)

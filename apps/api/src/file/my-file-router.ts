@@ -3,10 +3,9 @@ import { Hono } from "hono";
 import { type AppEnv } from "../global";
 import { zValidator } from "@hono/zod-validator";
 import { slugify } from "../lib/slugify";
-import { uploadFile, createFile } from "@publiz/core";
+import { uploadFile, createFile, getGcsImageServingUrl } from "@publiz/core";
 import { config } from "../config";
 import { useCurrentAppUser } from "../user";
-import { getGcsImageServingUrl } from "@publiz/core";
 
 export const myFileRouter = new Hono<AppEnv>();
 
@@ -26,7 +25,7 @@ myFileRouter.post(
   async (c) => {
     const currentUser = c.get("currentAppUser");
     const {
-      modelName = "Uncategorized",
+      modelName = "uncategorized",
       modelId,
       title,
       description,
@@ -49,7 +48,6 @@ myFileRouter.post(
     }
 
     const fileBuffer = await file.arrayBuffer();
-
     await uploadFile(container, {
       bucket: config.s3.bucket,
       key,
@@ -80,6 +78,7 @@ myFileRouter.post(
       contentType: file.type,
       fileName,
       title,
+      bucket: config.s3.bucket,
       description,
       filePath: key,
       metadata,
