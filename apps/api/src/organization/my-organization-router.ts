@@ -101,16 +101,29 @@ myOrganizationRouter.put(
   useCheckOrganizationUser(),
   async (c) => {
     const payload = c.req.valid("json");
-    const currentUser = c.get("currentAppUser");
     const id = c.req.param("id");
     const container = c.get("container");
+    const organizationId = c.req.param("organization_id");
     const myPost = await getOrganizationPostById(
       container,
-      currentUser.id,
+      +organizationId,
       +id
     );
     const updatedPost = await updatePost(container, myPost.id, payload);
     return c.json({ data: updatedPost });
+  }
+);
+
+myOrganizationRouter.get(
+  "/:organization_id/posts/:id",
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser(),
+  async (c) => {
+    const id = c.req.param("id");
+    const container = c.get("container");
+    const organizationId = c.req.param("organization_id");
+    const post = await getOrganizationPostById(container, +organizationId, +id);
+    return c.json({ data: post });
   }
 );
 
