@@ -39,3 +39,6 @@ export const getMyTagById = async (
 
 export const findSystemTags = async (container: Container) =>
   findSystemTagsRepo(container.sqlDb);
+
+export const findTagsByIds = async (container: Container, ids: number[]) =>
+  createTagCrudRepository(container.sqlDb).findByIds(ids);

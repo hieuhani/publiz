@@ -2,7 +2,10 @@ import { Database, SqlDatabase } from "../database";
 import { Insertable, Selectable, Updateable } from "kysely";
 
 type Table = keyof Database;
-export function createCrudRepository<R>(db: SqlDatabase, table: Table) {
+export function createCrudRepository<R extends Database[Table]>(
+  db: SqlDatabase,
+  table: Table
+) {
   return {
     async findById(id: number): Promise<Selectable<R>> {
       return db
@@ -10,6 +13,13 @@ export function createCrudRepository<R>(db: SqlDatabase, table: Table) {
         .selectAll()
         .where("id", "=", id)
         .executeTakeFirstOrThrow() as Selectable<R>;
+    },
+    async findByIds(ids: number[]): Promise<Selectable<R>[]> {
+      return db
+        .selectFrom(table)
+        .selectAll()
+        .where("id", "in", ids)
+        .execute() as Promise<Selectable<R>[]>;
     },
     async create(row: Insertable<Table>): Promise<Selectable<R>> {
       const { id } = await db

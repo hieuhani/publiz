@@ -7,6 +7,7 @@ export const createPostSchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED"]),
   metadata: z.object({}).passthrough().optional(),
   metaSchemaId: z.number().optional(),
+  tagIds: z.array(z.number()).optional(),
 });
 
 export const updatePostSchema = createPostSchema;
