@@ -44,3 +44,17 @@ export const findSystemTags = async (db: SqlDatabase) => {
     .where("type", "=", "SYSTEM")
     .execute();
 };
+
+export const findOrganizationRelatedTags = async (
+  db: SqlDatabase,
+  organizationId: number
+) => {
+  return db
+    .selectFrom("tags")
+    .selectAll("tags")
+    .rightJoin("posts_tags", "posts_tags.tagId", "tags.id")
+    .innerJoin("posts", "posts.id", "posts_tags.postId")
+    .where("posts.organizationId", "=", organizationId)
+    .distinctOn("tags.id")
+    .execute();
+};

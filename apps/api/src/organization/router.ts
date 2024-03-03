@@ -4,6 +4,7 @@ import {
   getOrganizations,
   findPostsByOrganizationId,
   getOrganizationById,
+  findOrganizationRelatedTags,
 } from "@publiz/core";
 
 export const organizationRouter = new Hono<AppEnv>();
@@ -30,4 +31,11 @@ organizationRouter.get("/:organization_id", async (c) => {
   const container = c.get("container");
   const organization = await getOrganizationById(container, id);
   return c.json({ data: organization });
+});
+
+organizationRouter.get("/:organization_id_or_slug/tags", async (c) => {
+  const idOrSlug = c.req.param("organization_id_or_slug");
+  const container = c.get("container");
+  const tags = await findOrganizationRelatedTags(container, idOrSlug);
+  return c.json({ data: tags });
 });

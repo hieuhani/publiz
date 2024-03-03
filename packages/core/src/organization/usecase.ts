@@ -6,6 +6,7 @@ import {
   createOrganizationRoleCrudRepository,
   createOrganizationUserCrudRepository,
   findOrganizationWorkingUsers as findOrganizationWorkingUsersRepo,
+  findOrganizationRelatedTags as findOrganizationRelatedTagsRepo,
   findWorkingOrganizationsByUserId,
 } from "@publiz/sqldb";
 import { Container } from "../container";
@@ -88,4 +89,22 @@ export const getOrganizationById = async (
     );
   }
   return getOrganizationBySlugRepo(container.sqlDb, idOrSlug + "");
+};
+
+export const findOrganizationRelatedTags = async (
+  container: Container,
+  idOrSlug: number | string
+) => {
+  let organizationId: number;
+  if (Number.isInteger(Number(idOrSlug))) {
+    organizationId = +idOrSlug;
+  } else {
+    const organization = await getOrganizationBySlugRepo(
+      container.sqlDb,
+      idOrSlug + ""
+    );
+    organizationId = organization.id;
+  }
+
+  return findOrganizationRelatedTagsRepo(container.sqlDb, organizationId);
 };
