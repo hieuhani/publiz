@@ -108,3 +108,15 @@ export const findOrganizationRelatedTags = async (
 
   return findOrganizationRelatedTagsRepo(container.sqlDb, organizationId);
 };
+
+export const patchOrganizationMetadataById = async (
+  container: Container,
+  organizationId: number,
+  metadata: object
+) => {
+  const organization = await getOrganizationById(container, organizationId);
+  const newMetadata = { ...organization.metadata, ...metadata };
+  return updateOrganization(container, organizationId, {
+    metadata: newMetadata,
+  });
+};

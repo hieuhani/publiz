@@ -5,10 +5,9 @@ export type OrganizationTable = {
   name: string;
   slug: string;
   description: string;
-  logoUrl?: string;
-  coverUrl?: string;
   verified: boolean;
   ownerId: number;
+  metadata: any;
 };
 
 export type OrganizationRow = Selectable<OrganizationTable>;

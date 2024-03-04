@@ -5,9 +5,22 @@ import { useCurrentAppUser } from "./middleware";
 import { authorizationHeader, tokenPrefix } from "./constant";
 import { withFirebaseConfig } from "../identity";
 import { get } from "../lib/get";
-import { AppError, Container, createUser, updateUser } from "@publiz/core";
+import {
+  AppError,
+  Container,
+  createFile,
+  createUser,
+  getFileUrl,
+  getGcsImageServingUrl,
+  patchUserMetadataById,
+  updateUser,
+  uploadFile,
+} from "@publiz/core";
 import { zValidator } from "@hono/zod-validator";
-import { updateProfileSchema } from "./schema";
+import { updateProfileSchema, uploadImageFileSchema } from "./schema";
+import { slugify } from "../lib/slugify";
+import { config } from "../config";
+import { normalizeMetadata } from "../lib/object";
 
 export const userRouter = new Hono<AppEnv>();
 
@@ -59,5 +72,71 @@ userRouter.put(
     );
 
     return c.json(updatedUser);
+  }
+);
+
+userRouter.patch(
+  "/my_profile/image",
+  zValidator("form", uploadImageFileSchema),
+  useCurrentAppUser({ required: true }),
+  async (c) => {
+    const currentUser = c.get("currentAppUser");
+    const container = c.get("container");
+    const { file, metadata: formMetadata, type } = c.req.valid("form");
+    if (!file.type.startsWith("image/")) {
+      throw new Error("File must be an image file");
+    }
+
+    const modelName = "user";
+    const modelId = currentUser.id;
+    const fileName = slugify(file.name);
+    const key = [modelName, modelId, `${type}-${Date.now()}-${fileName}`]
+      .filter(Boolean)
+      .join("/");
+
+    const rawMetadata = formMetadata ? JSON.parse(formMetadata) : {};
+    const metadata = Object.assign({}, rawMetadata, {
+      userId: currentUser.id,
+      modelName,
+      modelId,
+    });
+    if (!metadata.size) {
+      metadata.size = file.size;
+    }
+
+    const fileBuffer = await file.arrayBuffer();
+    await uploadFile(container, {
+      bucket: config.s3.bucket,
+      key,
+      body: fileBuffer as any,
+      metadata: normalizeMetadata(metadata),
+    });
+    const imageServingEndpoint = config.s3.getGcsImageServingEndpoint;
+    if (imageServingEndpoint) {
+      metadata.gcsImageServingUrl = await getGcsImageServingUrl({
+        bucket: config.s3.bucket,
+        key,
+        endpoint: imageServingEndpoint,
+      });
+    }
+
+    const imageFile = await createFile(container, {
+      contentType: file.type,
+      fileName,
+      bucket: config.s3.bucket,
+      filePath: key,
+      metadata,
+      userId: currentUser.id,
+    });
+    const fileUrl = await getFileUrl(container, imageFile);
+    const imageMeta = {
+      ...rawMetadata,
+      src: fileUrl,
+    };
+    const updatedUser = await patchUserMetadataById(container, currentUser.id, {
+      [type]: imageMeta,
+    });
+
+    return c.json({ data: updatedUser });
   }
 );

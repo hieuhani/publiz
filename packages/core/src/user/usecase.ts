@@ -54,5 +54,21 @@ export const updateUser = async (
   return createUserCrudRepository(container.sqlDb).update(id, input);
 };
 
+export const getUserById = async (container: Container, id: number) => {
+  return createUserCrudRepository(container.sqlDb).findById(id);
+};
+
 export const getUsers = async (container: Container) =>
   createUserCrudRepository(container.sqlDb).find();
+
+export const patchUserMetadataById = async (
+  container: Container,
+  userId: number,
+  metadata: object
+) => {
+  const user = await getUserById(container, userId);
+  const newMetadata = { ...user.metadata, ...metadata };
+  return createUserCrudRepository(container.sqlDb).update(userId, {
+    metadata: newMetadata,
+  });
+};
