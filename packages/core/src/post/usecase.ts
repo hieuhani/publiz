@@ -8,6 +8,7 @@ import {
   findPostsByOrganizationId as findPostsByOrganizationIdRepo,
   findMyPostsByMetaSchemaId as findMyPostsByMetaSchemaIdRRepo,
   createPostTagCrudRepository,
+  findPostTagsByPostId,
 } from "@publiz/sqldb";
 import Ajv from "ajv";
 import { Container } from "../container";
@@ -83,11 +84,12 @@ export const getOrganizationPostById = async (
 type UpdatePostInput = UpdateablePostRow & {
   metadata?: any;
   metaSchemaId?: number;
+  tagIds?: number[];
 };
 export const updatePost = async (
   container: Container,
   id: number,
-  { metaSchemaId, ...input }: UpdatePostInput
+  { metaSchemaId, tagIds, ...input }: UpdatePostInput
 ) => {
   if (metaSchemaId) {
     const metaSchema = await getMetaSchemaById(container, metaSchemaId);
@@ -95,6 +97,41 @@ export const updatePost = async (
     if (!validate(input.metadata)) {
       throw new AppError(400_102, "Invalid metadata", validate.errors);
     }
+  }
+  if (tagIds) {
+    const postTags = await findPostTagsByPostId(container.sqlDb, id);
+
+    return container.sqlDb.transaction().execute(async (trx) => {
+      if (tagIds.length === 0) {
+        if (postTags.length > 0) {
+          await createPostTagCrudRepository(trx).bulkDelete(
+            postTags.map((postTag) => postTag.id)
+          );
+        }
+      } else {
+        const currentTagIds = new Set(postTags.map((postTag) => postTag.tagId));
+        const newTagIds = new Set(tagIds);
+
+        const toInsertTagIds = tagIds.filter(
+          (tagId) => !currentTagIds.has(tagId)
+        );
+
+        if (toInsertTagIds.length > 0) {
+          await createPostTagCrudRepository(trx).createMulti(
+            toInsertTagIds.map((tagId) => ({ postId: id, tagId }))
+          );
+        }
+
+        const toDeletePostTagIds = postTags
+          .filter((postTag) => !newTagIds.has(postTag.tagId))
+          .map((postTag) => postTag.id);
+
+        if (toDeletePostTagIds.length > 0) {
+          await createPostTagCrudRepository(trx).bulkDelete(toDeletePostTagIds);
+        }
+      }
+      return createPostCrudRepository(trx).update(id, input);
+    });
   }
   return createPostCrudRepository(container.sqlDb).update(id, input);
 };

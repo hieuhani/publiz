@@ -29,6 +29,7 @@ export const getPostByIdAndOrganizationId = async (
   return db
     .selectFrom("posts")
     .selectAll()
+    .select(withTags)
     .where("id", "=", postId)
     .where("organizationId", "=", organizationId)
     .executeTakeFirstOrThrow();
@@ -54,6 +55,7 @@ export const findMyPostsByMetaSchemaId = async (
   return db
     .selectFrom("posts")
     .selectAll()
+    .select(withTags)
     .where("authorId", "=", userId)
     .where("metadata", "@>", new JsonValue({ metaSchemaId }))
     .execute();
