@@ -10,6 +10,11 @@ import {
   findWorkingOrganizationsByUserId,
 } from "@publiz/sqldb";
 import { Container } from "../container";
+import { getMetaSchemaById } from "../meta-schema";
+import Ajv from "ajv";
+import { AppError } from "../error";
+
+const ajv = new Ajv();
 
 type GetOrganizationBySlug = {
   slug: string;
@@ -112,10 +117,19 @@ export const findOrganizationRelatedTags = async (
 export const patchOrganizationMetadataById = async (
   container: Container,
   organizationId: number,
-  metadata: object
+  metadata: object,
+  metaSchemaId?: number
 ) => {
   const organization = await getOrganizationById(container, organizationId);
   const newMetadata = { ...organization.metadata, ...metadata };
+  if (metaSchemaId) {
+    const metaSchema = await getMetaSchemaById(container, metaSchemaId);
+    const validate = ajv.compile(metaSchema.schema);
+    if (!validate(metadata)) {
+      throw new AppError(400_102, "Invalid metadata", validate.errors);
+    }
+    newMetadata.metaSchemaId = metaSchemaId;
+  }
   return updateOrganization(container, organizationId, {
     metadata: newMetadata,
   });

@@ -232,3 +232,29 @@ myOrganizationRouter.patch(
     return c.json({ data: updatedOrganization });
   }
 );
+
+const updateOrganizationMetadataSchema = z.object({
+  metadata: z.object({}).passthrough(),
+  metaSchemaId: z.number(),
+});
+
+myOrganizationRouter.patch(
+  "/:organization_id/metadata",
+  zValidator("json", updateOrganizationMetadataSchema),
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser("Administrator"),
+  async (c) => {
+    const payload = c.req.valid("json");
+    const organizationId = c.req.param("organization_id");
+    const container = c.get("container");
+
+    const updatedOrganization = await patchOrganizationMetadataById(
+      container,
+      +organizationId,
+      payload.metadata,
+      payload.metaSchemaId
+    );
+
+    return c.json({ data: updatedOrganization });
+  }
+);
