@@ -7,6 +7,7 @@ import {
   getPostById as getPostByIdRepo,
   findPostsByOrganizationId as findPostsByOrganizationIdRepo,
   findMyPostsByMetaSchemaId as findMyPostsByMetaSchemaIdRRepo,
+  findPostsByMetaSchemaId as findPostsByMetaSchemaIdRepo,
   createPostTagCrudRepository,
   findPostTagsByPostId,
 } from "@publiz/sqldb";
@@ -145,4 +146,23 @@ export const findPostsByOrganizationId = async (
   organizationId: number
 ) => {
   return findPostsByOrganizationIdRepo(container.sqlDb, organizationId);
+};
+
+type FindPostsByMetaSchemaIdPayload = {
+  metaSchemaId: number;
+  after?: string;
+  before?: string;
+  size?: number;
+};
+export const findPostsByMetaSchemaId = async (
+  container: Container,
+  { metaSchemaId, after, before, size }: FindPostsByMetaSchemaIdPayload
+) => {
+  return findPostsByMetaSchemaIdRepo(
+    container.sqlDb,
+    metaSchemaId,
+    after,
+    before,
+    size
+  );
 };

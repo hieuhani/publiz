@@ -3,7 +3,9 @@ import { createCrudRepository } from "../crud";
 import { Database, SqlDatabase } from "../database";
 import { JsonValue } from "../kysely";
 import { PostTable } from "./model";
-import { ExpressionBuilder } from "kysely";
+import { ExpressionBuilder, SelectQueryBuilder } from "kysely";
+import { TagType } from "../tag";
+import { executeWithCursorPagination } from "../pagination/cursor";
 
 export const createPostCrudRepository = (db: SqlDatabase) =>
   createCrudRepository<PostTable>(db, "posts");
@@ -68,6 +70,34 @@ export const getPostById = async (db: SqlDatabase, postId: number) => {
     .select(withTags)
     .where("id", "=", postId)
     .executeTakeFirstOrThrow();
+};
+
+export const findPostsByMetaSchemaId = async (
+  db: SqlDatabase,
+  metaSchemaId: number,
+  after?: string,
+  before?: string,
+  size: number = 10
+) => {
+  const query = db
+    .selectFrom("posts")
+    .selectAll()
+    .select(withTags)
+    .where("metadata", "@>", new JsonValue({ metaSchemaId }));
+
+  return executeWithCursorPagination(query, {
+    perPage: size,
+    after,
+    before,
+    fields: [
+      { expression: "id", direction: "asc" },
+      { expression: "updatedAt", direction: "desc" },
+    ],
+    parseCursor: (cursor) => ({
+      id: parseInt(cursor.id, 10),
+      updatedAt: cursor.updatedAt,
+    }),
+  });
 };
 
 const withTags = (eb: ExpressionBuilder<Database, "posts">) =>

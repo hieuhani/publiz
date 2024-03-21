@@ -11,6 +11,8 @@ export type PostTable = {
   type: "REVISION" | "POST";
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   metadata: any;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type PostRow = Selectable<PostTable>;
