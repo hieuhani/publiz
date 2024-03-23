@@ -98,6 +98,7 @@ export const updatePost = async (
     if (!validate(input.metadata)) {
       throw new AppError(400_102, "Invalid metadata", validate.errors);
     }
+    (input.metadata as any).metaSchemaId = metaSchemaId;
   }
   if (tagIds) {
     const postTags = await findPostTagsByPostId(container.sqlDb, id);
@@ -165,4 +166,13 @@ export const findPostsByMetaSchemaId = async (
     before,
     size
   );
+};
+
+export const bulkCreatePosts = async (
+  container: Container,
+  records: InsertablePostRow[]
+) => {
+  return container.sqlDb.transaction().execute(async (trx) => {
+    return createPostCrudRepository(trx).createMulti(records);
+  });
 };

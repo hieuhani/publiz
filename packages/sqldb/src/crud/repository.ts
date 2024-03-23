@@ -1,5 +1,5 @@
 import { Database, SqlDatabase } from "../database";
-import { Insertable, Selectable, Updateable } from "kysely";
+import { InsertResult, Insertable, Selectable, Updateable } from "kysely";
 
 type Table = keyof Database;
 export function createCrudRepository<R extends Database[Table]>(
@@ -31,7 +31,7 @@ export function createCrudRepository<R extends Database[Table]>(
     },
 
     async createMulti(rows: Insertable<Table>[]) {
-      await db.insertInto(table).values(rows).execute();
+      return await db.insertInto(table).values(rows).execute();
     },
 
     async update(

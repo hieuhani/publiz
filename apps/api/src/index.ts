@@ -20,6 +20,7 @@ import { myFileRouter } from "./file";
 import { myOrganizationRouter, organizationRouter } from "./organization";
 import { metaSchemaRouter } from "./meta-schema";
 import { postRouter } from "./post";
+import { adminPostRouter } from "./admin/post-router";
 
 const app = new Hono<AppEnv>();
 const corsMiddleware = cors(config.cors);
@@ -67,6 +68,7 @@ app.route("/admin/api/v1/tags", adminTagRouter);
 app.route("/admin/api/v1/organizations", adminOrganizationRouter);
 app.route("/admin/api/v1/meta_schemas", adminMetaSchemaRouter);
 app.route("/admin/api/v1/users", adminUserRouter);
+app.route("/admin/api/v1/posts", adminPostRouter);
 app.onError(globalErrorHandler);
 
 export default app;

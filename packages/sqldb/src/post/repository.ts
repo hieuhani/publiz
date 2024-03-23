@@ -3,8 +3,7 @@ import { createCrudRepository } from "../crud";
 import { Database, SqlDatabase } from "../database";
 import { JsonValue } from "../kysely";
 import { PostTable } from "./model";
-import { ExpressionBuilder, SelectQueryBuilder } from "kysely";
-import { TagType } from "../tag";
+import { ExpressionBuilder } from "kysely";
 import { executeWithCursorPagination } from "../pagination/cursor";
 
 export const createPostCrudRepository = (db: SqlDatabase) =>
