@@ -26,6 +26,17 @@ export const findTagsByUserId = async (db: SqlDatabase, userId: number) => {
     .execute();
 };
 
+export const findTagsByTaxonomyId = async (
+  db: SqlDatabase,
+  taxonomyId: number
+) => {
+  return db
+    .selectFrom("tags")
+    .selectAll()
+    .where("taxonomyId", "=", taxonomyId)
+    .execute();
+};
+
 export const findTagsByOrganizationId = async (
   db: SqlDatabase,
   organizationId: number

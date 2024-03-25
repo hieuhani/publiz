@@ -8,6 +8,7 @@ export type TagTable = {
   type: TagType;
   organizationId?: number;
   parentId?: number;
+  taxonomyId?: number;
   userId: number;
 };
 

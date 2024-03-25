@@ -14,6 +14,7 @@ import {
   createFile,
   getFileUrl,
   patchOrganizationMetadataById,
+  deletePost,
 } from "@publiz/core";
 import { useCurrentAppUser } from "../user";
 import { useCheckOrganizationUser } from "./middleware";
@@ -120,6 +121,19 @@ myOrganizationRouter.put(
     );
     const updatedPost = await updatePost(container, myPost.id, payload);
     return c.json({ data: updatedPost });
+  }
+);
+
+myOrganizationRouter.delete(
+  "/:organization_id/posts/:id",
+  zValidator("json", createPostSchema),
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser(),
+  async (c) => {
+    const id = c.req.param("id");
+    const container = c.get("container");
+    await deletePost(container, +id);
+    return c.body(null, 204);
   }
 );
 

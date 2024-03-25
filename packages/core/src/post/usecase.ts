@@ -176,3 +176,7 @@ export const bulkCreatePosts = async (
     return createPostCrudRepository(trx).createMulti(records);
   });
 };
+
+export const deletePost = async (container: Container, id: number) => {
+  return createPostCrudRepository(container.sqlDb).delete(id);
+};

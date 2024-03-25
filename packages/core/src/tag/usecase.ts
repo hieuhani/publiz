@@ -4,6 +4,7 @@ import {
   createTagCrudRepository,
   getTagByIdAndUserId,
   findSystemTags as findSystemTagsRepo,
+  findTagsByTaxonomyId as findTagsByTaxonomyIdRepo,
 } from "@publiz/sqldb";
 import { Container } from "../container";
 
@@ -42,3 +43,10 @@ export const findSystemTags = async (container: Container) =>
 
 export const findTagsByIds = async (container: Container, ids: number[]) =>
   createTagCrudRepository(container.sqlDb).findByIds(ids);
+
+export const findTagsByTaxonomyId = async (
+  container: Container,
+  taxonomyId: number
+) => {
+  return findTagsByTaxonomyIdRepo(container.sqlDb, taxonomyId);
+};

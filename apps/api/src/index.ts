@@ -21,6 +21,8 @@ import { myOrganizationRouter, organizationRouter } from "./organization";
 import { metaSchemaRouter } from "./meta-schema";
 import { postRouter } from "./post";
 import { adminPostRouter } from "./admin/post-router";
+import { adminTaxonomyRouter } from "./admin/taxonomy-router";
+import { taxonomyRouter } from "./taxonomy";
 
 const app = new Hono<AppEnv>();
 const corsMiddleware = cors(config.cors);
@@ -48,6 +50,9 @@ app.route("/api/v1/users", userRouter);
 app.route("/api/v1/tags", tagRouter);
 app.route("/api/v1/my_tags", myTagRouter);
 
+// taxonomies api
+app.route("/api/v1/taxonomies", taxonomyRouter);
+
 // meta schemas api
 app.route("/api/v1/meta_schemas", metaSchemaRouter);
 
@@ -69,6 +74,7 @@ app.route("/admin/api/v1/organizations", adminOrganizationRouter);
 app.route("/admin/api/v1/meta_schemas", adminMetaSchemaRouter);
 app.route("/admin/api/v1/users", adminUserRouter);
 app.route("/admin/api/v1/posts", adminPostRouter);
+app.route("/admin/api/v1/taxonomies", adminTaxonomyRouter);
 app.onError(globalErrorHandler);
 
 export default app;

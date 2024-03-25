@@ -16,6 +16,7 @@ const createTagSchema = z.object({
   name: z.string().min(1).max(100),
   slug: z.string().min(1).max(100),
   parentId: z.number().optional(),
+  taxonomyId: z.number().optional(),
 });
 
 myTagRouter.post(
@@ -48,6 +49,7 @@ const updateTagSchema = z.object({
   name: z.string().min(1).max(100),
   slug: z.string().min(1).max(100),
   parentId: z.number().optional(),
+  taxonomyId: z.number().optional(),
 });
 
 myTagRouter.put(

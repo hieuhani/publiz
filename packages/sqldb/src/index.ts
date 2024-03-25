@@ -10,3 +10,4 @@ export * from "./organization-role";
 export * from "./organization-user";
 export * from "./meta-schema";
 export * from "./comment";
+export * from "./taxonomy";
