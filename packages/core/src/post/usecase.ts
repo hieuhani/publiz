@@ -8,6 +8,7 @@ import {
   findPostsByOrganizationId as findPostsByOrganizationIdRepo,
   findMyPostsByMetaSchemaId as findMyPostsByMetaSchemaIdRRepo,
   findPostsByMetaSchemaId as findPostsByMetaSchemaIdRepo,
+  findPostsByTaxonomyId as findPostsByTaxonomyIdRepo,
   createPostTagCrudRepository,
   findPostTagsByPostId,
 } from "@publiz/sqldb";
@@ -179,4 +180,26 @@ export const bulkCreatePosts = async (
 
 export const deletePost = async (container: Container, id: number) => {
   return createPostCrudRepository(container.sqlDb).delete(id);
+};
+
+type FindPostsByTaxonomyIdPayload = {
+  taxonomyId: number;
+  after?: string;
+  before?: string;
+  size?: number;
+  tag?: string;
+};
+
+export const findPostsByTaxonomyId = async (
+  container: Container,
+  { taxonomyId, after, before, size, tag }: FindPostsByTaxonomyIdPayload
+) => {
+  return findPostsByTaxonomyIdRepo(
+    container.sqlDb,
+    taxonomyId,
+    tag,
+    after,
+    before,
+    size
+  );
 };

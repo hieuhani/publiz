@@ -99,6 +99,39 @@ export const findPostsByMetaSchemaId = async (
   });
 };
 
+export const findPostsByTaxonomyId = async (
+  db: SqlDatabase,
+  taxonomyId: number,
+  tag?: string,
+  after?: string,
+  before?: string,
+  size: number = 10
+) => {
+  let query = db
+    .selectFrom("posts")
+    .selectAll("posts")
+    .innerJoin("posts_tags", "posts_tags.postId", "posts.id")
+    .innerJoin("tags", "tags.id", "posts_tags.tagId")
+    .groupBy("posts.id")
+    .where("tags.taxonomyId", "=", taxonomyId);
+  if (tag) {
+    query = query.where("tags.slug", "=", tag);
+  }
+  return executeWithCursorPagination(query, {
+    perPage: size,
+    after,
+    before,
+    fields: [
+      { expression: "posts.id", direction: "asc" },
+      { expression: "posts.updatedAt", direction: "desc" },
+    ],
+    parseCursor: (cursor) => ({
+      id: parseInt(cursor.id, 10),
+      updatedAt: cursor.updatedAt,
+    }),
+  });
+};
+
 const withTags = (eb: ExpressionBuilder<Database, "posts">) =>
   jsonArrayFrom(
     eb
