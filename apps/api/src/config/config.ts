@@ -8,6 +8,11 @@ export const zConfig = z.object({
     user: z.string(),
     password: z.string(),
     database: z.string(),
+    ssl: z
+      .object({
+        rejectUnauthorized: z.boolean(),
+      })
+      .optional(),
   }),
   firebase: z.object({
     apiKey: z.string(),
@@ -42,6 +47,13 @@ export const config: Config = {
     user: getEnvVar("DB_USER"),
     password: getEnvVar("DB_PASSWORD"),
     database: getEnvVar("DB_DATABASE"),
+    ssl:
+      getEnvVar("DB_SSL", "false") === "true"
+        ? {
+            rejectUnauthorized:
+              getEnvVar("DB_SSL_REJECT_UNAUTHORIZED", "true") === "true",
+          }
+        : undefined,
   },
   firebase: {
     apiKey: getEnvVar("FIREBASE_API_KEY"),
