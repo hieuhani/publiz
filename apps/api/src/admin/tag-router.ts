@@ -3,7 +3,7 @@ import z from "zod";
 import { type AppEnv } from "../global";
 import { useCurrentAppUser } from "../user";
 import { zValidator } from "@hono/zod-validator";
-import { createTag, deleteTagById, updateTag } from "@publiz/core";
+import { bulkCreateTags, deleteTagById, updateTag } from "@publiz/core";
 
 export const adminTagRouter = new Hono<AppEnv>();
 
@@ -13,21 +13,27 @@ const createTagSchema = z.object({
   parentId: z.number().optional(),
   taxonomyId: z.number().optional(),
 });
+const bulkCreateTagSchema = z.array(createTagSchema);
 
 adminTagRouter.post(
   "/",
   useCurrentAppUser({ required: true }),
-  zValidator("json", createTagSchema),
+  zValidator("json", bulkCreateTagSchema),
   async (c) => {
     const payload = c.req.valid("json");
     const currentUser = c.get("currentAppUser");
     const container = c.get("container");
-    const tag = await createTag(container, {
-      ...payload,
-      type: "SYSTEM",
-      userId: currentUser.id,
+    const results = await bulkCreateTags(
+      container,
+      payload.map((p) => ({
+        ...p,
+        type: "SYSTEM",
+        userId: currentUser.id,
+      }))
+    );
+    return c.json({
+      numInsertedOrUpdatedRows: results[0].numInsertedOrUpdatedRows?.toString(),
     });
-    return c.json({ data: tag }, 201);
   }
 );
 

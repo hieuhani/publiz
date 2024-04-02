@@ -13,6 +13,15 @@ type CreateTagInput = InsertableTagRow;
 export const createTag = async (container: Container, input: CreateTagInput) =>
   createTagCrudRepository(container.sqlDb).create(input);
 
+export const bulkCreateTags = async (
+  container: Container,
+  records: CreateTagInput[]
+) => {
+  return container.sqlDb.transaction().execute(async (trx) => {
+    return createTagCrudRepository(trx).createMulti(records);
+  });
+};
+
 type UpdateTagInput = UpdateableTagRow;
 
 export const updateTag = async (
