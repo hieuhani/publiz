@@ -1,11 +1,12 @@
 import { buildMigrator } from "@publiz/dbmigration";
-import { NO_MIGRATIONS, PostgresDialect } from "kysely";
-import { Pool } from "pg";
+import { NO_MIGRATIONS } from "kysely";
+import { PostgresJSDialect } from "kysely-postgres-js";
+import postgres from "postgres";
 import { createSqlDb } from "@publiz/core";
 import { config } from "./src/config";
 
-const dialect = new PostgresDialect({
-  pool: new Pool(config.db),
+const dialect = new PostgresJSDialect({
+  postgres: postgres(config.db),
 });
 
 const db = createSqlDb(dialect);

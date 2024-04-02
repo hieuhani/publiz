@@ -1,14 +1,12 @@
-import { Pool } from "pg";
-import { PostgresDialect } from "kysely";
 import { createSqlDb } from "@publiz/core";
 import { config } from "../config";
+import { PostgresJSDialect } from "kysely-postgres-js";
+import postgres from "postgres";
 
-const pool = new Pool(config.db);
+const dialect = new PostgresJSDialect({
+  postgres: postgres(config.db),
+});
 
 export const getSqlDb = () => {
-  const dialect = new PostgresDialect({
-    pool,
-  });
-
   return createSqlDb(dialect);
 };

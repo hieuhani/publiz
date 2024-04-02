@@ -5,14 +5,10 @@ export const zConfig = z.object({
   db: z.object({
     host: z.string(),
     port: z.number(),
-    user: z.string(),
+    username: z.string(),
     password: z.string(),
     database: z.string(),
-    ssl: z
-      .object({
-        rejectUnauthorized: z.boolean(),
-      })
-      .optional(),
+    ssl: z.enum(["require", "allow", "prefer", "verify-full"]).or(z.boolean()),
   }),
   firebase: z.object({
     apiKey: z.string(),
@@ -40,20 +36,18 @@ export const zConfig = z.object({
 
 export type Config = z.infer<typeof zConfig>;
 
+const configDbSsl = getEnvVar("DB_SSL", "false") as string;
+
 export const config: Config = {
   db: {
     host: getEnvVar("DB_HOST"),
     port: parseInt(getEnvVar("DB_PORT") ?? "5432", 10),
-    user: getEnvVar("DB_USER"),
+    username: getEnvVar("DB_USER"),
     password: getEnvVar("DB_PASSWORD"),
     database: getEnvVar("DB_DATABASE"),
-    ssl:
-      getEnvVar("DB_SSL", "false") === "true"
-        ? {
-            rejectUnauthorized:
-              getEnvVar("DB_SSL_REJECT_UNAUTHORIZED", "true") === "true",
-          }
-        : undefined,
+    ssl: ["true", "false"].includes(configDbSsl)
+      ? configDbSsl === "true"
+      : (configDbSsl as Config["db"]["ssl"]),
   },
   firebase: {
     apiKey: getEnvVar("FIREBASE_API_KEY"),
