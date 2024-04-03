@@ -4,7 +4,6 @@ import { type AppEnv } from "../global";
 import { zValidator } from "@hono/zod-validator";
 import { slugify } from "../lib/slugify";
 import { uploadFile, createFile, getGcsImageServingUrl } from "@publiz/core";
-import { config } from "../config";
 import { useCurrentAppUser } from "../user";
 
 export const myFileRouter = new Hono<AppEnv>();
@@ -24,6 +23,7 @@ myFileRouter.post(
   useCurrentAppUser({ required: true }),
   async (c) => {
     const currentUser = c.get("currentAppUser");
+    const config = c.get("config");
     const {
       modelName = "uncategorized",
       modelId,

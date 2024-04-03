@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { getEnvVar } from "./env";
 
 export const zConfig = z.object({
   db: z.object({
@@ -9,6 +8,7 @@ export const zConfig = z.object({
     password: z.string(),
     database: z.string(),
     ssl: z.enum(["require", "allow", "prefer", "verify-full"]).or(z.boolean()),
+    prepare: z.boolean().optional(),
   }),
   firebase: z.object({
     apiKey: z.string(),
@@ -35,45 +35,3 @@ export const zConfig = z.object({
 });
 
 export type Config = z.infer<typeof zConfig>;
-
-const configDbSsl = getEnvVar("DB_SSL", "false") as string;
-
-export const config: Config = {
-  db: {
-    host: getEnvVar("DB_HOST"),
-    port: parseInt(getEnvVar("DB_PORT") ?? "5432", 10),
-    username: getEnvVar("DB_USER"),
-    password: getEnvVar("DB_PASSWORD"),
-    database: getEnvVar("DB_DATABASE"),
-    ssl: ["true", "false"].includes(configDbSsl)
-      ? configDbSsl === "true"
-      : (configDbSsl as Config["db"]["ssl"]),
-  },
-  firebase: {
-    apiKey: getEnvVar("FIREBASE_API_KEY"),
-    projectId: getEnvVar("FIREBASE_PROJECT_ID"),
-  },
-  admin: {
-    authIds: getEnvVar("ADMIN_AUTH_IDS", "").split(","),
-  },
-  s3: {
-    bucket: getEnvVar("S3_BUCKET"),
-    accessKeyId: getEnvVar("S3_ACCESS_KEY_ID"),
-    secretAccessKey: getEnvVar("S3_SECRET_ACCESS_KEY"),
-    endpoint: getEnvVar("S3_ENDPOINT", "http://s3.amazonaws.com"),
-    region: getEnvVar("S3_REGION", "ap-southeast-1"),
-    getGcsImageServingEndpoint: getEnvVar("GET_GCS_IMAGE_SERVING_ENDPOINT", ""),
-  },
-  cors: {
-    origin: getEnvVar("CORS_ORIGIN", "*").split(","),
-    allowHeaders: getEnvVar(
-      "CORS_ALLOW_HEADERS",
-      "Content-Type, Authorization"
-    ).split(","),
-    allowMethods: getEnvVar("CORS_ALLOW_METHODS", "GET,POST,PUT,DELETE").split(
-      ","
-    ),
-    maxAge: parseInt(getEnvVar("CORS_MAX_AGE", "600"), 10),
-    credentials: getEnvVar("CORS_CREDENTIALS", "true") === "true",
-  },
-};

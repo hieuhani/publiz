@@ -3,7 +3,6 @@ import { googleAccountLookUp } from "@fiboup/google-identify-toolkit";
 import { type AppEnv } from "../global";
 import { useCurrentAppUser } from "./middleware";
 import { authorizationHeader, tokenPrefix } from "./constant";
-import { withFirebaseConfig } from "../identity";
 import { get } from "../lib/get";
 import {
   AppError,
@@ -19,7 +18,6 @@ import {
 import { zValidator } from "@hono/zod-validator";
 import { updateProfileSchema, uploadImageFileSchema } from "./schema";
 import { slugify } from "../lib/slugify";
-import { config } from "../config";
 import { normalizeMetadata } from "../lib/object";
 
 export const userRouter = new Hono<AppEnv>();
@@ -32,8 +30,8 @@ userRouter.get("/my_profile", useCurrentAppUser(), async (c) => {
   if (!currentAppUser) {
     const tokenHeader = c.req.header(authorizationHeader) || "";
     const idToken = tokenHeader.substring(tokenPrefix.length);
-
-    const firebaseAccount = await withFirebaseConfig(googleAccountLookUp)({
+    const config = c.get("config");
+    const firebaseAccount = await googleAccountLookUp(config.firebase, {
       idToken,
     });
     if (firebaseAccount.users.length === 0) {
@@ -80,6 +78,7 @@ userRouter.patch(
   zValidator("form", uploadImageFileSchema),
   useCurrentAppUser({ required: true }),
   async (c) => {
+    const config = c.get("config");
     const currentUser = c.get("currentAppUser");
     const container = c.get("container");
     const { file, metadata: formMetadata, type } = c.req.valid("form");

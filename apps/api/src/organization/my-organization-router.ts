@@ -23,7 +23,6 @@ import { zValidator } from "@hono/zod-validator";
 import { createPostSchema, updatePostSchema } from "../post";
 import { z } from "zod";
 import { slugify } from "../lib/slugify";
-import { config } from "../config";
 import { normalizeMetadata } from "../lib/object";
 
 export const myOrganizationRouter = new Hono<AppEnv>();
@@ -209,6 +208,7 @@ myOrganizationRouter.patch(
     }
 
     const fileBuffer = await file.arrayBuffer();
+    const config = c.get("config");
     await uploadFile(container, {
       bucket: config.s3.bucket,
       key,

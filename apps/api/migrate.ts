@@ -3,7 +3,51 @@ import { NO_MIGRATIONS } from "kysely";
 import { PostgresJSDialect } from "kysely-postgres-js";
 import postgres from "postgres";
 import { createSqlDb } from "@publiz/core";
-import { config } from "./src/config";
+import { getEnvVar } from "./src/config/env";
+import { Config } from "./src/config";
+
+const configDbSsl = getEnvVar("DB_SSL", "false") as string;
+
+export const config: Config = {
+  db: {
+    host: getEnvVar("DB_HOST"),
+    port: parseInt(getEnvVar("DB_PORT") ?? "5432", 10),
+    username: getEnvVar("DB_USER"),
+    password: getEnvVar("DB_PASSWORD"),
+    database: getEnvVar("DB_DATABASE"),
+    ssl: ["true", "false"].includes(configDbSsl)
+      ? configDbSsl === "true"
+      : (configDbSsl as Config["db"]["ssl"]),
+    prepare: getEnvVar("DB_PREPARE", "true") === "true",
+  },
+  firebase: {
+    apiKey: getEnvVar("FIREBASE_API_KEY"),
+    projectId: getEnvVar("FIREBASE_PROJECT_ID"),
+  },
+  admin: {
+    authIds: getEnvVar("ADMIN_AUTH_IDS", "").split(","),
+  },
+  s3: {
+    bucket: getEnvVar("S3_BUCKET"),
+    accessKeyId: getEnvVar("S3_ACCESS_KEY_ID"),
+    secretAccessKey: getEnvVar("S3_SECRET_ACCESS_KEY"),
+    endpoint: getEnvVar("S3_ENDPOINT", "http://s3.amazonaws.com"),
+    region: getEnvVar("S3_REGION", "ap-southeast-1"),
+    getGcsImageServingEndpoint: getEnvVar("GET_GCS_IMAGE_SERVING_ENDPOINT", ""),
+  },
+  cors: {
+    origin: getEnvVar("CORS_ORIGIN", "*").split(","),
+    allowHeaders: getEnvVar(
+      "CORS_ALLOW_HEADERS",
+      "Content-Type, Authorization"
+    ).split(","),
+    allowMethods: getEnvVar("CORS_ALLOW_METHODS", "GET,POST,PUT,DELETE").split(
+      ","
+    ),
+    maxAge: parseInt(getEnvVar("CORS_MAX_AGE", "600"), 10),
+    credentials: getEnvVar("CORS_CREDENTIALS", "true") === "true",
+  },
+};
 
 const dialect = new PostgresJSDialect({
   postgres: postgres(config.db),

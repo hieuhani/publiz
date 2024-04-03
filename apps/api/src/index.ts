@@ -3,7 +3,6 @@ import { cors } from "hono/cors";
 import { validateFirebaseAuth } from "@fiboup/hono-firebase-auth";
 import { useDi } from "./di";
 import { AppEnv } from "./global";
-import { config } from "./config";
 import { globalErrorHandler } from "./error";
 import { userRouter } from "./user";
 import { authRouter } from "./auth";
@@ -25,18 +24,16 @@ import { adminTaxonomyRouter } from "./admin/taxonomy-router";
 import { taxonomyRouter } from "./taxonomy";
 
 const app = new Hono<AppEnv>();
-const corsMiddleware = cors(config.cors);
 
 app.use("*", useDi());
-app.use(
-  "*",
+app.use("*", (c, next) =>
   validateFirebaseAuth({
-    projectId: config.firebase.projectId,
-  })
+    projectId: c.get("config").firebase.projectId,
+  })(c, next)
 );
 
-app.use("/api/*", corsMiddleware);
-app.use("/admin/api/*", corsMiddleware);
+app.use("/api/*", (c, next) => cors(c.get("config").cors)(c, next));
+app.use("/admin/api/*", (c, next) => cors(c.get("config").cors)(c, next));
 
 app.get("/", (c) => c.json({ data: "ok" }));
 

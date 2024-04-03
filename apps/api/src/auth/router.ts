@@ -2,7 +2,6 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { type AppEnv } from "../global";
-import { withFirebaseConfig } from "../identity";
 import { googleAccountSignInWithPassword } from "@fiboup/google-identify-toolkit";
 
 export const authRouter = new Hono<AppEnv>();
@@ -20,9 +19,11 @@ authRouter.post(
   zValidator("json", updateProfileSchema),
   async (c) => {
     const signInPayload = c.req.valid("json");
-    const authResponse = await withFirebaseConfig(
-      googleAccountSignInWithPassword
-    )({ ...signInPayload, returnSecureToken: true });
+    const config = c.get("config");
+    const authResponse = await googleAccountSignInWithPassword(
+      config.firebase,
+      { ...signInPayload, returnSecureToken: true }
+    );
     return c.json({ data: authResponse });
   }
 );
