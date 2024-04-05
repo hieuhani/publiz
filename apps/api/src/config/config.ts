@@ -4,10 +4,14 @@ export const zConfig = z.object({
   db: z.object({
     host: z.string(),
     port: z.number(),
-    username: z.string(),
+    user: z.string(),
     password: z.string(),
     database: z.string(),
-    ssl: z.enum(["require", "allow", "prefer", "verify-full"]).or(z.boolean()),
+    ssl: z
+      .object({
+        rejectUnauthorized: z.boolean(),
+      })
+      .optional(),
     prepare: z.boolean().optional(),
   }),
   firebase: z.object({

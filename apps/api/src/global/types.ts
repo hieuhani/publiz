@@ -13,7 +13,8 @@ type Env = {
   DB_USER?: string;
   DB_PASSWORD?: string;
   DB_DATABASE?: string;
-  DB_SSL?: "require" | "allow" | "prefer" | "verify-full" | boolean;
+  DB_SSL?: boolean;
+  DB_SSL_REJECT_UNAUTHORIZED?: string;
   DB_PREPARE?: string;
   FIREBASE_API_KEY: string;
   FIREBASE_PROJECT_ID: string;

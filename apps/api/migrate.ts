@@ -1,23 +1,24 @@
 import { buildMigrator } from "@publiz/dbmigration";
-import { NO_MIGRATIONS } from "kysely";
-import { PostgresJSDialect } from "kysely-postgres-js";
-import postgres from "postgres";
+import { NO_MIGRATIONS, PostgresDialect } from "kysely";
 import { createSqlDb } from "@publiz/core";
 import { getEnvVar } from "./src/config/env";
 import { Config } from "./src/config";
-
-const configDbSsl = getEnvVar("DB_SSL", "false") as string;
+import { Pool } from "pg";
 
 export const config: Config = {
   db: {
     host: getEnvVar("DB_HOST"),
     port: parseInt(getEnvVar("DB_PORT") ?? "5432", 10),
-    username: getEnvVar("DB_USER"),
+    user: getEnvVar("DB_USER"),
     password: getEnvVar("DB_PASSWORD"),
     database: getEnvVar("DB_DATABASE"),
-    ssl: ["true", "false"].includes(configDbSsl)
-      ? configDbSsl === "true"
-      : (configDbSsl as Config["db"]["ssl"]),
+    ssl:
+      getEnvVar("DB_SSL", "false") === "true"
+        ? {
+            rejectUnauthorized:
+              getEnvVar("DB_SSL_REJECT_UNAUTHORIZED", "true") === "true",
+          }
+        : undefined,
     prepare: getEnvVar("DB_PREPARE", "true") === "true",
   },
   firebase: {
@@ -49,8 +50,8 @@ export const config: Config = {
   },
 };
 
-const dialect = new PostgresJSDialect({
-  postgres: postgres(config.db),
+const dialect = new PostgresDialect({
+  pool: new Pool(config.db),
 });
 
 const db = createSqlDb(dialect);

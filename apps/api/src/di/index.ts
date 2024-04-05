@@ -3,8 +3,10 @@ import { S3Client, type Container, createSqlDb } from "@publiz/core";
 import { env } from "hono/adapter";
 import { AppEnv } from "../global";
 import { type Config } from "../config";
-import { PostgresJSDialect } from "kysely-postgres-js";
-import postgres from "postgres";
+import { Pool } from "pg";
+import { PostgresDialect } from "kysely";
+
+let pool: Pool | null = null;
 
 export const useDi = (): MiddlewareHandler => {
   return async (c, next) => {
@@ -15,6 +17,7 @@ export const useDi = (): MiddlewareHandler => {
       DB_PASSWORD,
       DB_DATABASE,
       DB_SSL,
+      DB_SSL_REJECT_UNAUTHORIZED,
       DB_PREPARE,
       FIREBASE_API_KEY,
       FIREBASE_PROJECT_ID,
@@ -36,11 +39,13 @@ export const useDi = (): MiddlewareHandler => {
     const config = {
       db: {
         host: HYPERDRIVE ? HYPERDRIVE.host : DB_HOST,
-        port: HYPERDRIVE ? HYPERDRIVE.port : DB_PORT,
-        username: HYPERDRIVE ? HYPERDRIVE.user : DB_USER,
+        port: (HYPERDRIVE ? parseInt(HYPERDRIVE.port, 10) : DB_PORT) || 5432,
+        user: HYPERDRIVE ? HYPERDRIVE.user : DB_USER,
         password: HYPERDRIVE ? HYPERDRIVE.password : DB_PASSWORD,
         database: HYPERDRIVE ? HYPERDRIVE.database : DB_DATABASE,
-        ssl: DB_SSL,
+        ssl: DB_SSL
+          ? { rejectUnauthorized: DB_SSL_REJECT_UNAUTHORIZED === "true" }
+          : false,
         prepare: DB_PREPARE === "true",
       },
       firebase: {
@@ -66,8 +71,11 @@ export const useDi = (): MiddlewareHandler => {
         credentials: CORS_CREDENTIALS === "true",
       },
     };
-    const dialect = new PostgresJSDialect({
-      postgres: postgres(config.db),
+    if (!pool) {
+      pool = new Pool(config.db);
+    }
+    const dialect = new PostgresDialect({
+      pool,
     });
     c.set("config", config);
     c.set("container", {
