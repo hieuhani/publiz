@@ -34,7 +34,6 @@ adminPostRouter.get("/", async (c) => {
   const container = c.get("container");
   const metaSchemaId = c.req.query("metaSchemaId");
   const pageSize = c.req.query("pageSize");
-
   const {
     startCursor,
     endCursor,

@@ -3,13 +3,11 @@ import {
   createUserCrudRepository,
   findUserByAuthId,
 } from "@publiz/sqldb";
-import Ajv from "ajv";
+import { Validator } from "@cfworker/json-schema";
 
 import { Container } from "../container";
 import { getMetaSchemaById } from "../meta-schema";
 import { AppError } from "../error";
-
-const ajv = new Ajv();
 
 type GetMyProfileInput = {
   authId: string;
@@ -45,9 +43,12 @@ export const updateUser = async (
 ) => {
   if (metaSchemaId) {
     const metaSchema = await getMetaSchemaById(container, metaSchemaId);
-    const validate = ajv.compile(metaSchema.schema);
-    if (!validate(input.metadata)) {
-      throw new AppError(400_102, "Invalid metadata", validate.errors);
+    const validator = new Validator(metaSchema.schema);
+
+    const result = validator.validate(input.metadata);
+
+    if (!result.valid) {
+      throw new AppError(400_102, "Invalid metadata", result.errors);
     }
     (input.metadata as any).metaSchemaId = metaSchemaId;
   }

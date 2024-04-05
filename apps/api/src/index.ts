@@ -1,6 +1,10 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { cache } from "hono/cache";
+import { timing } from "hono/timing";
+
 import { validateFirebaseAuth } from "@fiboup/hono-firebase-auth";
+import { etag } from "hono/etag";
 import { useDi } from "./di";
 import { AppEnv } from "./global";
 import { globalErrorHandler } from "./error";
@@ -25,7 +29,15 @@ import { taxonomyRouter } from "./taxonomy";
 
 const app = new Hono<AppEnv>();
 
+app.use(timing());
 app.use("*", useDi());
+// app.get(
+//   "/api/*",
+//   cache({
+//     cacheName: "publiz",
+//     cacheControl: "max-age=3600",
+//   })
+// );
 app.use("*", (c, next) =>
   validateFirebaseAuth({
     projectId: c.get("config").firebase.projectId,
@@ -33,6 +45,7 @@ app.use("*", (c, next) =>
 );
 
 app.use("/api/*", (c, next) => cors(c.get("config").cors)(c, next));
+app.use("/api/*", etag());
 app.use("/admin/api/*", (c, next) => cors(c.get("config").cors)(c, next));
 
 app.get("/", (c) => c.json({ data: "ok" }));

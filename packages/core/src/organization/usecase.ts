@@ -11,10 +11,8 @@ import {
 } from "@publiz/sqldb";
 import { Container } from "../container";
 import { getMetaSchemaById } from "../meta-schema";
-import Ajv from "ajv";
+import { Validator } from "@cfworker/json-schema";
 import { AppError } from "../error";
-
-const ajv = new Ajv();
 
 type GetOrganizationBySlug = {
   slug: string;
@@ -124,9 +122,12 @@ export const patchOrganizationMetadataById = async (
   const newMetadata = { ...organization.metadata, ...metadata };
   if (metaSchemaId) {
     const metaSchema = await getMetaSchemaById(container, metaSchemaId);
-    const validate = ajv.compile(metaSchema.schema);
-    if (!validate(metadata)) {
-      throw new AppError(400_102, "Invalid metadata", validate.errors);
+    const validator = new Validator(metaSchema.schema);
+
+    const result = validator.validate(metadata);
+
+    if (!result.valid) {
+      throw new AppError(400_102, "Invalid metadata", result.errors);
     }
     newMetadata.metaSchemaId = metaSchemaId;
   }

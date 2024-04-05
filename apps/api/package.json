@@ -1,6 +1,7 @@
 {
   "name": "@publiz/api",
   "dependencies": {
+    "@cfworker/base64url": "^1.12.5",
     "@fiboup/google-identify-toolkit": "^1.0.1",
     "@fiboup/hono-firebase-auth": "^1.0.4",
     "@hono/zod-validator": "^0.1.11",

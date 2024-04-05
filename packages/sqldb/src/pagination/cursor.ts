@@ -4,6 +4,7 @@ import {
   SelectQueryBuilder,
   StringReference,
 } from "kysely";
+import { encode, decode } from "@cfworker/base64url";
 
 type SortField<DB, TB extends keyof DB, O> =
   | {
@@ -290,7 +291,7 @@ export function defaultEncodeCursor<
     }
   }
 
-  return Buffer.from(cursor.toString(), "utf8").toString("base64url");
+  return encode(cursor.toString());
 }
 
 export function defaultDecodeCursor<
@@ -305,11 +306,7 @@ export function defaultDecodeCursor<
   let parsed;
 
   try {
-    parsed = [
-      ...new URLSearchParams(
-        Buffer.from(cursor, "base64url").toString("utf8")
-      ).entries(),
-    ];
+    parsed = [...new URLSearchParams(decode(cursor)).entries()];
   } catch {
     throw new Error("Unparsable cursor");
   }

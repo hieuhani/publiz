@@ -12,13 +12,11 @@ import {
   createPostTagCrudRepository,
   findPostTagsByPostId,
 } from "@publiz/sqldb";
-import Ajv from "ajv";
+import { Validator } from "@cfworker/json-schema";
 import { Container } from "../container";
 import { getMetaSchemaById } from "../meta-schema";
 import { AppError } from "../error";
 import { findTagsByIds } from "../tag";
-
-const ajv = new Ajv();
 
 type CreatePostInput = InsertablePostRow & {
   metadata?: any;
@@ -32,9 +30,12 @@ export const createPost = async (
 ) => {
   if (metaSchemaId) {
     const metaSchema = await getMetaSchemaById(container, metaSchemaId);
-    const validate = ajv.compile(metaSchema.schema);
-    if (!validate(input.metadata)) {
-      throw new AppError(400_102, "Invalid metadata", validate.errors);
+    const validator = new Validator(metaSchema.schema);
+
+    const result = validator.validate(input.metadata);
+
+    if (!result.valid) {
+      throw new AppError(400_102, "Invalid metadata", result.errors);
     }
     (input.metadata as any).metaSchemaId = metaSchemaId;
   }
@@ -95,9 +96,12 @@ export const updatePost = async (
 ) => {
   if (metaSchemaId) {
     const metaSchema = await getMetaSchemaById(container, metaSchemaId);
-    const validate = ajv.compile(metaSchema.schema);
-    if (!validate(input.metadata)) {
-      throw new AppError(400_102, "Invalid metadata", validate.errors);
+    const validator = new Validator(metaSchema.schema);
+
+    const result = validator.validate(input.metadata);
+
+    if (!result.valid) {
+      throw new AppError(400_102, "Invalid metadata", result.errors);
     }
     (input.metadata as any).metaSchemaId = metaSchemaId;
   }
