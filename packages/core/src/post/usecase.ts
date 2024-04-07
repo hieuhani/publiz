@@ -6,7 +6,8 @@ import {
   getPostByIdAndOrganizationId,
   getPostById as getPostByIdRepo,
   findPostsByOrganizationId as findPostsByOrganizationIdRepo,
-  findMyPostsByMetaSchemaId as findMyPostsByMetaSchemaIdRRepo,
+  findMyPostsByUserIdAndMetaSchemaId as findMyPostsByUserIdAndMetaSchemaIdRRepo,
+  findMyPostsMetaSchemaId as findMyPostsMetaSchemaIdRepo,
   findPostsByMetaSchemaId as findPostsByMetaSchemaIdRepo,
   findPostsByTaxonomyId as findPostsByTaxonomyIdRepo,
   createPostTagCrudRepository,
@@ -73,7 +74,18 @@ export const getMyPostsByMetaSchemaId = async (
   userId: number,
   metaSchemaId: number
 ) => {
-  return findMyPostsByMetaSchemaIdRRepo(container.sqlDb, userId, metaSchemaId);
+  return findMyPostsByUserIdAndMetaSchemaIdRRepo(
+    container.sqlDb,
+    userId,
+    metaSchemaId
+  );
+};
+
+export const getPostsByMetaSchemaId = async (
+  container: Container,
+  metaSchemaId: number
+) => {
+  return findMyPostsMetaSchemaIdRepo(container.sqlDb, metaSchemaId);
 };
 
 export const getOrganizationPostById = async (

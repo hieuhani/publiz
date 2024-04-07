@@ -17,6 +17,7 @@ export const getPostByIdAndUserId = async (
   return db
     .selectFrom("posts")
     .selectAll()
+    .select(withTags)
     .where("id", "=", postId)
     .where("authorId", "=", authorId)
     .executeTakeFirstOrThrow();
@@ -48,7 +49,7 @@ export const findPostsByOrganizationId = async (
     .execute();
 };
 
-export const findMyPostsByMetaSchemaId = async (
+export const findMyPostsByUserIdAndMetaSchemaId = async (
   db: SqlDatabase,
   userId: number,
   metaSchemaId: number
@@ -58,6 +59,18 @@ export const findMyPostsByMetaSchemaId = async (
     .selectAll()
     .select(withTags)
     .where("authorId", "=", userId)
+    .where("metadata", "@>", new JsonValue({ metaSchemaId }))
+    .execute();
+};
+
+export const findMyPostsMetaSchemaId = async (
+  db: SqlDatabase,
+  metaSchemaId: number
+) => {
+  return db
+    .selectFrom("posts")
+    .selectAll()
+    .select(withTags)
     .where("metadata", "@>", new JsonValue({ metaSchemaId }))
     .execute();
 };

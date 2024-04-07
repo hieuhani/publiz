@@ -6,8 +6,6 @@ import { type Config } from "../config";
 import { Pool } from "pg";
 import { PostgresDialect } from "kysely";
 
-let pool: Pool | null = null;
-
 export const useDi = (): MiddlewareHandler => {
   return async (c, next) => {
     const {
@@ -18,14 +16,13 @@ export const useDi = (): MiddlewareHandler => {
       DB_DATABASE,
       DB_SSL,
       DB_SSL_REJECT_UNAUTHORIZED,
-      DB_PREPARE,
       FIREBASE_API_KEY,
       FIREBASE_PROJECT_ID,
       ADMIN_AUTH_IDS = "",
       S3_BUCKET,
       S3_ACCESS_KEY_ID,
       S3_SECRET_ACCESS_KEY,
-      S3_REGION,
+      S3_REGION = "ap-southeast-1",
       S3_ENDPOINT,
       S3_GET_GCS_IMAGE_SERVING_ENDPOINT,
       CORS_ORIGIN = "*",
@@ -39,14 +36,14 @@ export const useDi = (): MiddlewareHandler => {
     const config = {
       db: {
         host: HYPERDRIVE ? HYPERDRIVE.host : DB_HOST,
-        port: (HYPERDRIVE ? parseInt(HYPERDRIVE.port, 10) : DB_PORT) || 5432,
+        port: (HYPERDRIVE ? HYPERDRIVE.port : DB_PORT) || 5432,
         user: HYPERDRIVE ? HYPERDRIVE.user : DB_USER,
         password: HYPERDRIVE ? HYPERDRIVE.password : DB_PASSWORD,
         database: HYPERDRIVE ? HYPERDRIVE.database : DB_DATABASE,
-        ssl: DB_SSL
-          ? { rejectUnauthorized: DB_SSL_REJECT_UNAUTHORIZED === "true" }
-          : false,
-        prepare: DB_PREPARE === "true",
+        ssl:
+          DB_SSL === "true"
+            ? { rejectUnauthorized: DB_SSL_REJECT_UNAUTHORIZED === "true" }
+            : false,
       },
       firebase: {
         apiKey: FIREBASE_API_KEY,
@@ -71,11 +68,9 @@ export const useDi = (): MiddlewareHandler => {
         credentials: CORS_CREDENTIALS === "true",
       },
     };
-    if (!pool) {
-      pool = new Pool(config.db);
-    }
+
     const dialect = new PostgresDialect({
-      pool,
+      pool: new Pool(config.db),
     });
     c.set("config", config);
     c.set("container", {

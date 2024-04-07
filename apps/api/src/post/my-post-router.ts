@@ -45,6 +45,14 @@ myPostRouter.put(
   }
 );
 
+myPostRouter.get("/:id", useCurrentAppUser({ required: true }), async (c) => {
+  const container = c.get("container");
+  const id = c.req.param("id");
+  const currentUser = c.get("currentAppUser");
+  const post = await getMyPostById(container, currentUser.id, +id);
+  return c.json({ data: post });
+});
+
 myPostRouter.get("/", useCurrentAppUser({ required: true }), async (c) => {
   const schema = c.req.query("schema");
   const container = c.get("container");

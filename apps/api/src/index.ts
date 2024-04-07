@@ -32,13 +32,13 @@ const app = new Hono<AppEnv>();
 app.use(timing());
 app.use("*", useDi());
 
-app.get(
-  "/api/*",
-  cache({
-    cacheName: "publiz",
-    cacheControl: "max-age=3600",
-  })
-);
+// app.get(
+//   "/api/*",
+//   cache({
+//     cacheName: "publiz",
+//     cacheControl: "max-age=3600",
+//   })
+// );
 
 app.use("*", (c, next) =>
   validateFirebaseAuth({
