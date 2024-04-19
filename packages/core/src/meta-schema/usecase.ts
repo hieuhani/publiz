@@ -4,6 +4,7 @@ import {
   createMetaSchemaCrudRepository,
   findMetaSchemasByOrganizationId,
   findSystemMetaSchemas as findSystemMetaSchemasRepo,
+  getOrganizationMetaSchemaById as getOrganizationMetaSchemaByIdRepo,
   updateIsDefaultValueAllMetaSchemasByOrganizationIdTarget,
 } from "@publiz/sqldb";
 import { Container } from "../container";
@@ -121,4 +122,12 @@ export const getMetaSchemaByIdentifier = async (
     .where("name", "=", name)
     .where("version", "=", version)
     .executeTakeFirstOrThrow();
+};
+
+export const getOrganizationMetaSchemaById = async (
+  container: Container,
+  organizationId: number,
+  id: number
+) => {
+  return getOrganizationMetaSchemaByIdRepo(container.sqlDb, organizationId, id);
 };

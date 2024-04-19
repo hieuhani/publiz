@@ -21,6 +21,14 @@ import {
   deleteTagById,
   updateTag,
   findTagsByOrganizationId,
+  findTaxonomiesByOrganizationId,
+  createTaxonomy,
+  getOrganizationTaxonomyById,
+  deleteTaxonomyById,
+  updateTaxonomy,
+  createMetaSchema,
+  updateMetaSchema,
+  getOrganizationMetaSchemaById,
 } from "@publiz/core";
 import { useCurrentAppUser } from "../user";
 import { useCheckOrganizationUser } from "./middleware";
@@ -371,5 +379,139 @@ myOrganizationRouter.put(
       taxonomyId: parentTag?.taxonomyId,
     });
     return c.json({ data: updatedTag });
+  }
+);
+
+// taxonomy
+
+myOrganizationRouter.get(
+  "/:organization_id/taxonomies",
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser(),
+  async (c) => {
+    const container = c.get("container");
+    const organizationId = c.req.param("organization_id");
+    const tags = await findTaxonomiesByOrganizationId(
+      container,
+      +organizationId
+    );
+    return c.json({ data: tags });
+  }
+);
+
+const createTaxonomySchema = z.object({
+  name: z.string().min(1).max(100),
+  slug: z.string().min(1).max(100),
+});
+
+myOrganizationRouter.post(
+  "/:organization_id/taxonomies",
+  zValidator("json", createTaxonomySchema),
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser("Administrator"),
+  async (c) => {
+    const payload = c.req.valid("json");
+    const container = c.get("container");
+
+    const currentUser = c.get("currentAppUser");
+    const organizationId = c.req.param("organization_id");
+    const taxonomy = await createTaxonomy(container, {
+      ...payload,
+      type: "DEFAULT",
+      userId: currentUser.id,
+      organizationId: +organizationId,
+    });
+    return c.json({ data: taxonomy }, 201);
+  }
+);
+
+myOrganizationRouter.delete(
+  "/:organization_id/taxonomies/:id",
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser("Administrator"),
+  async (c) => {
+    const container = c.get("container");
+    const organizationId = c.req.param("organization_id");
+    const id = c.req.param("id");
+    const organizationTag = await getOrganizationTaxonomyById(
+      container,
+      +organizationId,
+      +id
+    );
+    await deleteTaxonomyById(container, organizationTag.id);
+    return c.body(null, 204);
+  }
+);
+
+myOrganizationRouter.put(
+  "/:organization_id/taxonomies/:id",
+  zValidator("json", createTaxonomySchema),
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser("Administrator"),
+  async (c) => {
+    const container = c.get("container");
+    const organizationId = c.req.param("organization_id");
+    const id = c.req.param("id");
+    const payload = c.req.valid("json");
+    const organizationTag = await getOrganizationTaxonomyById(
+      container,
+      +organizationId,
+      +id
+    );
+
+    const updatedTag = await updateTaxonomy(
+      container,
+      organizationTag.id,
+      payload
+    );
+    return c.json({ data: updatedTag });
+  }
+);
+
+const createMetaSchemaSchema = z.object({
+  name: z.string().min(1).max(100),
+  schema: z.object({}).passthrough(),
+  target: z.enum(["post", "user", "organization", "file", "comment"]),
+  organizationId: z.number().optional(),
+  version: z.number(),
+});
+
+myOrganizationRouter.post(
+  "/:organization_id/meta_schemas",
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser("Administrator"),
+  zValidator("json", createMetaSchemaSchema),
+  async (c) => {
+    const payload = c.req.valid("json");
+    const container = c.get("container");
+    const organizationId = c.req.param("organization_id");
+    const metaSchema = await createMetaSchema(container, {
+      ...payload,
+      organizationId: +organizationId,
+    });
+    return c.json({ data: metaSchema }, 201);
+  }
+);
+
+myOrganizationRouter.put(
+  "/:organization_id/meta_schemas/:id",
+  useCurrentAppUser({ required: true }),
+  zValidator("json", createMetaSchemaSchema),
+  async (c) => {
+    const container = c.get("container");
+    const id = c.req.param("id");
+    const payload = c.req.valid("json");
+    const organizationId = c.req.param("organization_id");
+    const metaSchema = await getOrganizationMetaSchemaById(
+      container,
+      +organizationId,
+      +id
+    );
+    const updatedMetaSchema = await updateMetaSchema(
+      container,
+      metaSchema.id,
+      payload
+    );
+    return c.json({ data: updatedMetaSchema });
   }
 );

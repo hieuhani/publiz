@@ -4,6 +4,8 @@ import {
   createTaxonomyCrudRepository,
   findSystemTaxonomies as findSystemTaxonomiesRepo,
   getTaxonomyBySlug as getTaxonomyBySlugRepo,
+  findTaxonomiesByOrganizationId as findTaxonomiesByOrganizationIdRepo,
+  getOrganizationTaxonomyById as getOrganizationTaxonomyByIdRepo,
 } from "@publiz/sqldb";
 import { Container } from "../container";
 
@@ -42,3 +44,16 @@ export const findTaxonomiesByIds = async (
   container: Container,
   ids: number[]
 ) => createTaxonomyCrudRepository(container.sqlDb).findByIds(ids);
+
+export const findTaxonomiesByOrganizationId = async (
+  container: Container,
+  organizationId: number
+) => findTaxonomiesByOrganizationIdRepo(container.sqlDb, organizationId);
+
+export const getOrganizationTaxonomyById = async (
+  container: Container,
+  organizationId: number,
+  id: number
+) => {
+  return getOrganizationTaxonomyByIdRepo(container.sqlDb, organizationId, id);
+};

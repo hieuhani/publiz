@@ -34,3 +34,16 @@ export const getTaxonomyBySlug = (
     .where("slug", "=", slug)
     .executeTakeFirstOrThrow();
 };
+
+export const getOrganizationTaxonomyById = async (
+  db: SqlDatabase,
+  organizationId: number,
+  id: number
+) => {
+  return db
+    .selectFrom("taxonomies")
+    .selectAll()
+    .where("organizationId", "=", organizationId)
+    .where("id", "=", id)
+    .executeTakeFirstOrThrow();
+};

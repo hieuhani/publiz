@@ -39,3 +39,16 @@ export const updateIsDefaultValueAllMetaSchemasByOrganizationIdTarget = (
     .where("target", "=", target)
     .execute();
 };
+
+export const getOrganizationMetaSchemaById = async (
+  db: SqlDatabase,
+  organizationId: number,
+  id: number
+) => {
+  return db
+    .selectFrom("meta_schemas")
+    .selectAll()
+    .where("organizationId", "=", organizationId)
+    .where("id", "=", id)
+    .executeTakeFirstOrThrow();
+};
