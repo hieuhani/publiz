@@ -4,6 +4,8 @@ import {
   createTagCrudRepository,
   getTagByIdAndUserId,
   findSystemTags as findSystemTagsRepo,
+  getOrganizationTagById as getOrganizationTagByIdRepo,
+  findTagsByOrganizationId as findTagsByOrganizationIdRepo,
   findTagsByTaxonomyId as findTagsByTaxonomyIdRepo,
 } from "@publiz/sqldb";
 import { Container } from "../container";
@@ -47,6 +49,14 @@ export const getMyTagById = async (
   return getTagByIdAndUserId(container.sqlDb, tagId, userId);
 };
 
+export const getOrganizationTagById = async (
+  container: Container,
+  organizationId: number,
+  id: number
+) => {
+  return getOrganizationTagByIdRepo(container.sqlDb, organizationId, id);
+};
+
 export const findSystemTags = async (container: Container) =>
   findSystemTagsRepo(container.sqlDb);
 
@@ -58,4 +68,11 @@ export const findTagsByTaxonomyId = async (
   taxonomyId: number
 ) => {
   return findTagsByTaxonomyIdRepo(container.sqlDb, taxonomyId);
+};
+
+export const findTagsByOrganizationId = async (
+  container: Container,
+  organizationId: number
+) => {
+  return findTagsByOrganizationIdRepo(container.sqlDb, organizationId);
 };

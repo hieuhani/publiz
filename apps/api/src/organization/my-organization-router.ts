@@ -15,6 +15,12 @@ import {
   getFileUrl,
   patchOrganizationMetadataById,
   deletePost,
+  createTag,
+  getTagById,
+  getOrganizationTagById,
+  deleteTagById,
+  updateTag,
+  findTagsByOrganizationId,
 } from "@publiz/core";
 import { useCurrentAppUser } from "../user";
 import { useCheckOrganizationUser } from "./middleware";
@@ -270,5 +276,100 @@ myOrganizationRouter.patch(
     );
 
     return c.json({ data: updatedOrganization });
+  }
+);
+
+myOrganizationRouter.get(
+  "/:organization_id/tags",
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser(),
+  async (c) => {
+    const container = c.get("container");
+    const organizationId = c.req.param("organization_id");
+    const tags = await findTagsByOrganizationId(container, +organizationId);
+    return c.json({ data: tags });
+  }
+);
+
+const createTagSchema = z.object({
+  name: z.string().min(1).max(100),
+  parentId: z.number().optional(),
+});
+
+myOrganizationRouter.post(
+  "/:organization_id/tags",
+  zValidator("json", createTagSchema),
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser("Administrator"),
+  async (c) => {
+    const payload = c.req.valid("json");
+    const container = c.get("container");
+    let parentTag = undefined;
+    if (payload.parentId) {
+      parentTag = await getTagById(container, payload.parentId);
+    }
+
+    const currentUser = c.get("currentAppUser");
+    const organizationId = c.req.param("organization_id");
+    const tag = await createTag(container, {
+      ...payload,
+      parentId: parentTag?.id,
+      taxonomyId: parentTag?.taxonomyId,
+      slug: slugify(payload.name),
+      type: "DEFAULT",
+      userId: currentUser.id,
+      organizationId: +organizationId,
+    });
+    return c.json({ data: tag }, 201);
+  }
+);
+
+myOrganizationRouter.delete(
+  "/:organization_id/tags/:id",
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser("Administrator"),
+  async (c) => {
+    const container = c.get("container");
+    const organizationId = c.req.param("organization_id");
+    const id = c.req.param("id");
+    const organizationTag = await getOrganizationTagById(
+      container,
+      +organizationId,
+      +id
+    );
+    await deleteTagById(container, organizationTag.id);
+    return c.body(null, 204);
+  }
+);
+
+const updateTagSchema = z.object({
+  name: z.string().min(1).max(100),
+  parentId: z.number().optional(),
+});
+
+myOrganizationRouter.put(
+  "/:organization_id/tags/:id",
+  zValidator("json", updateTagSchema),
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser("Administrator"),
+  async (c) => {
+    const container = c.get("container");
+    const organizationId = c.req.param("organization_id");
+    const id = c.req.param("id");
+    const payload = c.req.valid("json");
+    const organizationTag = await getOrganizationTagById(
+      container,
+      +organizationId,
+      +id
+    );
+    let parentTag = undefined;
+    if (payload.parentId) {
+      parentTag = await getTagById(container, payload.parentId);
+    }
+    const updatedTag = await updateTag(container, organizationTag.id, {
+      ...payload,
+      taxonomyId: parentTag?.taxonomyId,
+    });
+    return c.json({ data: updatedTag });
   }
 );
