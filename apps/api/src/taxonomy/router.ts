@@ -33,7 +33,7 @@ taxonomyRouter.get("/:identity/posts", async (c) => {
   const pageSize = c.req.query("pageSize");
   const taxonomy = await getTaxonomyById(container, identity);
   const size = Number.isInteger(Number(pageSize)) ? Number(pageSize) : 10;
-  if (size >= 80) {
+  if (size > 80) {
     throw new AppError(400400, "Page size is too large");
   }
   const {

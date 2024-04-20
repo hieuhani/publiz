@@ -145,6 +145,37 @@ export const findPostsByTaxonomyId = async (
   });
 };
 
+export const findPosts = async (
+  db: SqlDatabase,
+  organizationId?: number,
+  metaSchemaId?: number,
+  after?: string,
+  before?: string,
+  size: number = 10
+) => {
+  let query = db.selectFrom("posts").selectAll();
+  if (organizationId) {
+    query = query.where("organizationId", "=", organizationId);
+  }
+
+  if (metaSchemaId) {
+    query = query.where("metadata", "@>", new JsonValue({ metaSchemaId }));
+  }
+  return executeWithCursorPagination(query, {
+    perPage: size,
+    after,
+    before,
+    fields: [
+      { expression: "id", direction: "asc" },
+      { expression: "updatedAt", direction: "desc" },
+    ],
+    parseCursor: (cursor) => ({
+      id: parseInt(cursor.id, 10),
+      updatedAt: cursor.updatedAt,
+    }),
+  });
+};
+
 const withTags = (eb: ExpressionBuilder<Database, "posts">) =>
   jsonArrayFrom(
     eb

@@ -5,6 +5,9 @@ import {
   findPostsByOrganizationId,
   getOrganizationById,
   findOrganizationRelatedTags,
+  AppError,
+  getMetaSchemaByIdentifier,
+  findPosts,
 } from "@publiz/core";
 
 export const organizationRouter = new Hono<AppEnv>();
@@ -19,11 +22,46 @@ organizationRouter.get("/:organization_id/posts", async (c) => {
   const id = c.req.param("organization_id");
   const container = c.get("container");
   const organization = await getOrganizationById(container, id);
-  const posts = await findPostsByOrganizationId(
-    container,
-    organization.id as number
-  );
-  return c.json({ data: posts });
+  const before = c.req.query("before");
+  const after = c.req.query("after");
+  const pageSize = c.req.query("pageSize");
+  const metaSchema = c.req.query("metaSchema");
+  const size = Number.isInteger(Number(pageSize)) ? Number(pageSize) : 10;
+  if (size > 80) {
+    throw new AppError(400400, "Page size is too large");
+  }
+
+  let metaSchemaId = 0;
+  if (metaSchema) {
+    if (Number.isInteger(Number(metaSchema))) {
+      metaSchemaId = +metaSchema;
+    } else {
+      const findMetaSchema = await getMetaSchemaByIdentifier(
+        container,
+        metaSchema
+      );
+      metaSchemaId = findMetaSchema.id;
+    }
+  }
+
+  const {
+    startCursor,
+    endCursor,
+    hasNextPage,
+    hasPrevPage,
+    rows: data,
+  } = await findPosts(container, {
+    organizationId: organization.id,
+    metaSchemaId,
+    before,
+    after,
+    size,
+  });
+
+  return c.json({
+    data,
+    pagination: { startCursor, endCursor, hasNextPage, hasPrevPage },
+  });
 });
 
 organizationRouter.get("/:organization_id", async (c) => {

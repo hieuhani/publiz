@@ -44,7 +44,7 @@ metaSchemaRouter.get("/:identity/posts", async (c) => {
   }
 
   const size = Number.isInteger(Number(pageSize)) ? Number(pageSize) : 10;
-  if (size >= 80) {
+  if (size > 80) {
     throw new AppError(400400, "Page size is too large");
   }
   const {

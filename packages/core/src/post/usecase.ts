@@ -10,6 +10,7 @@ import {
   findMyPostsMetaSchemaId as findMyPostsMetaSchemaIdRepo,
   findPostsByMetaSchemaId as findPostsByMetaSchemaIdRepo,
   findPostsByTaxonomyId as findPostsByTaxonomyIdRepo,
+  findPosts as findPostsRepo,
   createPostTagCrudRepository,
   findPostTagsByPostId,
 } from "@publiz/sqldb";
@@ -214,6 +215,28 @@ export const findPostsByTaxonomyId = async (
     container.sqlDb,
     taxonomyId,
     tag,
+    after,
+    before,
+    size
+  );
+};
+
+type FindPostsPayload = {
+  organizationId?: number;
+  metaSchemaId: number;
+  after?: string;
+  before?: string;
+  size?: number;
+};
+
+export const findPosts = async (
+  container: Container,
+  { organizationId, metaSchemaId, after, before, size }: FindPostsPayload
+) => {
+  return findPostsRepo(
+    container.sqlDb,
+    organizationId,
+    metaSchemaId,
     after,
     before,
     size
