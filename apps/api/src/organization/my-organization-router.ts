@@ -29,6 +29,7 @@ import {
   createMetaSchema,
   updateMetaSchema,
   getOrganizationMetaSchemaById,
+  findOrganizationAvailableMetaSchemas,
 } from "@publiz/core";
 import { useCurrentAppUser } from "../user";
 import { useCheckOrganizationUser } from "./middleware";
@@ -90,10 +91,24 @@ myOrganizationRouter.get(
   async (c) => {
     const organizationId = c.req.param("organization_id");
     const container = c.get("container");
-    const organizationUsers = await findOrganizationMetaSchemas(container, {
+    const metaSchemas = await findOrganizationMetaSchemas(container, {
       organizationId: +organizationId,
     });
-    return c.json({ data: organizationUsers });
+    return c.json({ data: metaSchemas });
+  }
+);
+
+myOrganizationRouter.get(
+  "/:organization_id/applicable_meta_schemas",
+  useCurrentAppUser({ required: true }),
+  async (c) => {
+    const organizationId = c.req.param("organization_id");
+    const container = c.get("container");
+    const metaSchemas = await findOrganizationAvailableMetaSchemas(
+      container,
+      +organizationId
+    );
+    return c.json({ data: metaSchemas });
   }
 );
 
@@ -382,8 +397,6 @@ myOrganizationRouter.put(
   }
 );
 
-// taxonomy
-
 myOrganizationRouter.get(
   "/:organization_id/taxonomies",
   useCurrentAppUser({ required: true }),
@@ -472,7 +485,6 @@ const createMetaSchemaSchema = z.object({
   name: z.string().min(1).max(100),
   schema: z.object({}).passthrough(),
   target: z.enum(["post", "user", "organization", "file", "comment"]),
-  organizationId: z.number().optional(),
   version: z.number(),
 });
 

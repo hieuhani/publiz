@@ -5,6 +5,7 @@ import {
   findMetaSchemasByOrganizationId,
   findSystemMetaSchemas as findSystemMetaSchemasRepo,
   getOrganizationMetaSchemaById as getOrganizationMetaSchemaByIdRepo,
+  findOrganizationAvailableMetaSchemas as findOrganizationAvailableMetaSchemasRepo,
   updateIsDefaultValueAllMetaSchemasByOrganizationIdTarget,
 } from "@publiz/sqldb";
 import { Container } from "../container";
@@ -130,4 +131,14 @@ export const getOrganizationMetaSchemaById = async (
   id: number
 ) => {
   return getOrganizationMetaSchemaByIdRepo(container.sqlDb, organizationId, id);
+};
+
+export const findOrganizationAvailableMetaSchemas = async (
+  container: Container,
+  organizationId: number
+) => {
+  return findOrganizationAvailableMetaSchemasRepo(
+    container.sqlDb,
+    organizationId
+  );
 };

@@ -16,6 +16,23 @@ export const findMetaSchemasByOrganizationId = (
     .execute();
 };
 
+export const findOrganizationAvailableMetaSchemas = (
+  db: SqlDatabase,
+  organizationId: number
+): Promise<MetaSchemaRow[]> => {
+  return db
+    .selectFrom("meta_schemas")
+    .selectAll()
+    .where((eb) =>
+      eb.or([
+        eb("organizationId", "=", organizationId),
+        eb("organizationId", "is", null),
+      ])
+    )
+    .where("type", "!=", "SYSTEM")
+    .execute();
+};
+
 export const findSystemMetaSchemas = (
   db: SqlDatabase
 ): Promise<MetaSchemaRow[]> => {

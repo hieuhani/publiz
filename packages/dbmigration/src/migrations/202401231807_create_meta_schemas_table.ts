@@ -1,7 +1,12 @@
 import { withTimestamps } from "../sql";
-import type { Kysely } from "kysely";
+import { sql, type Kysely } from "kysely";
 
 export async function up(db: Kysely<any>) {
+  await db.schema
+    .createType("meta_schema_type")
+    .asEnum(["SYSTEM", "DEFAULT"])
+    .execute();
+
   await db.schema
     .createTable("meta_schemas")
     .addColumn("id", "serial", (col) => col.primaryKey())
@@ -10,6 +15,9 @@ export async function up(db: Kysely<any>) {
     .addColumn("target", "varchar(16)", (col) => col.notNull())
     .addColumn("is_default", "boolean", (col) => col.notNull().defaultTo(false))
     .addColumn("schema", "jsonb", (col) => col.notNull())
+    .addColumn("type", sql`"meta_schema_type"`, (col) =>
+      col.notNull().defaultTo("DEFAULT")
+    )
     .addColumn("organization_id", "integer", (col) =>
       col.references("organizations.id")
     )
@@ -31,6 +39,7 @@ export async function up(db: Kysely<any>) {
 }
 
 export async function down(db: Kysely<any>) {
+  await db.schema.dropType("meta_schema_type").execute();
   await db.schema
     .dropIndex("meta_schemas_name_version_organization_id_unique")
     .execute();
