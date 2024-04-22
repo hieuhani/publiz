@@ -7,6 +7,7 @@ import {
   getOrganizationTagById as getOrganizationTagByIdRepo,
   findTagsByOrganizationId as findTagsByOrganizationIdRepo,
   findTagsByTaxonomyId as findTagsByTaxonomyIdRepo,
+  findOrganizationAvailableTags as findOrganizationAvailableTagsRepo,
 } from "@publiz/sqldb";
 import { Container } from "../container";
 
@@ -75,4 +76,11 @@ export const findTagsByOrganizationId = async (
   organizationId: number
 ) => {
   return findTagsByOrganizationIdRepo(container.sqlDb, organizationId);
+};
+
+export const findOrganizationAvailableTags = async (
+  container: Container,
+  organizationId: number
+) => {
+  return findOrganizationAvailableTagsRepo(container.sqlDb, organizationId);
 };

@@ -1,6 +1,6 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
-import { TagTable } from "./model";
+import { TagRow, TagTable } from "./model";
 
 export const createTagCrudRepository = (db: SqlDatabase) =>
   createCrudRepository<TagTable>(db, "tags");
@@ -80,5 +80,22 @@ export const findOrganizationRelatedTags = async (
     .innerJoin("posts", "posts.id", "posts_tags.postId")
     .where("posts.organizationId", "=", organizationId)
     .distinctOn("tags.id")
+    .execute();
+};
+
+export const findOrganizationAvailableTags = (
+  db: SqlDatabase,
+  organizationId: number
+): Promise<TagRow[]> => {
+  return db
+    .selectFrom("tags")
+    .selectAll()
+    .where((eb) =>
+      eb.or([
+        eb("organizationId", "=", organizationId),
+        eb("type", "=", "SYSTEM"),
+      ])
+    )
+
     .execute();
 };

@@ -30,6 +30,7 @@ import {
   updateMetaSchema,
   getOrganizationMetaSchemaById,
   findOrganizationAvailableMetaSchemas,
+  findOrganizationAvailableTags,
 } from "@publiz/core";
 import { useCurrentAppUser } from "../user";
 import { useCheckOrganizationUser } from "./middleware";
@@ -105,6 +106,20 @@ myOrganizationRouter.get(
     const organizationId = c.req.param("organization_id");
     const container = c.get("container");
     const metaSchemas = await findOrganizationAvailableMetaSchemas(
+      container,
+      +organizationId
+    );
+    return c.json({ data: metaSchemas });
+  }
+);
+
+myOrganizationRouter.get(
+  "/:organization_id/applicable_tags",
+  useCurrentAppUser({ required: true }),
+  async (c) => {
+    const organizationId = c.req.param("organization_id");
+    const container = c.get("container");
+    const metaSchemas = await findOrganizationAvailableTags(
       container,
       +organizationId
     );
@@ -499,6 +514,7 @@ myOrganizationRouter.post(
     const organizationId = c.req.param("organization_id");
     const metaSchema = await createMetaSchema(container, {
       ...payload,
+      type: "DEFAULT",
       organizationId: +organizationId,
     });
     return c.json({ data: metaSchema }, 201);
