@@ -223,7 +223,8 @@ export const findPostsByTaxonomyId = async (
 
 type FindPostsPayload = {
   organizationId?: number;
-  metaSchemaId: number;
+  metaSchemaId?: number;
+  collectionId?: number;
   after?: string;
   before?: string;
   size?: number;
@@ -231,14 +232,18 @@ type FindPostsPayload = {
 
 export const findPosts = async (
   container: Container,
-  { organizationId, metaSchemaId, after, before, size }: FindPostsPayload
-) => {
-  return findPostsRepo(
-    container.sqlDb,
+  {
     organizationId,
+    collectionId,
     metaSchemaId,
     after,
     before,
-    size
+    size,
+  }: FindPostsPayload
+) => {
+  return findPostsRepo(
+    container.sqlDb,
+    { organizationId, collectionId, metaSchemaId },
+    { after, before, size }
   );
 };

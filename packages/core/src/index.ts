@@ -12,3 +12,4 @@ export * from "./organization-user";
 export * from "./meta-schema";
 export * from "./comment";
 export * from "./taxonomy";
+export * from "./collection";

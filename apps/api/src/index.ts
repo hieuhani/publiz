@@ -17,6 +17,7 @@ import {
   adminUserRouter,
   adminMetaSchemaRouter,
   requireAdmin,
+  adminCollectionRouter,
 } from "./admin";
 import { myPostRouter } from "./post/my-post-router";
 import { myFileRouter } from "./file";
@@ -26,6 +27,7 @@ import { postRouter } from "./post";
 import { adminPostRouter } from "./admin/post-router";
 import { adminTaxonomyRouter } from "./admin/taxonomy-router";
 import { taxonomyRouter } from "./taxonomy";
+import { collectionRouter } from "./collection/router";
 
 const app = new Hono<AppEnv>();
 
@@ -79,6 +81,9 @@ app.route("/api/v1/posts", postRouter);
 app.route("/api/v1/organizations", organizationRouter);
 app.route("/api/v1/my_organizations", myOrganizationRouter);
 
+// collections api
+app.route("/api/v1/collections", collectionRouter);
+
 // admin api
 app.use("/admin/*", requireAdmin());
 app.route("/admin/api/v1/tags", adminTagRouter);
@@ -87,6 +92,8 @@ app.route("/admin/api/v1/meta_schemas", adminMetaSchemaRouter);
 app.route("/admin/api/v1/users", adminUserRouter);
 app.route("/admin/api/v1/posts", adminPostRouter);
 app.route("/admin/api/v1/taxonomies", adminTaxonomyRouter);
+app.route("/admin/api/v1/collections", adminCollectionRouter);
+
 app.onError(globalErrorHandler);
 
 export default app;

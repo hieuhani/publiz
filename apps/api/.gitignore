@@ -2,3 +2,4 @@ node_modules
 *.vars
 .wrangler
 wrangler.toml
+*.wrangler.toml

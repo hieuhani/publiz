@@ -147,13 +147,18 @@ export const findPostsByTaxonomyId = async (
 
 export const findPosts = async (
   db: SqlDatabase,
-  organizationId?: number,
-  metaSchemaId?: number,
-  after?: string,
-  before?: string,
-  size: number = 10
+  {
+    organizationId,
+    metaSchemaId,
+    collectionId,
+  }: { organizationId?: number; metaSchemaId?: number; collectionId?: number },
+  {
+    after,
+    before,
+    size = 10,
+  }: { after?: string; before?: string; size?: number }
 ) => {
-  let query = db.selectFrom("posts").selectAll();
+  let query = db.selectFrom("posts").selectAll("posts");
   if (organizationId) {
     query = query.where("organizationId", "=", organizationId);
   }
@@ -161,6 +166,13 @@ export const findPosts = async (
   if (metaSchemaId) {
     query = query.where("metadata", "@>", new JsonValue({ metaSchemaId }));
   }
+
+  if (collectionId) {
+    query = query
+      .innerJoin("collections_posts", "posts.id", "collections_posts.postId")
+      .where("collections_posts.collectionId", "=", collectionId);
+  }
+
   return executeWithCursorPagination(query, {
     perPage: size,
     after,

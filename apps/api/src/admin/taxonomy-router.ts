@@ -24,12 +24,12 @@ adminTaxonomyRouter.post(
     const payload = c.req.valid("json");
     const currentUser = c.get("currentAppUser");
     const container = c.get("container");
-    const tag = await createTaxonomy(container, {
+    const newTaxonomy = await createTaxonomy(container, {
       ...payload,
       type: "SYSTEM",
       userId: currentUser.id,
     });
-    return c.json({ data: tag }, 201);
+    return c.json({ data: newTaxonomy }, 201);
   }
 );
 
@@ -52,7 +52,7 @@ adminTaxonomyRouter.put(
     const container = c.get("container");
     const payload = c.req.valid("json");
     const id = c.req.param("id");
-    const updatedTag = await updateTaxonomy(container, +id, payload);
-    return c.json({ data: updatedTag });
+    const updatedTaxonomy = await updateTaxonomy(container, +id, payload);
+    return c.json({ data: updatedTaxonomy });
   }
 );

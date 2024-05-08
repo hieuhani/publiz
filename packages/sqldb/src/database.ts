@@ -10,6 +10,8 @@ import { OrganizationUserTable } from "./organization-user";
 import { MetaSchemaTable } from "./meta-schema";
 import { CommentTable } from "./comment";
 import { TaxonomyTable } from "./taxonomy";
+import { CollectionTable } from "./collection";
+import { CollectionPostTable } from "./collection-post";
 
 export interface Database {
   users: UserTable;
@@ -23,6 +25,8 @@ export interface Database {
   meta_schemas: MetaSchemaTable;
   comments: CommentTable;
   taxonomies: TaxonomyTable;
+  collections: CollectionTable;
+  collections_posts: CollectionPostTable;
 }
 
 export const createDatabase = (dialect: Dialect) => {
