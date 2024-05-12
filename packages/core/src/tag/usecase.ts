@@ -8,6 +8,7 @@ import {
   findTagsByOrganizationId as findTagsByOrganizationIdRepo,
   findTagsByTaxonomyId as findTagsByTaxonomyIdRepo,
   findOrganizationAvailableTags as findOrganizationAvailableTagsRepo,
+  getTagBySlug as getTagBySlugRepo,
 } from "@publiz/sqldb";
 import { Container } from "../container";
 
@@ -36,8 +37,15 @@ export const updateTag = async (
 export const getTags = async (container: Container) =>
   createTagCrudRepository(container.sqlDb).find();
 
-export const getTagById = async (container: Container, id: number) =>
-  createTagCrudRepository(container.sqlDb).findById(id);
+export const getTagById = async (
+  container: Container,
+  idOrSlug: number | string
+) => {
+  if (Number.isInteger(Number(idOrSlug))) {
+    return createTagCrudRepository(container.sqlDb).findById(+idOrSlug);
+  }
+  return getTagBySlugRepo(container.sqlDb, idOrSlug + "");
+};
 
 export const deleteTagById = async (container: Container, id: number) =>
   createTagCrudRepository(container.sqlDb).delete(id);

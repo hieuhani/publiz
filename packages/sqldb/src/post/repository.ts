@@ -1,4 +1,4 @@
-import { jsonArrayFrom } from "kysely/helpers/postgres";
+import { jsonArrayFrom, jsonObjectFrom } from "kysely/helpers/postgres";
 import { createCrudRepository } from "../crud";
 import { Database, SqlDatabase } from "../database";
 import { JsonValue } from "../kysely";
@@ -151,16 +151,37 @@ export const findPosts = async (
     organizationId,
     metaSchemaId,
     collectionId,
-  }: { organizationId?: number; metaSchemaId?: number; collectionId?: number },
+    taxonomyId,
+    tagId,
+  }: {
+    organizationId?: number;
+    metaSchemaId?: number;
+    collectionId?: number;
+    taxonomyId?: number;
+    tagId?: number;
+  },
   {
     after,
     before,
     size = 10,
   }: { after?: string; before?: string; size?: number }
 ) => {
-  let query = db.selectFrom("posts").selectAll("posts");
+  let query = db.selectFrom("posts").selectAll("posts").select(withAuthor);
   if (organizationId) {
     query = query.where("organizationId", "=", organizationId);
+  }
+
+  if (taxonomyId) {
+    query = query
+      .innerJoin("posts_tags", "posts.id", "posts_tags.postId")
+      .innerJoin("tags", "tags.id", "posts_tags.tagId")
+      .where("tags.taxonomyId", "=", taxonomyId);
+  }
+
+  if (tagId) {
+    query = query
+      .innerJoin("posts_tags", "posts.id", "posts_tags.postId")
+      .where("posts_tags.tagId", "=", tagId);
   }
 
   if (metaSchemaId) {
@@ -187,6 +208,14 @@ export const findPosts = async (
     }),
   });
 };
+
+const withAuthor = (eb: ExpressionBuilder<Database, "posts">) =>
+  jsonObjectFrom(
+    eb
+      .selectFrom("users")
+      .select(["users.id", "users.displayName", "users.metadata"])
+      .whereRef("users.id", "=", "posts.authorId")
+  ).as("author");
 
 const withTags = (eb: ExpressionBuilder<Database, "posts">) =>
   jsonArrayFrom(

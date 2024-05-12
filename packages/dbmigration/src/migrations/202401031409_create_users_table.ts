@@ -7,7 +7,6 @@ export async function up(db: Kysely<any>) {
     .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("auth_id", "varchar(255)", (col) => col.notNull().unique())
     .addColumn("display_name", "varchar(100)", (col) => col.notNull())
-    .addColumn("avatar_url", "text")
     .addColumn("metadata", "jsonb")
     .$call(withTimestamps)
     .execute();

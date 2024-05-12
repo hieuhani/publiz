@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { timing } from "hono/timing";
-
 import { validateFirebaseAuth } from "@fiboup/hono-firebase-auth";
 import { etag } from "hono/etag";
 import { useDi } from "./di";
@@ -40,7 +39,12 @@ app.use("*", (c, next) =>
 );
 
 app.use("/api/*", (c, next) => cors(c.get("config").cors)(c, next));
-app.use("/api/*", etag());
+app.use(
+  "/api/*",
+  etag({
+    weak: true,
+  })
+);
 app.use("/admin/api/*", (c, next) => cors(c.get("config").cors)(c, next));
 
 app.get("/", (c) => c.json({ data: "ok" }));

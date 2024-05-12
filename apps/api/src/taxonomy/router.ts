@@ -4,8 +4,9 @@ import {
   AppError,
   findSystemTaxonomies,
   getTaxonomyById,
-  findPostsByTaxonomyId,
   findTagsByTaxonomyId,
+  findPosts,
+  getTagById,
 } from "@publiz/core";
 
 export const taxonomyRouter = new Hono<AppEnv>();
@@ -31,20 +32,26 @@ taxonomyRouter.get("/:identity/posts", async (c) => {
   const after = c.req.query("after");
   const tag = c.req.query("tag");
   const pageSize = c.req.query("pageSize");
-  const taxonomy = await getTaxonomyById(container, identity);
   const size = Number.isInteger(Number(pageSize)) ? Number(pageSize) : 10;
   if (size > 80) {
     throw new AppError(400400, "Page size is too large");
   }
+  const taxonomy = await getTaxonomyById(container, identity);
+  let tagId: number | undefined = undefined;
+  if (tag) {
+    const tagEntity = await getTagById(container, tag);
+    tagId = tagEntity.id;
+  }
+
   const {
     startCursor,
     endCursor,
     hasNextPage,
     hasPrevPage,
     rows: data,
-  } = await findPostsByTaxonomyId(container, {
+  } = await findPosts(container, {
     taxonomyId: taxonomy.id,
-    tag,
+    tagId,
     before,
     after,
     size,

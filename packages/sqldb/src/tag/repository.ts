@@ -99,3 +99,11 @@ export const findOrganizationAvailableTags = (
 
     .execute();
 };
+
+export const getTagBySlug = async (db: SqlDatabase, slug: string) => {
+  return db
+    .selectFrom("tags")
+    .selectAll()
+    .where("slug", "=", slug)
+    .executeTakeFirstOrThrow();
+};

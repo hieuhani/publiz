@@ -225,6 +225,8 @@ type FindPostsPayload = {
   organizationId?: number;
   metaSchemaId?: number;
   collectionId?: number;
+  taxonomyId?: number;
+  tagId?: number;
   after?: string;
   before?: string;
   size?: number;
@@ -236,6 +238,8 @@ export const findPosts = async (
     organizationId,
     collectionId,
     metaSchemaId,
+    taxonomyId,
+    tagId,
     after,
     before,
     size,
@@ -243,7 +247,7 @@ export const findPosts = async (
 ) => {
   return findPostsRepo(
     container.sqlDb,
-    { organizationId, collectionId, metaSchemaId },
+    { organizationId, collectionId, metaSchemaId, taxonomyId, tagId },
     { after, before, size }
   );
 };

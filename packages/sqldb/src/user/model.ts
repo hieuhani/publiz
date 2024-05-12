@@ -4,7 +4,6 @@ export type UserTable = {
   id: Generated<number>;
   authId: string;
   displayName: string;
-  avatarUrl?: string;
   metadata: any;
   updatedAt?: string;
 };
