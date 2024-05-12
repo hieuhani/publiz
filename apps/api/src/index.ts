@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { cache } from "hono/cache";
 import { timing } from "hono/timing";
 
 import { validateFirebaseAuth } from "@fiboup/hono-firebase-auth";
@@ -33,14 +32,6 @@ const app = new Hono<AppEnv>();
 
 app.use(timing());
 app.use("*", useDi());
-
-// app.get(
-//   "/api/*",
-//   cache({
-//     cacheName: "publiz",
-//     cacheControl: "max-age=3600",
-//   })
-// );
 
 app.use("*", (c, next) =>
   validateFirebaseAuth({

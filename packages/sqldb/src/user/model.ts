@@ -6,6 +6,7 @@ export type UserTable = {
   displayName: string;
   avatarUrl?: string;
   metadata: any;
+  updatedAt?: string;
 };
 
 export type UserRow = Selectable<UserTable>;

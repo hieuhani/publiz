@@ -11,6 +11,7 @@ import {
   createUser,
   getFileUrl,
   getGcsImageServingUrl,
+  getUserById,
   patchUserMetadataById,
   updateUser,
   uploadFile,
@@ -68,7 +69,6 @@ userRouter.put(
       currentAppUser.id,
       userPayload
     );
-
     return c.json(updatedUser);
   }
 );
@@ -135,7 +135,20 @@ userRouter.patch(
     const updatedUser = await patchUserMetadataById(container, currentUser.id, {
       [type]: imageMeta,
     });
-
     return c.json({ data: updatedUser });
   }
 );
+
+userRouter.get("/:identity", async (c) => {
+  const container = c.get("container") as Container;
+  const identity = c.req.param("identity");
+  if (Number.isInteger(Number(identity))) {
+    const user = await getUserById(container, +identity);
+    if (user.updatedAt) {
+      c.header("Last-Modified", user.updatedAt);
+    }
+    return c.json({ data: user });
+  }
+
+  throw new AppError(500, "Querying user by username is not supported");
+});

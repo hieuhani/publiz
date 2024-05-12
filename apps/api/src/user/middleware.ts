@@ -24,5 +24,8 @@ export const useCurrentAppUser = (
     }
     c.set("currentAppUser", appUser);
     await next();
+    if (options.required) {
+      c.header("Cache-Control", "private");
+    }
   };
 };
