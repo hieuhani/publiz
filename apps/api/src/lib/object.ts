@@ -8,3 +8,14 @@ export const normalizeMetadata = (metadata: Record<string, any>) =>
       [current]: `${metadata[current]}`,
     };
   }, {});
+
+export const parseContext = (context: string | undefined) => {
+  if (!context) {
+    return {};
+  }
+  try {
+    return JSON.parse(context);
+  } catch (e) {
+    return {};
+  }
+};

@@ -9,6 +9,7 @@ import {
   getMetaSchemaByIdentifier,
   findPosts,
 } from "@publiz/core";
+import { parseContext } from "../lib/object";
 
 export const organizationRouter = new Hono<AppEnv>();
 
@@ -27,6 +28,7 @@ organizationRouter.get("/:organization_id/posts", async (c) => {
   const pageSize = c.req.query("pageSize");
   const metaSchema = c.req.query("metaSchema");
   const size = Number.isInteger(Number(pageSize)) ? Number(pageSize) : 10;
+  const context = parseContext(c.req.query("context"));
   if (size > 80) {
     throw new AppError(400400, "Page size is too large");
   }
@@ -50,13 +52,17 @@ organizationRouter.get("/:organization_id/posts", async (c) => {
     hasNextPage,
     hasPrevPage,
     rows: data,
-  } = await findPosts(container, {
-    organizationId: organization.id,
-    metaSchemaId,
-    before,
-    after,
-    size,
-  });
+  } = await findPosts(
+    container,
+    {
+      organizationId: organization.id,
+      metaSchemaId,
+      before,
+      after,
+      size,
+    },
+    context
+  );
 
   return c.json({
     data,

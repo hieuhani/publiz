@@ -2,11 +2,12 @@ import { Hono } from "hono";
 import { type AppEnv } from "../global";
 import {
   AppError,
-  findPostsByMetaSchemaId,
+  findPosts,
   findSystemMetaSchemas,
   getMetaSchemaById,
   getMetaSchemaByIdentifier,
 } from "@publiz/core";
+import { parseContext } from "../lib/object";
 
 export const metaSchemaRouter = new Hono<AppEnv>();
 
@@ -35,6 +36,7 @@ metaSchemaRouter.get("/:identity/posts", async (c) => {
   const before = c.req.query("before");
   const after = c.req.query("after");
   const pageSize = c.req.query("pageSize");
+  const context = parseContext(c.req.query("context"));
   let metaSchemaId = 0;
   if (Number.isInteger(Number(identity))) {
     metaSchemaId = +identity;
@@ -53,12 +55,16 @@ metaSchemaRouter.get("/:identity/posts", async (c) => {
     hasNextPage,
     hasPrevPage,
     rows: data,
-  } = await findPostsByMetaSchemaId(container, {
-    metaSchemaId,
-    before,
-    after,
-    size,
-  });
+  } = await findPosts(
+    container,
+    {
+      metaSchemaId,
+      before,
+      after,
+      size,
+    },
+    context
+  );
 
   return c.json({
     data: data,

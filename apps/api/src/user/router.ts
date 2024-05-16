@@ -48,9 +48,14 @@ userRouter.get("/my_profile", useCurrentAppUser(), async (c) => {
       authId: localId,
       displayName: "",
     });
+    if (newUser.updatedAt) {
+      c.header("Last-Modified", newUser.updatedAt);
+    }
     return c.json({ data: newUser });
   }
-
+  if (currentAppUser.updatedAt) {
+    c.header("Last-Modified", currentAppUser.updatedAt);
+  }
   return c.json({ data: currentAppUser });
 });
 

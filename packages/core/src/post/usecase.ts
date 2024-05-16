@@ -243,11 +243,15 @@ export const findPosts = async (
     after,
     before,
     size,
-  }: FindPostsPayload
+  }: FindPostsPayload,
+  context?: {
+    withOrganization?: boolean;
+  }
 ) => {
   return findPostsRepo(
     container.sqlDb,
     { organizationId, collectionId, metaSchemaId, taxonomyId, tagId },
-    { after, before, size }
+    { after, before, size },
+    context
   );
 };

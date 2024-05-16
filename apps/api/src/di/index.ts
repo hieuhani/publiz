@@ -70,7 +70,10 @@ export const useDi = (): MiddlewareHandler => {
     };
 
     const dialect = new PostgresDialect({
-      pool: new Pool(config.db),
+      pool: new Pool({
+        ...config.db,
+        maxUses: 1,
+      }),
     });
     c.set("config", config);
     c.set("container", {

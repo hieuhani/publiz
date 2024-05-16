@@ -30,6 +30,7 @@ export const findOrganizationAvailableMetaSchemas = (
       ])
     )
     .where("type", "!=", "SYSTEM")
+    .where("target", "=", "post")
     .execute();
 };
 

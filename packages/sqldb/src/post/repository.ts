@@ -164,21 +164,35 @@ export const findPosts = async (
     after,
     before,
     size = 10,
-  }: { after?: string; before?: string; size?: number }
+  }: { after?: string; before?: string; size?: number },
+  context: {
+    withOrganization?: boolean;
+  } = {
+    withOrganization: false,
+  }
 ) => {
   let query = db.selectFrom("posts").selectAll("posts").select(withAuthor);
+
+  if (context.withOrganization) {
+    query = query.select(withOrganization);
+  }
+
   if (organizationId) {
     query = query.where("organizationId", "=", organizationId);
   }
 
-  if (taxonomyId) {
+  if (taxonomyId && tagId) {
+    query = query
+      .innerJoin("posts_tags", "posts.id", "posts_tags.postId")
+      .innerJoin("tags", "tags.id", "posts_tags.tagId")
+      .where("tags.taxonomyId", "=", taxonomyId)
+      .where("posts_tags.tagId", "=", tagId);
+  } else if (taxonomyId) {
     query = query
       .innerJoin("posts_tags", "posts.id", "posts_tags.postId")
       .innerJoin("tags", "tags.id", "posts_tags.tagId")
       .where("tags.taxonomyId", "=", taxonomyId);
-  }
-
-  if (tagId) {
+  } else if (tagId) {
     query = query
       .innerJoin("posts_tags", "posts.id", "posts_tags.postId")
       .where("posts_tags.tagId", "=", tagId);
@@ -216,6 +230,14 @@ const withAuthor = (eb: ExpressionBuilder<Database, "posts">) =>
       .select(["users.id", "users.displayName", "users.metadata"])
       .whereRef("users.id", "=", "posts.authorId")
   ).as("author");
+
+const withOrganization = (eb: ExpressionBuilder<Database, "posts">) =>
+  jsonObjectFrom(
+    eb
+      .selectFrom("organizations")
+      .selectAll("organizations")
+      .whereRef("organizations.id", "=", "posts.organizationId")
+  ).as("organization");
 
 const withTags = (eb: ExpressionBuilder<Database, "posts">) =>
   jsonArrayFrom(

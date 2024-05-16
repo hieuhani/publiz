@@ -8,6 +8,7 @@ import {
   findPosts,
   getTagById,
 } from "@publiz/core";
+import { parseContext } from "../lib/object";
 
 export const taxonomyRouter = new Hono<AppEnv>();
 
@@ -33,6 +34,7 @@ taxonomyRouter.get("/:identity/posts", async (c) => {
   const tag = c.req.query("tag");
   const pageSize = c.req.query("pageSize");
   const size = Number.isInteger(Number(pageSize)) ? Number(pageSize) : 10;
+  const context = parseContext(c.req.query("context"));
   if (size > 80) {
     throw new AppError(400400, "Page size is too large");
   }
@@ -49,13 +51,17 @@ taxonomyRouter.get("/:identity/posts", async (c) => {
     hasNextPage,
     hasPrevPage,
     rows: data,
-  } = await findPosts(container, {
-    taxonomyId: taxonomy.id,
-    tagId,
-    before,
-    after,
-    size,
-  });
+  } = await findPosts(
+    container,
+    {
+      taxonomyId: taxonomy.id,
+      tagId,
+      before,
+      after,
+      size,
+    },
+    context
+  );
 
   return c.json({
     data: data,
