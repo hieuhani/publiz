@@ -13,6 +13,7 @@ import {
   findPosts as findPostsRepo,
   createPostTagCrudRepository,
   findPostTagsByPostId,
+  getPostsByUserId as getPostsByUserIdRepo,
 } from "@publiz/sqldb";
 import { Validator } from "@cfworker/json-schema";
 import { Container } from "../container";
@@ -89,6 +90,13 @@ export const getPostsByMetaSchemaId = async (
   return findMyPostsMetaSchemaIdRepo(container.sqlDb, metaSchemaId);
 };
 
+export const findPostsByUserId = async (
+  container: Container,
+  userId: number
+) => {
+  return getPostsByUserIdRepo(container.sqlDb, userId);
+};
+
 export const getOrganizationPostById = async (
   container: Container,
   organizationId: number,
@@ -156,8 +164,14 @@ export const updatePost = async (
   return createPostCrudRepository(container.sqlDb).update(id, input);
 };
 
-export const getPostById = async (container: Container, id: number) => {
-  return getPostByIdRepo(container.sqlDb, id);
+export const getPostById = async (
+  container: Container,
+  id: number,
+  context?: {
+    withOrganization?: boolean;
+  }
+) => {
+  return getPostByIdRepo(container.sqlDb, id, context);
 };
 
 export const findPostsByOrganizationId = async (
@@ -227,6 +241,7 @@ type FindPostsPayload = {
   collectionId?: number;
   taxonomyId?: number;
   tagId?: number;
+  userId?: number;
   after?: string;
   before?: string;
   size?: number;
@@ -240,6 +255,7 @@ export const findPosts = async (
     metaSchemaId,
     taxonomyId,
     tagId,
+    userId,
     after,
     before,
     size,
@@ -250,7 +266,7 @@ export const findPosts = async (
 ) => {
   return findPostsRepo(
     container.sqlDb,
-    { organizationId, collectionId, metaSchemaId, taxonomyId, tagId },
+    { organizationId, collectionId, metaSchemaId, taxonomyId, tagId, userId },
     { after, before, size },
     context
   );

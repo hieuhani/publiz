@@ -6,8 +6,7 @@ import {
   createPost,
   updatePost,
   getMyPostById,
-  getMetaSchemaByIdentifier,
-  getMyPostsByMetaSchemaId,
+  findPostsByUserId,
 } from "@publiz/core";
 import { createPostSchema, updatePostSchema } from "./schema";
 
@@ -54,20 +53,8 @@ myPostRouter.get("/:id", useCurrentAppUser({ required: true }), async (c) => {
 });
 
 myPostRouter.get("/", useCurrentAppUser({ required: true }), async (c) => {
-  const schema = c.req.query("schema");
   const container = c.get("container");
   const currentUser = c.get("currentAppUser");
-  if (schema) {
-    const metaSchema = await getMetaSchemaByIdentifier(container, schema);
-    if (!metaSchema) {
-      return c.json({ data: [] });
-    }
-    const posts = await getMyPostsByMetaSchemaId(
-      container,
-      currentUser.id,
-      metaSchema.id
-    );
-    return c.json({ data: posts });
-  }
-  return c.json({ data: [] });
+  const posts = await findPostsByUserId(container, currentUser.id);
+  return c.json({ data: posts });
 });

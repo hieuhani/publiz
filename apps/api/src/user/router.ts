@@ -9,6 +9,7 @@ import {
   Container,
   createFile,
   createUser,
+  findPosts,
   getFileUrl,
   getGcsImageServingUrl,
   getUserById,
@@ -154,6 +155,39 @@ userRouter.get("/:identity", async (c) => {
     }
     return c.json({ data: user });
   }
+});
 
-  throw new AppError(500, "Querying user by username is not supported");
+userRouter.get("/:identity/posts", async (c) => {
+  const container = c.get("container");
+  const identity = c.req.param("identity");
+  const before = c.req.query("before");
+  const after = c.req.query("after");
+  const pageSize = c.req.query("pageSize");
+  const size = Number.isInteger(Number(pageSize)) ? Number(pageSize) : 10;
+  if (size > 80) {
+    throw new AppError(400400, "Page size is too large");
+  }
+  if (!Number.isInteger(Number(identity))) {
+    throw new AppError(500, "Querying user by username is not supported");
+  }
+  const user = await getUserById(container, +identity);
+
+  const {
+    startCursor,
+    endCursor,
+    hasNextPage,
+    hasPrevPage,
+    rows: data,
+  } = await findPosts(container, {
+    userId: user.id,
+    organizationId: 0,
+    before,
+    after,
+    size,
+  });
+
+  return c.json({
+    data: data,
+    pagination: { startCursor, endCursor, hasNextPage, hasPrevPage },
+  });
 });

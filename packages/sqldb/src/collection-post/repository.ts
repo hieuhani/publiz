@@ -39,5 +39,6 @@ export const findPostsByCollectionId = (
     .selectAll("posts")
     .innerJoin("collections_posts", "posts.id", "collections_posts.postId")
     .where("collections_posts.collectionId", "=", collectionId)
+    .orderBy("collections_posts.updatedAt", "desc")
     .execute();
 };

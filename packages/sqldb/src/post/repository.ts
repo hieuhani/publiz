@@ -23,6 +23,14 @@ export const getPostByIdAndUserId = async (
     .executeTakeFirstOrThrow();
 };
 
+export const getPostsByUserId = async (db: SqlDatabase, authorId: number) => {
+  return db
+    .selectFrom("posts")
+    .selectAll()
+    .where("authorId", "=", authorId)
+    .execute();
+};
+
 export const getPostByIdAndOrganizationId = async (
   db: SqlDatabase,
   postId: number,
@@ -75,13 +83,25 @@ export const findMyPostsMetaSchemaId = async (
     .execute();
 };
 
-export const getPostById = async (db: SqlDatabase, postId: number) => {
-  return db
+export const getPostById = async (
+  db: SqlDatabase,
+  postId: number,
+  context: {
+    withOrganization?: boolean;
+  } = {
+    withOrganization: false,
+  }
+) => {
+  let query = db
     .selectFrom("posts")
     .selectAll()
     .select(withTags)
-    .where("id", "=", postId)
-    .executeTakeFirstOrThrow();
+    .where("id", "=", postId);
+  if (context.withOrganization) {
+    query = query.select(withOrganization);
+  }
+
+  return query.executeTakeFirstOrThrow();
 };
 
 export const findPostsByMetaSchemaId = async (
@@ -153,12 +173,14 @@ export const findPosts = async (
     collectionId,
     taxonomyId,
     tagId,
+    userId,
   }: {
     organizationId?: number;
     metaSchemaId?: number;
     collectionId?: number;
     taxonomyId?: number;
     tagId?: number;
+    userId?: number;
   },
   {
     after,
@@ -171,14 +193,26 @@ export const findPosts = async (
     withOrganization: false,
   }
 ) => {
-  let query = db.selectFrom("posts").selectAll("posts").select(withAuthor);
+  let query = db
+    .selectFrom("posts")
+    .selectAll("posts")
+    .distinctOn(["posts.id", "posts.createdAt"])
+    .select(withAuthor);
 
   if (context.withOrganization) {
     query = query.select(withOrganization);
   }
 
-  if (organizationId) {
-    query = query.where("organizationId", "=", organizationId);
+  if (organizationId !== undefined) {
+    if (organizationId === 0) {
+      query = query.where("organizationId", "is", null);
+    } else {
+      query = query.where("organizationId", "=", organizationId);
+    }
+  }
+
+  if (userId) {
+    query = query.where("authorId", "=", userId);
   }
 
   if (taxonomyId && tagId) {
@@ -205,8 +239,12 @@ export const findPosts = async (
   if (collectionId) {
     query = query
       .innerJoin("collections_posts", "posts.id", "collections_posts.postId")
-      .where("collections_posts.collectionId", "=", collectionId);
+      .distinctOn(["collections_posts.updatedAt"])
+      .where("collections_posts.collectionId", "=", collectionId)
+      .orderBy("collections_posts.updatedAt", "desc");
   }
+
+  query = query.orderBy("posts.createdAt desc");
 
   return executeWithCursorPagination(query, {
     perPage: size,

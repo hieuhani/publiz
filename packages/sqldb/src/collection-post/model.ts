@@ -4,6 +4,7 @@ export type CollectionPostTable = {
   id: Generated<number>;
   collectionId: number;
   postId: number;
+  updatedAt?: string;
 };
 
 export type CollectionPostRow = Selectable<CollectionPostTable>;
