@@ -1,9 +1,13 @@
 import { Hono } from "hono";
 import z from "zod";
+import { zValidator } from "@hono/zod-validator";
+import {
+  createReactionPackUseCase,
+  createReactionUseCase,
+  createReactionPackUserUseCase,
+} from "@publiz/core";
 import { type AppEnv } from "../global";
 import { useCurrentAppUser } from "../user";
-import { zValidator } from "@hono/zod-validator";
-import { createReactionPackUseCase } from "@publiz/core";
 
 export const adminReactionPackRouter = new Hono<AppEnv>();
 
@@ -54,5 +58,53 @@ adminReactionPackRouter.put(
       payload
     );
     return c.json({ data: updatedEntity });
+  }
+);
+
+const createReactionSchema = z.object({
+  name: z.string().min(1).max(100),
+  code: z.string().min(1).max(100),
+  metadata: z.object({}).passthrough(),
+});
+
+adminReactionPackRouter.post(
+  "/:id/reactions",
+  useCurrentAppUser({ required: true }),
+  zValidator("json", createReactionSchema),
+  async (c) => {
+    const payload = c.req.valid("json");
+    const container = c.get("container");
+    const id = c.req.param("id");
+    const reactionPack =
+      await createReactionPackUseCase(container).getById(+id);
+
+    const newEntity = await createReactionUseCase(container).create({
+      ...payload,
+      reactionPackId: reactionPack.id,
+    });
+    return c.json({ data: newEntity }, 201);
+  }
+);
+
+const createReactionPackUserSchema = z.object({
+  userId: z.number(),
+});
+
+adminReactionPackRouter.post(
+  "/:id/reaction_pack_users",
+  useCurrentAppUser({ required: true }),
+  zValidator("json", createReactionPackUserSchema),
+  async (c) => {
+    const payload = c.req.valid("json");
+    const container = c.get("container");
+    const id = c.req.param("id");
+    const reactionPack =
+      await createReactionPackUseCase(container).getById(+id);
+
+    const newEntity = await createReactionPackUserUseCase(container).create({
+      userId: payload.userId,
+      reactionPackId: reactionPack.id,
+    });
+    return c.json({ data: newEntity }, 201);
   }
 );

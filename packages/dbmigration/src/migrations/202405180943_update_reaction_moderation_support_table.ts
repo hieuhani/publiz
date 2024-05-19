@@ -45,7 +45,7 @@ export async function up(db: Kysely<any>) {
   await db.schema
     .alterTable("reactions")
     .addColumn("metadata", "jsonb")
-    .addColumn("code", "varchar(155)", (col) => col.notNull().unique())
+    .addColumn("code", "varchar(155)", (col) => col.notNull())
     .execute();
 
   await db.schema
@@ -65,6 +65,13 @@ export async function up(db: Kysely<any>) {
     .columns(["reaction_id", "post_id", "user_id"])
     .unique()
     .execute();
+
+  await db.schema
+    .createIndex("reactions_reaction_pack_id_code_uniq")
+    .on("reactions")
+    .columns(["reaction_pack_id", "code"])
+    .unique()
+    .execute();
 }
 
 export async function down(db: Kysely<any>) {
@@ -72,6 +79,9 @@ export async function down(db: Kysely<any>) {
     .dropIndex("reactions_posts_reaction_id_post_id_user_id_uniq")
     .execute();
   await db.schema.dropTable("reactions_posts").execute();
+
+  await db.schema.dropIndex("reactions_reaction_pack_id_code_uniq").execute();
+
   await db.schema
     .alterTable("reactions")
     .dropColumn("metadata")

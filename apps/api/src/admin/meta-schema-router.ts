@@ -27,7 +27,10 @@ adminMetaSchemaRouter.post(
   async (c) => {
     const payload = c.req.valid("json");
     const container = c.get("container");
-    const metaSchema = await createMetaSchema(container, payload);
+    const metaSchema = await createMetaSchema(container, {
+      ...payload,
+      type: "SYSTEM",
+    });
     return c.json({ data: metaSchema }, 201);
   }
 );
