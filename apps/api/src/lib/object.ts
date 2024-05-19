@@ -11,11 +11,14 @@ export const normalizeMetadata = (metadata: Record<string, any>) =>
 
 export const parseContext = (context: string | undefined) => {
   if (!context) {
-    return {};
+    return undefined;
   }
   try {
-    return JSON.parse(context);
+    const parsedContext = JSON.parse(context);
+    // TODO: Temporary solution to remove moderationRequired from context
+    delete parsedContext.moderationRequired;
+    return parsedContext;
   } catch (e) {
-    return {};
+    return undefined;
   }
 };

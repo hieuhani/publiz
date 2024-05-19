@@ -14,6 +14,7 @@ import {
   createPostTagCrudRepository,
   findPostTagsByPostId,
   getPostsByUserId as getPostsByUserIdRepo,
+  getContentModerationApproveReaction,
 } from "@publiz/sqldb";
 import { Validator } from "@cfworker/json-schema";
 import { Container } from "../container";
@@ -245,6 +246,7 @@ type FindPostsPayload = {
   after?: string;
   before?: string;
   size?: number;
+  reactionId?: number | null;
 };
 
 export const findPosts = async (
@@ -259,14 +261,38 @@ export const findPosts = async (
     after,
     before,
     size,
+    reactionId,
   }: FindPostsPayload,
-  context?: {
+  context: {
     withOrganization?: boolean;
+    moderationRequired?: boolean;
+  } = {
+    withOrganization: false,
+    moderationRequired: true,
   }
 ) => {
+  if (context.moderationRequired) {
+    const approvedReaction = await getContentModerationApproveReaction(
+      container.sqlDb
+    );
+    if (reactionId) {
+      console.warn(
+        "reactionId is already set, but it is overridden by moderation required flag"
+      );
+    }
+    reactionId = approvedReaction.id;
+  }
   return findPostsRepo(
     container.sqlDb,
-    { organizationId, collectionId, metaSchemaId, taxonomyId, tagId, userId },
+    {
+      organizationId,
+      collectionId,
+      metaSchemaId,
+      taxonomyId,
+      tagId,
+      userId,
+      reactionId,
+    },
     { after, before, size },
     context
   );

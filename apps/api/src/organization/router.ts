@@ -61,7 +61,10 @@ organizationRouter.get("/:organization_id/posts", async (c) => {
       after,
       size,
     },
-    context
+    {
+      ...context,
+      moderationRequired: false,
+    }
   );
 
   return c.json({

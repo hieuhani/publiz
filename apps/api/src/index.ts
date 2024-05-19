@@ -27,6 +27,7 @@ import { adminTaxonomyRouter } from "./admin/taxonomy-router";
 import { taxonomyRouter } from "./taxonomy";
 import { collectionRouter } from "./collection/router";
 import { adminReactionPackRouter } from "./admin/reaction-pack-router";
+import { moderatingPostRouter } from "./post/moderating-post-router";
 
 const app = new Hono<AppEnv>();
 
@@ -72,6 +73,8 @@ app.route("/api/v1/my_files", myFileRouter);
 // post api
 app.route("/api/v1/my_posts", myPostRouter);
 app.route("/api/v1/posts", postRouter);
+
+app.route("/api/v1/moderating_posts", moderatingPostRouter);
 
 // organizations api
 app.route("/api/v1/organizations", organizationRouter);

@@ -5,6 +5,7 @@ import { JsonValue } from "../kysely";
 import { PostTable } from "./model";
 import { ExpressionBuilder } from "kysely";
 import { executeWithCursorPagination } from "../pagination/cursor";
+import { getContentModerationApproveReaction } from "../reaction";
 
 export const createPostCrudRepository = (db: SqlDatabase) =>
   createCrudRepository(db, "posts");
@@ -174,6 +175,7 @@ export const findPosts = async (
     taxonomyId,
     tagId,
     userId,
+    reactionId,
   }: {
     organizationId?: number;
     metaSchemaId?: number;
@@ -181,6 +183,7 @@ export const findPosts = async (
     taxonomyId?: number;
     tagId?: number;
     userId?: number;
+    reactionId?: number | null;
   },
   {
     after,
@@ -242,6 +245,16 @@ export const findPosts = async (
       .distinctOn(["collections_posts.updatedAt"])
       .where("collections_posts.collectionId", "=", collectionId)
       .orderBy("collections_posts.updatedAt", "desc");
+  }
+
+  if (reactionId === null) {
+    query = query
+      .leftJoin("reactions_posts", "posts.id", "reactions_posts.postId")
+      .where("reactions_posts.reactionId", "is", null);
+  } else if (reactionId) {
+    query = query
+      .innerJoin("reactions_posts", "posts.id", "reactions_posts.postId")
+      .where("reactions_posts.reactionId", "=", reactionId);
   }
 
   query = query.orderBy("posts.createdAt desc");

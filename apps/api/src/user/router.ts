@@ -16,6 +16,7 @@ import {
   patchUserMetadataById,
   updateUser,
   uploadFile,
+  getMyReactionPacks,
 } from "@publiz/core";
 import { zValidator } from "@hono/zod-validator";
 import { updateProfileSchema, uploadImageFileSchema } from "./schema";
@@ -191,3 +192,18 @@ userRouter.get("/:identity/posts", async (c) => {
     pagination: { startCursor, endCursor, hasNextPage, hasPrevPage },
   });
 });
+
+userRouter.get(
+  "/my_reaction_packs",
+  useCurrentAppUser({ required: true }),
+  async (c) => {
+    const container = c.get("container");
+    const currentAppUser = c.get("currentAppUser");
+
+    const data = await getMyReactionPacks(container, currentAppUser.id);
+
+    return c.json({
+      data: data,
+    });
+  }
+);

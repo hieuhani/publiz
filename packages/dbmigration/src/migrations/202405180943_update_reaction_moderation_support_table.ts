@@ -36,6 +36,12 @@ export async function up(db: Kysely<any>) {
     .execute();
 
   await db.schema
+    .createIndex("reaction_packs_users_user_id")
+    .on("reaction_packs_users")
+    .column("user_id")
+    .execute();
+
+  await db.schema
     .createIndex("reaction_packs_users_reaction_pack_id_user_id_uniq")
     .on("reaction_packs_users")
     .columns(["reaction_pack_id", "user_id"])
@@ -92,6 +98,7 @@ export async function down(db: Kysely<any>) {
     .dropIndex("reaction_packs_users_reaction_pack_id_user_id_uniq")
     .execute();
 
+  await db.schema.dropIndex("reaction_packs_users_user_id").execute();
   await db.schema.dropTable("reaction_packs_users").execute();
 
   await db.schema
