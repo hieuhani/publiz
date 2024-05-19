@@ -12,6 +12,10 @@ import { CommentTable } from "./comment";
 import { TaxonomyTable } from "./taxonomy";
 import { CollectionTable } from "./collection";
 import { CollectionPostTable } from "./collection-post";
+import { ReactionPackTable } from "./reaction-pack";
+import { ReactionPackUserTable } from "./reaction-pack-user";
+import { ReactionTable } from "./reaction";
+import { ReactionPostTable } from "./reaction-post";
 
 export interface Database {
   users: UserTable;
@@ -27,6 +31,10 @@ export interface Database {
   taxonomies: TaxonomyTable;
   collections: CollectionTable;
   collections_posts: CollectionPostTable;
+  reaction_packs: ReactionPackTable;
+  reaction_packs_users: ReactionPackUserTable;
+  reactions: ReactionTable;
+  reactions_posts: ReactionPostTable;
 }
 
 export const createDatabase = (dialect: Dialect) => {

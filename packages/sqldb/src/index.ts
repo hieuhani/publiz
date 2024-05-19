@@ -13,3 +13,7 @@ export * from "./comment";
 export * from "./taxonomy";
 export * from "./collection";
 export * from "./collection-post";
+export * from "./reaction-pack";
+export * from "./reaction-pack-user";
+export * from "./reaction";
+export * from "./reaction-post";

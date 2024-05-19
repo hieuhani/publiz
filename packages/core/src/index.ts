@@ -13,3 +13,5 @@ export * from "./meta-schema";
 export * from "./comment";
 export * from "./taxonomy";
 export * from "./collection";
+export * from "./reaction-pack";
+export * from "./reaction";
