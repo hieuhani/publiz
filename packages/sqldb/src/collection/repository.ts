@@ -1,9 +1,8 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
-import { CollectionTable } from "./model";
 
 export const createCollectionCrudRepository = (db: SqlDatabase) =>
-  createCrudRepository<CollectionTable>(db, "collections");
+  createCrudRepository(db, "collections");
 
 export const getCollectionByIdAndUserId = async (
   db: SqlDatabase,

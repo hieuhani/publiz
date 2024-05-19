@@ -1,9 +1,9 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
-import { TaxonomyRow, TaxonomyTable } from "./model";
+import { TaxonomyRow } from "./model";
 
 export const createTaxonomyCrudRepository = (db: SqlDatabase) =>
-  createCrudRepository<TaxonomyTable>(db, "taxonomies");
+  createCrudRepository(db, "taxonomies");
 
 export const findTaxonomiesByOrganizationId = async (
   db: SqlDatabase,

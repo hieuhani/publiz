@@ -1,9 +1,9 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
-import { OrganizationRow, OrganizationTable } from "./model";
+import { OrganizationRow } from "./model";
 
 export const createOrganizationCrudRepository = (db: SqlDatabase) =>
-  createCrudRepository<OrganizationTable>(db, "organizations");
+  createCrudRepository(db, "organizations");
 
 export const getOrganizationBySlug = (
   db: SqlDatabase,

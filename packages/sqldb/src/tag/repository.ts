@@ -1,9 +1,9 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
-import { TagRow, TagTable } from "./model";
+import { TagRow } from "./model";
 
 export const createTagCrudRepository = (db: SqlDatabase) =>
-  createCrudRepository<TagTable>(db, "tags");
+  createCrudRepository(db, "tags");
 
 export const getTagByIdAndUserId = async (
   db: SqlDatabase,

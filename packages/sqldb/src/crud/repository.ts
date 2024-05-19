@@ -1,58 +1,73 @@
 import { Database, SqlDatabase } from "../database";
-import { InsertResult, Insertable, Selectable, Updateable } from "kysely";
+import { Insertable, Updateable } from "kysely";
 
-type Table = keyof Database;
-export function createCrudRepository<R extends Database[Table]>(
+export const createCrudRepository = <T extends keyof Database>(
   db: SqlDatabase,
-  table: Table
-) {
+  table: T
+) => {
   return {
-    async findById(id: number): Promise<Selectable<R>> {
+    /**
+     * @deprecated use getById instead
+     * @param id
+     * @returns
+     */
+    findById: (id: number) => {
+      return db
+        .selectFrom(table)
+        .where("id", "=", id as any)
+        .selectAll()
+        .executeTakeFirstOrThrow();
+    },
+    getById: (id: number) => {
+      return db
+        .selectFrom(table)
+        .where("id", "=", id as any)
+        .selectAll()
+        .executeTakeFirstOrThrow();
+    },
+    async findByIds(ids: number[]) {
       return db
         .selectFrom(table)
         .selectAll()
-        .where("id", "=", id)
-        .executeTakeFirstOrThrow() as Selectable<R>;
+        .where("id", "in", ids as any)
+        .execute();
     },
-    async findByIds(ids: number[]): Promise<Selectable<R>[]> {
-      return db
-        .selectFrom(table)
-        .selectAll()
-        .where("id", "in", ids)
-        .execute() as Promise<Selectable<R>[]>;
-    },
-    async create(row: Insertable<Table>): Promise<Selectable<R>> {
+    async create(row: Insertable<T>) {
       const { id } = await db
         .insertInto(table)
-        .values(row)
+        .values(row as any)
         .returning("id")
         .executeTakeFirstOrThrow();
-      return this.findById(id) as Selectable<R>;
+      return this.getById(id);
     },
-
-    async createMulti(rows: Insertable<Table>[]) {
-      return await db.insertInto(table).values(rows).execute();
+    async createMulti(rows: Insertable<T>[]) {
+      return await db
+        .insertInto(table)
+        .values(rows as any)
+        .execute();
     },
-
-    async update(
-      id: number,
-      payload: Updateable<Table>
-    ): Promise<Selectable<R>> {
+    async update(id: number, payload: Updateable<T>) {
       await db
         .updateTable(table)
-        .set(payload)
-        .where("id", "=", id)
+        .set(payload as any)
+        .where("id", "=", id as any)
         .executeTakeFirstOrThrow();
-      return this.findById(id);
+      return this.getById(id);
     },
     async delete(id: number): Promise<void> {
-      await db.deleteFrom(table).where("id", "=", id).executeTakeFirstOrThrow();
+      await db
+        .deleteFrom(table)
+        .where("id", "=", id as any)
+        .executeTakeFirstOrThrow();
     },
     async bulkDelete(ids: number[]): Promise<void> {
-      await db.deleteFrom(table).where("id", "in", ids).execute();
+      await db
+        .deleteFrom(table)
+        .where("id", "in", ids as any)
+        .execute();
     },
     async find() {
       return db.selectFrom(table).selectAll().execute();
     },
   };
-}
+};

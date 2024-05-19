@@ -1,9 +1,9 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
-import { CollectionPostTable, CollectionPostRow } from "./model";
+import { CollectionPostRow } from "./model";
 
 export const createCollectionPostCrudRepository = (db: SqlDatabase) =>
-  createCrudRepository<CollectionPostTable>(db, "collections_posts");
+  createCrudRepository(db, "collections_posts");
 
 export const getCollectionPostByCollectionIdAndPostId = (
   db: SqlDatabase,

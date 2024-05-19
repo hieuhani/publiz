@@ -1,9 +1,9 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
-import { MetaSchemaRow, MetaSchemaTable } from "./model";
+import { MetaSchemaRow } from "./model";
 
 export const createMetaSchemaCrudRepository = (db: SqlDatabase) =>
-  createCrudRepository<MetaSchemaTable>(db, "meta_schemas");
+  createCrudRepository(db, "meta_schemas");
 
 export const findMetaSchemasByOrganizationId = (
   db: SqlDatabase,

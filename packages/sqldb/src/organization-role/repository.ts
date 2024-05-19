@@ -1,13 +1,9 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
-import {
-  OrganizationRoleRow,
-  OrganizationRoleTable,
-  UpdateableOrganizationRoleRow,
-} from "./model";
+import { OrganizationRoleRow, UpdateableOrganizationRoleRow } from "./model";
 
 export const createOrganizationRoleCrudRepository = (db: SqlDatabase) =>
-  createCrudRepository<OrganizationRoleTable>(db, "organization_roles");
+  createCrudRepository(db, "organization_roles");
 
 export const findOrganizationRolesByOrganizationId = (
   db: SqlDatabase,

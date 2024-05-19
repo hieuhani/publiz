@@ -1,9 +1,9 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
-import { OrganizationUserRow, OrganizationUserTable } from "./model";
+import { OrganizationUserRow } from "./model";
 
 export const createOrganizationUserCrudRepository = (db: SqlDatabase) =>
-  createCrudRepository<OrganizationUserTable>(db, "organizations_users");
+  createCrudRepository(db, "organizations_users");
 
 export const findOrganizationUsersByOrganizationId = (
   db: SqlDatabase,

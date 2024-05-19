@@ -1,10 +1,10 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
 import { JsonValue } from "../kysely";
-import { FileRow, FileTable } from "./model";
+import { FileRow } from "./model";
 
 export const createFileCrudRepository = (db: SqlDatabase) =>
-  createCrudRepository<FileTable>(db, "files");
+  createCrudRepository(db, "files");
 
 export async function findByModelNameAndModelId(
   db: SqlDatabase,

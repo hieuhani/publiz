@@ -7,7 +7,7 @@ import { ExpressionBuilder } from "kysely";
 import { executeWithCursorPagination } from "../pagination/cursor";
 
 export const createPostCrudRepository = (db: SqlDatabase) =>
-  createCrudRepository<PostTable>(db, "posts");
+  createCrudRepository(db, "posts");
 
 export const getPostByIdAndUserId = async (
   db: SqlDatabase,

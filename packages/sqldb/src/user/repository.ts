@@ -1,9 +1,9 @@
 import { createCrudRepository } from "../crud";
 import { SqlDatabase } from "../database";
-import { UserRow, UserTable } from "./model";
+import { UserRow } from "./model";
 
 export const createUserCrudRepository = (db: SqlDatabase) =>
-  createCrudRepository<UserTable>(db, "users");
+  createCrudRepository(db, "users");
 
 export const findUserByAuthId = (
   db: SqlDatabase,
