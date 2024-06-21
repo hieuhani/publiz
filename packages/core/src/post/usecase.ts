@@ -263,15 +263,13 @@ export const findPosts = async (
     size,
     reactionId,
   }: FindPostsPayload,
-  context: {
+  context?: {
     withOrganization?: boolean;
     moderationRequired?: boolean;
-  } = {
-    withOrganization: false,
-    moderationRequired: true,
   }
 ) => {
-  if (context.moderationRequired) {
+  const { withOrganization = false, moderationRequired = true } = context || {};
+  if (moderationRequired) {
     const approvedReaction = await getContentModerationApproveReaction(
       container.sqlDb
     );
@@ -294,6 +292,6 @@ export const findPosts = async (
       reactionId,
     },
     { after, before, size },
-    context
+    { withOrganization }
   );
 };

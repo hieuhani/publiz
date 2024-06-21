@@ -44,7 +44,6 @@ taxonomyRouter.get("/:identity/posts", async (c) => {
     const tagEntity = await getTagById(container, tag);
     tagId = tagEntity.id;
   }
-
   const {
     startCursor,
     endCursor,
