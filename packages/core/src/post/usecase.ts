@@ -6,8 +6,6 @@ import {
   getPostByIdAndOrganizationId,
   getPostById as getPostByIdRepo,
   findPostsByOrganizationId as findPostsByOrganizationIdRepo,
-  findMyPostsByUserIdAndMetaSchemaId as findMyPostsByUserIdAndMetaSchemaIdRRepo,
-  findMyPostsMetaSchemaId as findMyPostsMetaSchemaIdRepo,
   findPostsByMetaSchemaId as findPostsByMetaSchemaIdRepo,
   findPostsByTaxonomyId as findPostsByTaxonomyIdRepo,
   findPosts as findPostsRepo,
@@ -18,30 +16,29 @@ import {
 } from "@publiz/sqldb";
 import { Validator } from "@cfworker/json-schema";
 import { Container } from "../container";
-import { getMetaSchemaById } from "../meta-schema";
+import { getMetaSchemaByIdentifier } from "../meta-schema";
 import { AppError } from "../error";
 import { findTagsByIds } from "../tag";
 
 type CreatePostInput = InsertablePostRow & {
   metadata?: any;
-  metaSchemaId?: number;
   tagIds?: number[];
 };
 
 export const createPost = async (
   container: Container,
-  { metaSchemaId, tagIds = [], ...input }: CreatePostInput
+  { tagIds = [], ...input }: CreatePostInput
 ) => {
-  if (metaSchemaId) {
-    const metaSchema = await getMetaSchemaById(container, metaSchemaId);
+  if (input.metaSchema) {
+    const metaSchema = await getMetaSchemaByIdentifier(
+      container,
+      input.metaSchema
+    );
     const validator = new Validator(metaSchema.schema);
-
     const result = validator.validate(input.metadata);
-
     if (!result.valid) {
       throw new AppError(400_102, "Invalid metadata", result.errors);
     }
-    (input.metadata as any).metaSchemaId = metaSchemaId;
   }
 
   if (tagIds.length > 0) {
@@ -72,25 +69,6 @@ export const getMyPostById = async (
   return getPostByIdAndUserId(container.sqlDb, postId, userId);
 };
 
-export const getMyPostsByMetaSchemaId = async (
-  container: Container,
-  userId: number,
-  metaSchemaId: number
-) => {
-  return findMyPostsByUserIdAndMetaSchemaIdRRepo(
-    container.sqlDb,
-    userId,
-    metaSchemaId
-  );
-};
-
-export const getPostsByMetaSchemaId = async (
-  container: Container,
-  metaSchemaId: number
-) => {
-  return findMyPostsMetaSchemaIdRepo(container.sqlDb, metaSchemaId);
-};
-
 export const findPostsByUserId = async (
   container: Container,
   userId: number
@@ -108,16 +86,19 @@ export const getOrganizationPostById = async (
 
 type UpdatePostInput = UpdateablePostRow & {
   metadata?: any;
-  metaSchemaId?: number;
   tagIds?: number[];
 };
+
 export const updatePost = async (
   container: Container,
   id: number,
-  { metaSchemaId, tagIds, ...input }: UpdatePostInput
+  { tagIds, ...input }: UpdatePostInput
 ) => {
-  if (metaSchemaId) {
-    const metaSchema = await getMetaSchemaById(container, metaSchemaId);
+  if (input.metaSchema) {
+    const metaSchema = await getMetaSchemaByIdentifier(
+      container,
+      input.metaSchema
+    );
     const validator = new Validator(metaSchema.schema);
 
     const result = validator.validate(input.metadata);
@@ -125,7 +106,6 @@ export const updatePost = async (
     if (!result.valid) {
       throw new AppError(400_102, "Invalid metadata", result.errors);
     }
-    (input.metadata as any).metaSchemaId = metaSchemaId;
   }
   if (tagIds) {
     const postTags = await findPostTagsByPostId(container.sqlDb, id);

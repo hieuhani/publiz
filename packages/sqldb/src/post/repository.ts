@@ -2,10 +2,8 @@ import { jsonArrayFrom, jsonObjectFrom } from "kysely/helpers/postgres";
 import { createCrudRepository } from "../crud";
 import { Database, SqlDatabase } from "../database";
 import { JsonValue } from "../kysely";
-import { PostTable } from "./model";
 import { ExpressionBuilder } from "kysely";
 import { executeWithCursorPagination } from "../pagination/cursor";
-import { getContentModerationApproveReaction } from "../reaction";
 
 export const createPostCrudRepository = (db: SqlDatabase) =>
   createCrudRepository(db, "posts");
@@ -55,32 +53,6 @@ export const findPostsByOrganizationId = async (
     .selectAll()
     .select(withTags)
     .where("organizationId", "=", organizationId)
-    .execute();
-};
-
-export const findMyPostsByUserIdAndMetaSchemaId = async (
-  db: SqlDatabase,
-  userId: number,
-  metaSchemaId: number
-) => {
-  return db
-    .selectFrom("posts")
-    .selectAll()
-    .select(withTags)
-    .where("authorId", "=", userId)
-    .where("metadata", "@>", new JsonValue({ metaSchemaId }))
-    .execute();
-};
-
-export const findMyPostsMetaSchemaId = async (
-  db: SqlDatabase,
-  metaSchemaId: number
-) => {
-  return db
-    .selectFrom("posts")
-    .selectAll()
-    .select(withTags)
-    .where("metadata", "@>", new JsonValue({ metaSchemaId }))
     .execute();
 };
 

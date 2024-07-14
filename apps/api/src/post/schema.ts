@@ -6,7 +6,7 @@ export const createPostSchema = z.object({
   contentJson: z.object({}).passthrough().optional(),
   status: z.enum(["DRAFT", "PUBLISHED"]),
   metadata: z.object({}).passthrough().optional(),
-  metaSchemaId: z.number().optional(),
+  metaSchema: z.string().optional(),
   tagIds: z.array(z.number()).optional(),
 });
 

@@ -7,6 +7,7 @@ export type PostTable = {
   contentJson: any;
   parentId?: number;
   authorId: number;
+  metaSchema?: string;
   organizationId?: number;
   type: "REVISION" | "POST";
   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
