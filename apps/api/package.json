@@ -7,7 +7,7 @@
     "@hono/zod-validator": "^0.1.11",
     "@publiz/core": "workspace:0.0.0",
     "@publiz/dbmigration": "workspace:0.0.0",
-    "hono": "^3.12.0",
+    "hono": "^4.4.13",
     "kysely": "^0.27.1",
     "pg": "^8.11.5",
     "zod": "^3.22.4"
