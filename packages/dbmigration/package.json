@@ -7,7 +7,8 @@
     "build": "unbuild"
   },
   "dependencies": {
-    "kysely": "^0.27.1"
+    "kysely": "^0.27.1",
+    "sqids": "^0.3.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.6",

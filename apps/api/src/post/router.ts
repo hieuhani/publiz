@@ -10,6 +10,6 @@ postRouter.get("/:id", async (c) => {
   const container = c.get("container");
   const id = c.req.param("id");
   const context = parseContext(c.req.query("context"));
-  const post = await getPostById(container, +id, context);
+  const post = await getPostById(container, id, context);
   return c.json({ data: post });
 });

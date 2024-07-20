@@ -2,7 +2,6 @@ import { Hono } from "hono";
 import { type AppEnv } from "../global";
 import {
   getOrganizations,
-  findPostsByOrganizationId,
   getOrganizationById,
   findOrganizationRelatedTags,
   AppError,

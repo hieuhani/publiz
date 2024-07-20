@@ -5,25 +5,38 @@ import {
   UpdateablePostRow,
   getPostByIdAndOrganizationId,
   getPostById as getPostByIdRepo,
-  findPostsByOrganizationId as findPostsByOrganizationIdRepo,
-  findPostsByMetaSchemaId as findPostsByMetaSchemaIdRepo,
-  findPostsByTaxonomyId as findPostsByTaxonomyIdRepo,
   findPosts as findPostsRepo,
   createPostTagCrudRepository,
   findPostTagsByPostId,
   getPostsByUserId as getPostsByUserIdRepo,
   getContentModerationApproveReaction,
 } from "@publiz/sqldb";
+import { customAlphabet } from "nanoid";
 import { Validator } from "@cfworker/json-schema";
 import { Container } from "../container";
 import { getMetaSchemaByIdentifier } from "../meta-schema";
 import { AppError } from "../error";
 import { findTagsByIds } from "../tag";
+import { makePublicEntity } from "../lib/public-id";
 
-type CreatePostInput = InsertablePostRow & {
+type CreatePostInput = Omit<InsertablePostRow, "publicId"> & {
   metadata?: any;
   tagIds?: number[];
 };
+
+const PUBLIC_ID_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz";
+const PUBLIC_ID_LENGTH = 12;
+const nanoid = customAlphabet(PUBLIC_ID_ALPHABET, PUBLIC_ID_LENGTH);
+function generateUniqueIds(count: number): string[] {
+  const ids: string[] = [];
+  while (ids.length < count) {
+    const id = nanoid();
+    if (!ids.includes(id)) {
+      ids.push(id);
+    }
+  }
+  return ids;
+}
 
 export const createPost = async (
   container: Container,
@@ -58,7 +71,11 @@ export const createPost = async (
     }
   }
 
-  return createPostCrudRepository(container.sqlDb).create(input);
+  const post = await createPostCrudRepository(container.sqlDb).create({
+    ...input,
+    publicId: nanoid(),
+  });
+  return makePublicEntity(post);
 };
 
 export const getMyPostById = async (
@@ -66,14 +83,16 @@ export const getMyPostById = async (
   userId: number,
   postId: number
 ) => {
-  return getPostByIdAndUserId(container.sqlDb, postId, userId);
+  const post = await getPostByIdAndUserId(container.sqlDb, postId, userId);
+  return makePublicEntity(post);
 };
 
 export const findPostsByUserId = async (
   container: Container,
   userId: number
 ) => {
-  return getPostsByUserIdRepo(container.sqlDb, userId);
+  const posts = await getPostsByUserIdRepo(container.sqlDb, userId);
+  return posts.map(makePublicEntity);
 };
 
 export const getOrganizationPostById = async (
@@ -81,7 +100,12 @@ export const getOrganizationPostById = async (
   organizationId: number,
   postId: number
 ) => {
-  return getPostByIdAndOrganizationId(container.sqlDb, postId, organizationId);
+  const post = await getPostByIdAndOrganizationId(
+    container.sqlDb,
+    postId,
+    organizationId
+  );
+  return makePublicEntity(post);
 };
 
 type UpdatePostInput = UpdateablePostRow & {
@@ -139,81 +163,46 @@ export const updatePost = async (
           await createPostTagCrudRepository(trx).bulkDelete(toDeletePostTagIds);
         }
       }
-      return createPostCrudRepository(trx).update(id, input);
+      const post = await createPostCrudRepository(trx).update(id, input);
+      return makePublicEntity(post);
     });
   }
-  return createPostCrudRepository(container.sqlDb).update(id, input);
+  const post = await createPostCrudRepository(container.sqlDb).update(
+    id,
+    input
+  );
+  return makePublicEntity(post);
 };
 
 export const getPostById = async (
   container: Container,
-  id: number,
+  id: number | string,
   context?: {
     withOrganization?: boolean;
   }
 ) => {
-  return getPostByIdRepo(container.sqlDb, id, context);
-};
-
-export const findPostsByOrganizationId = async (
-  container: Container,
-  organizationId: number
-) => {
-  return findPostsByOrganizationIdRepo(container.sqlDb, organizationId);
-};
-
-type FindPostsByMetaSchemaIdPayload = {
-  metaSchemaId: number;
-  after?: string;
-  before?: string;
-  size?: number;
-};
-export const findPostsByMetaSchemaId = async (
-  container: Container,
-  { metaSchemaId, after, before, size }: FindPostsByMetaSchemaIdPayload
-) => {
-  return findPostsByMetaSchemaIdRepo(
-    container.sqlDb,
-    metaSchemaId,
-    after,
-    before,
-    size
-  );
+  console.log(id);
+  const post = await getPostByIdRepo(container.sqlDb, id, context);
+  return makePublicEntity(post);
 };
 
 export const bulkCreatePosts = async (
   container: Container,
-  records: InsertablePostRow[]
+  records: Omit<InsertablePostRow, "publicId">[]
 ) => {
+  const uniquePublicIds = generateUniqueIds(records.length);
   return container.sqlDb.transaction().execute(async (trx) => {
-    return createPostCrudRepository(trx).createMulti(records);
+    return createPostCrudRepository(trx).createMulti(
+      records.map((record, index) => ({
+        ...record,
+        publicId: uniquePublicIds[index],
+      }))
+    );
   });
 };
 
 export const deletePost = async (container: Container, id: number) => {
   return createPostCrudRepository(container.sqlDb).delete(id);
-};
-
-type FindPostsByTaxonomyIdPayload = {
-  taxonomyId: number;
-  after?: string;
-  before?: string;
-  size?: number;
-  tag?: string;
-};
-
-export const findPostsByTaxonomyId = async (
-  container: Container,
-  { taxonomyId, after, before, size, tag }: FindPostsByTaxonomyIdPayload
-) => {
-  return findPostsByTaxonomyIdRepo(
-    container.sqlDb,
-    taxonomyId,
-    tag,
-    after,
-    before,
-    size
-  );
 };
 
 type FindPostsPayload = {
@@ -260,7 +249,7 @@ export const findPosts = async (
     }
     reactionId = approvedReaction.id;
   }
-  return findPostsRepo(
+  const paginatedPosts = await findPostsRepo(
     container.sqlDb,
     {
       organizationId,
@@ -274,4 +263,9 @@ export const findPosts = async (
     { after, before, size },
     { withOrganization }
   );
+
+  return {
+    ...paginatedPosts,
+    rows: paginatedPosts.rows.map(makePublicEntity),
+  };
 };

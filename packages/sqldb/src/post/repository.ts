@@ -44,98 +44,26 @@ export const getPostByIdAndOrganizationId = async (
     .executeTakeFirstOrThrow();
 };
 
-export const findPostsByOrganizationId = async (
-  db: SqlDatabase,
-  organizationId: number
-) => {
-  return db
-    .selectFrom("posts")
-    .selectAll()
-    .select(withTags)
-    .where("organizationId", "=", organizationId)
-    .execute();
-};
-
 export const getPostById = async (
   db: SqlDatabase,
-  postId: number,
+  postId: number | string,
   context: {
     withOrganization?: boolean;
   } = {
     withOrganization: false,
   }
 ) => {
-  let query = db
-    .selectFrom("posts")
-    .selectAll()
-    .select(withTags)
-    .where("id", "=", postId);
+  let query = db.selectFrom("posts").selectAll().select(withTags);
+  if (Number.isInteger(postId)) {
+    query = query.where("id", "=", +postId);
+  } else {
+    query = query.where("publicId", "=", String(postId));
+  }
   if (context.withOrganization) {
     query = query.select(withOrganization);
   }
 
   return query.executeTakeFirstOrThrow();
-};
-
-export const findPostsByMetaSchemaId = async (
-  db: SqlDatabase,
-  metaSchemaId: number,
-  after?: string,
-  before?: string,
-  size: number = 10
-) => {
-  const query = db
-    .selectFrom("posts")
-    .selectAll()
-    .select(withTags)
-    .where("metadata", "@>", new JsonValue({ metaSchemaId }));
-
-  return executeWithCursorPagination(query, {
-    perPage: size,
-    after,
-    before,
-    fields: [
-      { expression: "id", direction: "asc" },
-      { expression: "updatedAt", direction: "desc" },
-    ],
-    parseCursor: (cursor) => ({
-      id: parseInt(cursor.id, 10),
-      updatedAt: cursor.updatedAt,
-    }),
-  });
-};
-
-export const findPostsByTaxonomyId = async (
-  db: SqlDatabase,
-  taxonomyId: number,
-  tag?: string,
-  after?: string,
-  before?: string,
-  size: number = 10
-) => {
-  let query = db
-    .selectFrom("posts")
-    .selectAll("posts")
-    .innerJoin("posts_tags", "posts_tags.postId", "posts.id")
-    .innerJoin("tags", "tags.id", "posts_tags.tagId")
-    .groupBy("posts.id")
-    .where("tags.taxonomyId", "=", taxonomyId);
-  if (tag) {
-    query = query.where("tags.slug", "=", tag);
-  }
-  return executeWithCursorPagination(query, {
-    perPage: size,
-    after,
-    before,
-    fields: [
-      { expression: "posts.id", direction: "asc" },
-      { expression: "posts.updatedAt", direction: "desc" },
-    ],
-    parseCursor: (cursor) => ({
-      id: parseInt(cursor.id, 10),
-      updatedAt: cursor.updatedAt,
-    }),
-  });
 };
 
 export const findPosts = async (

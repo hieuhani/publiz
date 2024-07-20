@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { type AppEnv } from "../global";
 import { z } from "zod";
-import { bulkCreatePosts, findPostsByMetaSchemaId } from "@publiz/core";
+import { bulkCreatePosts, findPosts } from "@publiz/core";
 import { zValidator } from "@hono/zod-validator";
 
 export const adminPostRouter = new Hono<AppEnv>();
@@ -40,7 +40,7 @@ adminPostRouter.get("/", async (c) => {
     hasNextPage,
     hasPrevPage,
     rows: data,
-  } = await findPostsByMetaSchemaId(container, {
+  } = await findPosts(container, {
     metaSchemaId: metaSchemaId ? +metaSchemaId : 0,
     size: pageSize ? +pageSize : 10,
   });
