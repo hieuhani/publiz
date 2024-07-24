@@ -40,6 +40,7 @@ import { createPostSchema, updatePostSchema } from "../post";
 import { z } from "zod";
 import { slugify } from "../lib/slugify";
 import { normalizeMetadata } from "../lib/object";
+import { getOrganizationIdFromCache } from "./lib";
 
 export const myOrganizationRouter = new Hono<AppEnv>();
 
@@ -62,10 +63,15 @@ myOrganizationRouter.get(
   useCurrentAppUser({ required: true }),
   useCheckOrganizationUser(),
   async (c) => {
-    const organizationId = c.req.param("organization_id");
     const container = c.get("container");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
+
     const organizationRoles = await findOrganizationRoles(container, {
-      organizationId: +organizationId,
+      organizationId: organizationId,
     });
     return c.json({ data: organizationRoles });
   }
@@ -76,11 +82,15 @@ myOrganizationRouter.get(
   useCurrentAppUser({ required: true }),
   useCheckOrganizationUser(),
   async (c) => {
-    const organizationId = c.req.param("organization_id");
     const container = c.get("container");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const organizationUsers = await findOrganizationWorkingUsers(
       container,
-      +organizationId
+      organizationId
     );
     return c.json({ data: organizationUsers });
   }
@@ -90,10 +100,14 @@ myOrganizationRouter.get(
   "/:organization_id/meta_schemas",
   useCurrentAppUser({ required: true }),
   async (c) => {
-    const organizationId = c.req.param("organization_id");
     const container = c.get("container");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const metaSchemas = await findOrganizationMetaSchemas(container, {
-      organizationId: +organizationId,
+      organizationId: organizationId,
     });
     return c.json({ data: metaSchemas });
   }
@@ -103,11 +117,15 @@ myOrganizationRouter.get(
   "/:organization_id/applicable_meta_schemas",
   useCurrentAppUser({ required: true }),
   async (c) => {
-    const organizationId = c.req.param("organization_id");
     const container = c.get("container");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const metaSchemas = await findOrganizationAvailableMetaSchemas(
       container,
-      +organizationId
+      organizationId
     );
     return c.json({ data: metaSchemas });
   }
@@ -117,11 +135,15 @@ myOrganizationRouter.get(
   "/:organization_id/applicable_tags",
   useCurrentAppUser({ required: true }),
   async (c) => {
-    const organizationId = c.req.param("organization_id");
     const container = c.get("container");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const metaSchemas = await findOrganizationAvailableTags(
       container,
-      +organizationId
+      organizationId
     );
     return c.json({ data: metaSchemas });
   }
@@ -135,12 +157,16 @@ myOrganizationRouter.post(
   async (c) => {
     const payload = c.req.valid("json");
     const currentUser = c.get("currentAppUser");
-    const organizationId = c.req.param("organization_id");
     const container = c.get("container");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const post = await createPost(container, {
       ...payload,
       authorId: currentUser.id,
-      organizationId: +organizationId,
+      organizationId,
       type: "POST",
     });
     return c.json({ data: post });
@@ -156,13 +182,17 @@ myOrganizationRouter.put(
     const payload = c.req.valid("json");
     const id = c.req.param("id");
     const container = c.get("container");
-    const organizationId = c.req.param("organization_id");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const myPost = await getOrganizationPostById(
       container,
-      +organizationId,
+      organizationId,
       +id
     );
-    const updatedPost = await updatePost(container, myPost.id, payload);
+    const updatedPost = await updatePost(container, +myPost.id, payload);
     return c.json({ data: updatedPost });
   }
 );
@@ -171,7 +201,7 @@ myOrganizationRouter.delete(
   "/:organization_id/posts/:id",
   zValidator("json", createPostSchema),
   useCurrentAppUser({ required: true }),
-  useCheckOrganizationUser(),
+  useCheckOrganizationUser("Administrator"),
   async (c) => {
     const id = c.req.param("id");
     const container = c.get("container");
@@ -187,8 +217,12 @@ myOrganizationRouter.get(
   async (c) => {
     const id = c.req.param("id");
     const container = c.get("container");
-    const organizationId = c.req.param("organization_id");
-    const post = await getOrganizationPostById(container, +organizationId, +id);
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
+    const post = await getOrganizationPostById(container, organizationId, +id);
     return c.json({ data: post });
   }
 );
@@ -208,7 +242,7 @@ myOrganizationRouter.get(
       +id
     );
 
-    const comments = await getPostComments(container, myPost.id);
+    const comments = await getPostComments(container, +myPost.id);
 
     return c.json({ data: comments });
   }
@@ -227,8 +261,12 @@ myOrganizationRouter.patch(
   useCheckOrganizationUser("Administrator"),
   async (c) => {
     const currentUser = c.get("currentAppUser");
-    const organizationId = c.req.param("organization_id");
     const container = c.get("container");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const { file, metadata: formMetadata, type } = c.req.valid("form");
     if (!file.type.startsWith("image/")) {
       throw new Error("File must be an image file");
@@ -283,7 +321,7 @@ myOrganizationRouter.patch(
     };
     const updatedOrganization = await patchOrganizationMetadataById(
       container,
-      +organizationId,
+      organizationId,
       { [type]: imageMeta }
     );
 
@@ -303,12 +341,16 @@ myOrganizationRouter.patch(
   useCheckOrganizationUser("Administrator"),
   async (c) => {
     const payload = c.req.valid("json");
-    const organizationId = c.req.param("organization_id");
     const container = c.get("container");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
 
     const updatedOrganization = await patchOrganizationMetadataById(
       container,
-      +organizationId,
+      organizationId,
       payload.metadata,
       payload.metaSchemaId
     );
@@ -323,8 +365,12 @@ myOrganizationRouter.get(
   useCheckOrganizationUser(),
   async (c) => {
     const container = c.get("container");
-    const organizationId = c.req.param("organization_id");
-    const tags = await findTagsByOrganizationId(container, +organizationId);
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
+    const tags = await findTagsByOrganizationId(container, organizationId);
     return c.json({ data: tags });
   }
 );
@@ -341,14 +387,19 @@ myOrganizationRouter.post(
   useCheckOrganizationUser("Administrator"),
   async (c) => {
     const payload = c.req.valid("json");
-    const container = c.get("container");
     let parentTag = undefined;
+    const container = c.get("container");
+
     if (payload.parentId) {
       parentTag = await getTagById(container, payload.parentId);
     }
 
     const currentUser = c.get("currentAppUser");
-    const organizationId = c.req.param("organization_id");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const tag = await createTag(container, {
       ...payload,
       parentId: parentTag?.id,
@@ -368,7 +419,11 @@ myOrganizationRouter.delete(
   useCheckOrganizationUser("Administrator"),
   async (c) => {
     const container = c.get("container");
-    const organizationId = c.req.param("organization_id");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const id = c.req.param("id");
     const organizationTag = await getOrganizationTagById(
       container,
@@ -392,7 +447,11 @@ myOrganizationRouter.put(
   useCheckOrganizationUser("Administrator"),
   async (c) => {
     const container = c.get("container");
-    const organizationId = c.req.param("organization_id");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const id = c.req.param("id");
     const payload = c.req.valid("json");
     const organizationTag = await getOrganizationTagById(
@@ -418,7 +477,11 @@ myOrganizationRouter.get(
   useCheckOrganizationUser(),
   async (c) => {
     const container = c.get("container");
-    const organizationId = c.req.param("organization_id");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const tags = await findTaxonomiesByOrganizationId(
       container,
       +organizationId
@@ -442,7 +505,11 @@ myOrganizationRouter.post(
     const container = c.get("container");
 
     const currentUser = c.get("currentAppUser");
-    const organizationId = c.req.param("organization_id");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const taxonomy = await createTaxonomy(container, {
       ...payload,
       type: "DEFAULT",
@@ -459,11 +526,15 @@ myOrganizationRouter.delete(
   useCheckOrganizationUser("Administrator"),
   async (c) => {
     const container = c.get("container");
-    const organizationId = c.req.param("organization_id");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const id = c.req.param("id");
     const organizationTag = await getOrganizationTaxonomyById(
       container,
-      +organizationId,
+      organizationId,
       +id
     );
     await deleteTaxonomyById(container, organizationTag.id);
@@ -478,12 +549,16 @@ myOrganizationRouter.put(
   useCheckOrganizationUser("Administrator"),
   async (c) => {
     const container = c.get("container");
-    const organizationId = c.req.param("organization_id");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const id = c.req.param("id");
     const payload = c.req.valid("json");
     const organizationTag = await getOrganizationTaxonomyById(
       container,
-      +organizationId,
+      organizationId,
       +id
     );
 
@@ -511,11 +586,15 @@ myOrganizationRouter.post(
   async (c) => {
     const payload = c.req.valid("json");
     const container = c.get("container");
-    const organizationId = c.req.param("organization_id");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const metaSchema = await createMetaSchema(container, {
       ...payload,
       type: "DEFAULT",
-      organizationId: +organizationId,
+      organizationId,
     });
     return c.json({ data: metaSchema }, 201);
   }
@@ -526,13 +605,17 @@ myOrganizationRouter.put(
   useCurrentAppUser({ required: true }),
   zValidator("json", createMetaSchemaSchema),
   async (c) => {
-    const container = c.get("container");
     const id = c.req.param("id");
     const payload = c.req.valid("json");
-    const organizationId = c.req.param("organization_id");
+    const container = c.get("container");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
     const metaSchema = await getOrganizationMetaSchemaById(
       container,
-      +organizationId,
+      organizationId,
       +id
     );
     const updatedMetaSchema = await updateMetaSchema(

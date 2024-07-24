@@ -18,6 +18,19 @@ type GetOrganizationBySlug = {
   slug: string;
 };
 
+export const getOrganizationId = async (
+  container: Container,
+  idOrSlug: string | number
+) => {
+  if (Number.isInteger(Number(idOrSlug))) {
+    return +idOrSlug;
+  }
+  const organization = await getOrganizationBySlug(container, {
+    slug: String(idOrSlug),
+  });
+  return organization.id;
+};
+
 export const getOrganizationBySlug = async (
   container: Container,
   { slug }: GetOrganizationBySlug

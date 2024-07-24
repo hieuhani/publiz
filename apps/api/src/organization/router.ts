@@ -9,6 +9,7 @@ import {
   findPosts,
 } from "@publiz/core";
 import { parseContext } from "../lib/object";
+import { getOrganizationIdFromCache } from "./lib";
 
 export const organizationRouter = new Hono<AppEnv>();
 
@@ -19,9 +20,13 @@ organizationRouter.get("/", async (c) => {
 });
 
 organizationRouter.get("/:organization_id/posts", async (c) => {
-  const id = c.req.param("organization_id");
   const container = c.get("container");
-  const organization = await getOrganizationById(container, id);
+
+  const organizationId = await getOrganizationIdFromCache(
+    container,
+    c.req.param("organization_id")
+  );
+  const organization = await getOrganizationById(container, organizationId);
   const before = c.req.query("before");
   const after = c.req.query("after");
   const pageSize = c.req.query("pageSize");
@@ -73,9 +78,13 @@ organizationRouter.get("/:organization_id/posts", async (c) => {
 });
 
 organizationRouter.get("/:organization_id", async (c) => {
-  const id = c.req.param("organization_id");
   const container = c.get("container");
-  const organization = await getOrganizationById(container, id);
+
+  const organizationId = await getOrganizationIdFromCache(
+    container,
+    c.req.param("organization_id")
+  );
+  const organization = await getOrganizationById(container, organizationId);
   return c.json({ data: organization });
 });
 
