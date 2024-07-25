@@ -7,6 +7,7 @@ import {
   AppError,
   getMetaSchemaByIdentifier,
   findPosts,
+  getOrganizationMetaSchemaByIdentifier,
 } from "@publiz/core";
 import { parseContext } from "../lib/object";
 import { getOrganizationIdFromCache } from "./lib";
@@ -94,3 +95,23 @@ organizationRouter.get("/:organization_id_or_slug/tags", async (c) => {
   const tags = await findOrganizationRelatedTags(container, idOrSlug);
   return c.json({ data: tags });
 });
+
+organizationRouter.get(
+  "/:organization_id/meta_schemas/:identifier",
+  async (c) => {
+    const container = c.get("container");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
+    const identifier = c.req.param("identifier");
+
+    const metaSchema = await getOrganizationMetaSchemaByIdentifier(
+      container,
+      organizationId,
+      identifier
+    );
+    return c.json({ data: metaSchema });
+  }
+);

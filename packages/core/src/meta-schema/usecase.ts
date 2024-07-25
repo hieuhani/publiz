@@ -125,6 +125,22 @@ export const getMetaSchemaByIdentifier = async (
     .executeTakeFirstOrThrow();
 };
 
+export const getOrganizationMetaSchemaByIdentifier = async (
+  container: Container,
+  organizationId: number,
+  identifier: string
+): Promise<MetaSchema> => {
+  const { name, version } = extractMetaSchemaIdentifier(identifier);
+
+  return container.sqlDb
+    .selectFrom("meta_schemas")
+    .selectAll()
+    .where("organizationId", "=", organizationId)
+    .where("name", "=", name)
+    .where("version", "=", version)
+    .executeTakeFirstOrThrow();
+};
+
 export const getOrganizationMetaSchemaById = async (
   container: Container,
   organizationId: number,
