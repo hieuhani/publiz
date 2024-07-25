@@ -576,6 +576,7 @@ const createMetaSchemaSchema = z.object({
   schema: z.object({}).passthrough(),
   target: z.enum(["post", "user", "organization", "file", "comment"]),
   version: z.number(),
+  metadata: z.object({}).passthrough(),
 });
 
 myOrganizationRouter.post(

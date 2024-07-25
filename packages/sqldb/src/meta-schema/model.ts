@@ -8,6 +8,7 @@ export type MetaSchemaTable = {
   version: number;
   target: string;
   type: MetaSchemaType;
+  metadata: any;
   isDefault?: boolean;
   organizationId?: number;
 };
