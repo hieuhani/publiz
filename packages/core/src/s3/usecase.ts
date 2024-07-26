@@ -1,5 +1,6 @@
 import {
   GetBucketPolicyStatusCommand,
+  GetObjectCommand,
   PutObjectCommand,
   PutObjectCommandInput,
 } from "@aws-sdk/client-s3";
@@ -38,7 +39,7 @@ export const getPresignedUrl = async (
   container: Container,
   { bucket, key, expires }: GetPresignedUrlInput
 ) => {
-  const command = new PutObjectCommand({ Bucket: bucket, Key: key });
+  const command = new GetObjectCommand({ Bucket: bucket, Key: key });
   return getSignedUrl(container.s3, command, { expiresIn: expires });
 };
 
