@@ -12,6 +12,7 @@ import {
 import { useCurrentAppUser } from "../user";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
+import { getPostIdFromCache } from "./lib";
 
 export const moderatingPostRouter = new Hono<AppEnv>();
 
@@ -77,7 +78,7 @@ export const createPostReaction = z.object({
 });
 
 moderatingPostRouter.post(
-  "/:id/reactions",
+  "/:post_id/reactions",
   zValidator("json", createPostReaction),
   useCurrentAppUser({ required: true }),
   async (c) => {
@@ -85,9 +86,9 @@ moderatingPostRouter.post(
     const currentAppUser = c.get("currentAppUser");
     const payload = c.req.valid("json");
     await checkUserHasContentModerationPack(container, currentAppUser.id);
-    const id = c.req.param("id");
+    const postId = await getPostIdFromCache(container, c.req.param("post_id"));
     const reactionPost = await createReactionPostCrudUseCase(container).create({
-      postId: +id,
+      postId,
       userId: currentAppUser.id,
       reactionId: payload.reactionId,
     });

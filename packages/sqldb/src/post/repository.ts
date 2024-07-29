@@ -4,9 +4,21 @@ import { Database, SqlDatabase } from "../database";
 import { JsonValue } from "../kysely";
 import { ExpressionBuilder } from "kysely";
 import { executeWithCursorPagination } from "../pagination/cursor";
+import { PostRow } from "./model";
 
 export const createPostCrudRepository = (db: SqlDatabase) =>
   createCrudRepository(db, "posts");
+
+export const getPostByPublicId = (
+  db: SqlDatabase,
+  publicId: string
+): Promise<PostRow> => {
+  return db
+    .selectFrom("posts")
+    .selectAll()
+    .where("publicId", "=", publicId)
+    .executeTakeFirstOrThrow();
+};
 
 export const getPostByIdAndUserId = async (
   db: SqlDatabase,

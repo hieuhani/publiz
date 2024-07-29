@@ -9,6 +9,7 @@ import {
   findPostsByUserId,
 } from "@publiz/core";
 import { createPostSchema, updatePostSchema } from "./schema";
+import { getPostIdFromCache } from "./lib";
 
 export const myPostRouter = new Hono<AppEnv>();
 
@@ -30,27 +31,32 @@ myPostRouter.post(
 );
 
 myPostRouter.put(
-  "/:id",
+  "/:post_id",
   useCurrentAppUser({ required: true }),
   zValidator("json", updatePostSchema),
   async (c) => {
     const currentUser = c.get("currentAppUser");
     const container = c.get("container");
     const payload = c.req.valid("json");
-    const id = c.req.param("id");
-    const myPost = await getMyPostById(container, currentUser.id, +id);
-    const updatedPost = await updatePost(container, myPost.id, payload);
+    const postId = await getPostIdFromCache(container, c.req.param("post_id"));
+    // verify that the post belongs to the current user
+    await getMyPostById(container, currentUser.id, postId);
+    const updatedPost = await updatePost(container, postId, payload);
     return c.json({ data: updatedPost });
   }
 );
 
-myPostRouter.get("/:id", useCurrentAppUser({ required: true }), async (c) => {
-  const container = c.get("container");
-  const id = c.req.param("id");
-  const currentUser = c.get("currentAppUser");
-  const post = await getMyPostById(container, currentUser.id, +id);
-  return c.json({ data: post });
-});
+myPostRouter.get(
+  "/:post_id",
+  useCurrentAppUser({ required: true }),
+  async (c) => {
+    const container = c.get("container");
+    const postId = await getPostIdFromCache(container, c.req.param("post_id"));
+    const currentUser = c.get("currentAppUser");
+    const post = await getMyPostById(container, currentUser.id, postId);
+    return c.json({ data: post });
+  }
+);
 
 myPostRouter.get("/", useCurrentAppUser({ required: true }), async (c) => {
   const container = c.get("container");

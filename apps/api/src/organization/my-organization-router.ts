@@ -41,6 +41,7 @@ import { z } from "zod";
 import { slugify } from "../lib/slugify";
 import { normalizeMetadata } from "../lib/object";
 import { getOrganizationIdFromCache } from "./lib";
+import { getPostIdFromCache } from "../post/lib";
 
 export const myOrganizationRouter = new Hono<AppEnv>();
 
@@ -174,15 +175,14 @@ myOrganizationRouter.post(
 );
 
 myOrganizationRouter.put(
-  "/:organization_id/posts/:id",
+  "/:organization_id/posts/:post_id",
   zValidator("json", updatePostSchema),
   useCurrentAppUser({ required: true }),
   useCheckOrganizationUser(),
   async (c) => {
     const payload = c.req.valid("json");
-    const id = c.req.param("id");
     const container = c.get("container");
-
+    const postId = await getPostIdFromCache(container, c.req.param("post_id"));
     const organizationId = await getOrganizationIdFromCache(
       container,
       c.req.param("organization_id")
@@ -190,7 +190,7 @@ myOrganizationRouter.put(
     const myPost = await getOrganizationPostById(
       container,
       organizationId,
-      +id
+      postId
     );
     const updatedPost = await updatePost(container, +myPost.id, payload);
     return c.json({ data: updatedPost });
@@ -198,48 +198,53 @@ myOrganizationRouter.put(
 );
 
 myOrganizationRouter.delete(
-  "/:organization_id/posts/:id",
+  "/:organization_id/posts/:post_id",
   zValidator("json", createPostSchema),
   useCurrentAppUser({ required: true }),
   useCheckOrganizationUser("Administrator"),
   async (c) => {
-    const id = c.req.param("id");
     const container = c.get("container");
-    await deletePost(container, +id);
+    const postId = await getPostIdFromCache(container, c.req.param("post_id"));
+    await deletePost(container, postId);
     return c.body(null, 204);
   }
 );
 
 myOrganizationRouter.get(
-  "/:organization_id/posts/:id",
+  "/:organization_id/posts/:post_id",
   useCurrentAppUser({ required: true }),
   useCheckOrganizationUser(),
   async (c) => {
-    const id = c.req.param("id");
     const container = c.get("container");
-
+    const postId = await getPostIdFromCache(container, c.req.param("post_id"));
     const organizationId = await getOrganizationIdFromCache(
       container,
       c.req.param("organization_id")
     );
-    const post = await getOrganizationPostById(container, organizationId, +id);
+    const post = await getOrganizationPostById(
+      container,
+      organizationId,
+      postId
+    );
     return c.json({ data: post });
   }
 );
 
 myOrganizationRouter.get(
-  "/:organization_id/posts/:id/comments",
+  "/:organization_id/posts/:post_id/comments",
   useCurrentAppUser({ required: true }),
   useCheckOrganizationUser(),
   async (c) => {
-    const currentUser = c.get("currentAppUser");
-    const id = c.req.param("id");
     const container = c.get("container");
-    // this function guarantees that this post is from the organization
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
+    const postId = await getPostIdFromCache(container, c.req.param("post_id"));
     const myPost = await getOrganizationPostById(
       container,
-      currentUser.id,
-      +id
+      organizationId,
+      postId
     );
 
     const comments = await getPostComments(container, +myPost.id);

@@ -10,6 +10,7 @@ import {
   findPostTagsByPostId,
   getPostsByUserId as getPostsByUserIdRepo,
   getContentModerationApproveReaction,
+  getPostByPublicId,
 } from "@publiz/sqldb";
 import { customAlphabet } from "nanoid";
 import { Validator } from "@cfworker/json-schema";
@@ -181,7 +182,6 @@ export const getPostById = async (
     withOrganization?: boolean;
   }
 ) => {
-  console.log(id);
   const post = await getPostByIdRepo(container.sqlDb, id, context);
   return makePublicEntity(post);
 };
@@ -268,4 +268,15 @@ export const findPosts = async (
     ...paginatedPosts,
     rows: paginatedPosts.rows.map(makePublicEntity),
   };
+};
+
+export const getPostId = async (
+  container: Container,
+  idOrSlug: string | number
+) => {
+  if (Number.isInteger(Number(idOrSlug))) {
+    return +idOrSlug;
+  }
+  const post = await getPostByPublicId(container.sqlDb, "" + idOrSlug);
+  return post.id;
 };
