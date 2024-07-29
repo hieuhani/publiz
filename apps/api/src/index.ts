@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { logger } from "hono/logger";
 import { timing } from "hono/timing";
 import { validateFirebaseAuth } from "@fiboup/hono-firebase-auth";
 import { etag } from "hono/etag";
@@ -32,6 +33,7 @@ import { moderatingPostRouter } from "./post/moderating-post-router";
 const app = new Hono<AppEnv>();
 
 app.use(timing());
+app.use(logger());
 app.use("*", useDi());
 
 app.use("*", (c, next) =>
