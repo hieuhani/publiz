@@ -31,6 +31,8 @@ import {
   getOrganizationMetaSchemaById,
   findOrganizationAvailableMetaSchemas,
   findOrganizationAvailableTags,
+  createComment,
+  findCommentsByTargetAndTargetId,
 } from "@publiz/core";
 import { useCurrentAppUser } from "../user";
 import { useCheckOrganizationUser } from "./middleware";
@@ -42,6 +44,7 @@ import { slugify } from "../lib/slugify";
 import { normalizeMetadata } from "../lib/object";
 import { getOrganizationIdFromCache } from "./lib";
 import { getPostIdFromCache } from "../post/lib";
+import { createCommentSchema } from "../comment/schema";
 
 export const myOrganizationRouter = new Hono<AppEnv>();
 
@@ -199,7 +202,6 @@ myOrganizationRouter.put(
 
 myOrganizationRouter.delete(
   "/:organization_id/posts/:post_id",
-  zValidator("json", createPostSchema),
   useCurrentAppUser({ required: true }),
   useCheckOrganizationUser("Administrator"),
   async (c) => {
@@ -227,29 +229,6 @@ myOrganizationRouter.get(
       postId
     );
     return c.json({ data: post });
-  }
-);
-
-myOrganizationRouter.get(
-  "/:organization_id/posts/:post_id/comments",
-  useCurrentAppUser({ required: true }),
-  useCheckOrganizationUser(),
-  async (c) => {
-    const container = c.get("container");
-    const organizationId = await getOrganizationIdFromCache(
-      container,
-      c.req.param("organization_id")
-    );
-    const postId = await getPostIdFromCache(container, c.req.param("post_id"));
-    const myPost = await getOrganizationPostById(
-      container,
-      organizationId,
-      postId
-    );
-
-    const comments = await getPostComments(container, +myPost.id);
-
-    return c.json({ data: comments });
   }
 );
 
@@ -630,5 +609,51 @@ myOrganizationRouter.put(
       payload
     );
     return c.json({ data: updatedMetaSchema });
+  }
+);
+
+myOrganizationRouter.post(
+  "/:organization_id/posts/:post_id/comments",
+  zValidator("json", createCommentSchema),
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser(),
+  async (c) => {
+    const payload = c.req.valid("json");
+    const currentUser = c.get("currentAppUser");
+    const container = c.get("container");
+    const postId = await getPostIdFromCache(container, c.req.param("post_id"));
+
+    const comment = await createComment(container, {
+      ...payload,
+      authorId: currentUser.id,
+      target: "post",
+      targetId: postId,
+    });
+    return c.json({ data: comment });
+  }
+);
+
+myOrganizationRouter.get(
+  "/:organization_id/posts/:post_id/comments",
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser(),
+  async (c) => {
+    const container = c.get("container");
+    const postId = await getPostIdFromCache(container, c.req.param("post_id"));
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
+    const _verifyPostBelongToOrganization = await getOrganizationPostById(
+      container,
+      organizationId,
+      postId
+    );
+    const comments = await findCommentsByTargetAndTargetId(
+      container,
+      "post",
+      postId
+    );
+    return c.json({ data: comments });
   }
 );
