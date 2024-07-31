@@ -63,7 +63,10 @@ export const createPost = async (
     );
     if (availableTags.length > 0) {
       return container.sqlDb.transaction().execute(async (trx) => {
-        const post = await createPostCrudRepository(trx).create(input);
+        const post = await createPostCrudRepository(trx).create({
+          ...input,
+          publicId: nanoid(),
+        });
         await createPostTagCrudRepository(trx).createMulti(
           availableTags.map((tag) => ({ postId: post.id, tagId: tag.id }))
         );
