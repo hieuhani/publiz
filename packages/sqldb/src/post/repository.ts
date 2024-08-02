@@ -39,6 +39,7 @@ export const getPostsByUserId = async (db: SqlDatabase, authorId: number) => {
     .selectFrom("posts")
     .selectAll()
     .where("authorId", "=", authorId)
+    .orderBy("createdAt", "desc")
     .execute();
 };
 

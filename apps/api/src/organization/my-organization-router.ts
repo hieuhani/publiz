@@ -8,7 +8,6 @@ import {
   updatePost,
   findOrganizationRoles,
   findOrganizationMetaSchemas,
-  getPostComments,
   uploadFile,
   getGcsImageServingUrl,
   createFile,
@@ -33,6 +32,7 @@ import {
   findOrganizationAvailableTags,
   createComment,
   findCommentsByTargetAndTargetId,
+  findByModelNameAndModelId,
 } from "@publiz/core";
 import { useCurrentAppUser } from "../user";
 import { useCheckOrganizationUser } from "./middleware";
@@ -655,5 +655,31 @@ myOrganizationRouter.get(
       postId
     );
     return c.json({ data: comments });
+  }
+);
+
+myOrganizationRouter.get(
+  "/:organization_id/posts/:post_id/files",
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser(),
+  async (c) => {
+    const container = c.get("container");
+    const postId = await getPostIdFromCache(container, c.req.param("post_id"));
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
+
+    const _verifyPostBelongToOrganization = await getOrganizationPostById(
+      container,
+      organizationId,
+      postId
+    );
+    const files = await findByModelNameAndModelId(
+      container,
+      "post",
+      "" + postId
+    );
+    return c.json({ data: files });
   }
 );

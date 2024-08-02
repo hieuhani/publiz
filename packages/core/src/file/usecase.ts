@@ -2,6 +2,7 @@ import {
   InsertableFileRow,
   createFileCrudRepository,
   deleteByModelNameAndModelId,
+  findByModelNameAndModelId as findByModelNameAndModelIdRepo,
 } from "@publiz/sqldb";
 import { Container } from "../container";
 import { FileModel } from "./model";
@@ -43,6 +44,14 @@ export const getFileById = async (
     container,
     await createFileCrudRepository(container.sqlDb).findById(id)
   );
+};
+
+export const findByModelNameAndModelId = async (
+  container: Container,
+  modelName: string,
+  modelId: string
+): Promise<FileModel[]> => {
+  return findByModelNameAndModelIdRepo(container.sqlDb, modelName, modelId);
 };
 
 const withFileUrl = async (container: Container, file: FileModel) => {
