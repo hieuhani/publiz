@@ -66,12 +66,17 @@ export const getPostById = async (
     withOrganization: false,
   }
 ) => {
-  let query = db.selectFrom("posts").selectAll().select(withTags);
+  let query = db
+    .selectFrom("posts")
+    .selectAll()
+    .select(withTags)
+    .select(withAuthor);
   if (Number.isInteger(postId)) {
     query = query.where("id", "=", +postId);
   } else {
     query = query.where("publicId", "=", String(postId));
   }
+
   if (context.withOrganization) {
     query = query.select(withOrganization);
   }
