@@ -29,6 +29,7 @@ import { taxonomyRouter } from "./taxonomy";
 import { collectionRouter } from "./collection/router";
 import { adminReactionPackRouter } from "./admin/reaction-pack-router";
 import { moderatingPostRouter } from "./post/moderating-post-router";
+import { getEnvVar } from "./config/env";
 
 const app = new Hono<AppEnv>();
 
@@ -98,4 +99,7 @@ app.route("/admin/api/v1/reaction_packs", adminReactionPackRouter);
 
 app.onError(globalErrorHandler);
 
-export default app;
+export default {
+  port: parseInt(getEnvVar("PORT") ?? "3000", 10),
+  fetch: app.fetch,
+};
