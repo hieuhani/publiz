@@ -5,7 +5,6 @@ import {
   getOrganizationById,
   findOrganizationRelatedTags,
   AppError,
-  getMetaSchemaByIdentifier,
   findPosts,
   getOrganizationMetaSchemaByIdentifier,
 } from "@publiz/core";
@@ -38,19 +37,6 @@ organizationRouter.get("/:organization_id/posts", async (c) => {
     throw new AppError(400400, "Page size is too large");
   }
 
-  let metaSchemaId = 0;
-  if (metaSchema) {
-    if (Number.isInteger(Number(metaSchema))) {
-      metaSchemaId = +metaSchema;
-    } else {
-      const findMetaSchema = await getMetaSchemaByIdentifier(
-        container,
-        metaSchema
-      );
-      metaSchemaId = findMetaSchema.id;
-    }
-  }
-
   const {
     startCursor,
     endCursor,
@@ -61,7 +47,7 @@ organizationRouter.get("/:organization_id/posts", async (c) => {
     container,
     {
       organizationId: organization.id,
-      metaSchemaId,
+      metaSchema,
       before,
       after,
       size,

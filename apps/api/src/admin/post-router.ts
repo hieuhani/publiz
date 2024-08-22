@@ -32,7 +32,7 @@ adminPostRouter.post("/", zValidator("json", createPostSchema), async (c) => {
 
 adminPostRouter.get("/", async (c) => {
   const container = c.get("container");
-  const metaSchemaId = c.req.query("metaSchemaId");
+  const metaSchema = c.req.query("metaSchema");
   const pageSize = c.req.query("pageSize");
   const {
     startCursor,
@@ -41,7 +41,7 @@ adminPostRouter.get("/", async (c) => {
     hasPrevPage,
     rows: data,
   } = await findPosts(container, {
-    metaSchemaId: metaSchemaId ? +metaSchemaId : 0,
+    metaSchema,
     size: pageSize ? +pageSize : 10,
   });
 

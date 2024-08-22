@@ -1,7 +1,6 @@
 import { jsonArrayFrom, jsonObjectFrom } from "kysely/helpers/postgres";
 import { createCrudRepository } from "../crud";
 import { Database, SqlDatabase } from "../database";
-import { JsonValue } from "../kysely";
 import { ExpressionBuilder } from "kysely";
 import { executeWithCursorPagination } from "../pagination/cursor";
 import { PostRow } from "./model";
@@ -89,6 +88,7 @@ export const findPosts = async (
   {
     organizationId,
     metaSchemaId,
+    metaSchema,
     collectionId,
     taxonomyId,
     tagId,
@@ -96,7 +96,9 @@ export const findPosts = async (
     reactionId,
   }: {
     organizationId?: number;
+    // Deprecated
     metaSchemaId?: number;
+    metaSchema?: string;
     collectionId?: number;
     taxonomyId?: number;
     tagId?: number;
@@ -154,7 +156,11 @@ export const findPosts = async (
   }
 
   if (metaSchemaId) {
-    query = query.where("metadata", "@>", new JsonValue({ metaSchemaId }));
+    console.warn("metaSchemaId is deprecated, use metaSchema instead");
+  }
+
+  if (metaSchema) {
+    query = query.where("metaSchema", "=", metaSchema);
   }
 
   if (collectionId) {

@@ -211,6 +211,7 @@ export const deletePost = async (container: Container, id: number) => {
 type FindPostsPayload = {
   organizationId?: number;
   metaSchemaId?: number;
+  metaSchema?: string;
   collectionId?: number;
   taxonomyId?: number;
   tagId?: number;
@@ -227,6 +228,7 @@ export const findPosts = async (
     organizationId,
     collectionId,
     metaSchemaId,
+    metaSchema,
     taxonomyId,
     tagId,
     userId,
@@ -258,6 +260,7 @@ export const findPosts = async (
       organizationId,
       collectionId,
       metaSchemaId,
+      metaSchema,
       taxonomyId,
       tagId,
       userId,
