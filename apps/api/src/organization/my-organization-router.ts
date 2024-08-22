@@ -190,12 +190,12 @@ myOrganizationRouter.put(
       container,
       c.req.param("organization_id")
     );
-    const myPost = await getOrganizationPostById(
+    const _verifyOrganizationPost = await getOrganizationPostById(
       container,
       organizationId,
       postId
     );
-    const updatedPost = await updatePost(container, +myPost.id, payload);
+    const updatedPost = await updatePost(container, postId, payload);
     return c.json({ data: updatedPost });
   }
 );
