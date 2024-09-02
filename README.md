@@ -37,6 +37,7 @@ Yet another content management platform, but trying to do the best on 3 points:
 4. Run migration
 
     ```sh
+    bun run build:types
     bun run migrate:dev:latest
     ```
 
