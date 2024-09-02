@@ -25,7 +25,7 @@ Yet another content management platform, but trying to do the best on 3 points:
 2. Run dependent services
 
     ```sh
-    docker compose up
+    docker compose up -d
     ```
 
 3. Configure environment
@@ -37,6 +37,7 @@ Yet another content management platform, but trying to do the best on 3 points:
 4. Run migration
 
     ```sh
+    bun run build:types
     bun run migrate:dev:latest
     ```
 
