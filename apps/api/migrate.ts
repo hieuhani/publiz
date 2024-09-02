@@ -2,23 +2,16 @@ import { buildMigrator } from "@publiz/dbmigration";
 import { NO_MIGRATIONS, PostgresDialect } from "kysely";
 import { createSqlDb } from "@publiz/core";
 import { getEnvVar } from "./src/config/env";
-import { Config } from "./src/config";
+import type { Config } from "./src/config";
 import { Pool } from "pg";
 
 export const config: Config = {
   db: {
     host: getEnvVar("DB_HOST"),
-    port: parseInt(getEnvVar("DB_PORT") ?? "5432", 10),
+    port: +getEnvVar("DB_PORT") ?? "5432",
     user: getEnvVar("DB_USER"),
     password: getEnvVar("DB_PASSWORD"),
     database: getEnvVar("DB_DATABASE"),
-    ssl:
-      getEnvVar("DB_SSL", "false") === "true"
-        ? {
-            rejectUnauthorized:
-              getEnvVar("DB_SSL_REJECT_UNAUTHORIZED", "true") === "true",
-          }
-        : undefined,
     prepare: getEnvVar("DB_PREPARE", "true") === "true",
   },
   firebase: {
@@ -36,19 +29,19 @@ export const config: Config = {
     region: getEnvVar("S3_REGION", "ap-southeast-1"),
     getGcsImageServingEndpoint: getEnvVar(
       "S3_GET_GCS_IMAGE_SERVING_ENDPOINT",
-      ""
+      "",
     ),
   },
   cors: {
     origin: getEnvVar("CORS_ORIGIN", "*").split(","),
     allowHeaders: getEnvVar(
       "CORS_ALLOW_HEADERS",
-      "Content-Type, Authorization"
+      "Content-Type, Authorization",
     ).split(","),
     allowMethods: getEnvVar("CORS_ALLOW_METHODS", "GET,POST,PUT,DELETE").split(
-      ","
+      ",",
     ),
-    maxAge: parseInt(getEnvVar("CORS_MAX_AGE", "600"), 10),
+    maxAge: +getEnvVar("CORS_MAX_AGE", "600"),
     credentials: getEnvVar("CORS_CREDENTIALS", "true") === "true",
   },
 };
