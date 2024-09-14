@@ -1,50 +1,51 @@
 # Publiz
+<a href="https://github.com/hieuhani/publiz">
+  <img alt="Publiz" src="./assets/cover.png">
+</a>
 
-Yet another content management platform, but trying to do the best on 3 points:
+## Introduction
 
-- Integration with your existing system
-- Multi-purposed usages from a simple blog site to a social network
-- Automated content management
+Publiz is a cutting-edge, open-source, meta-schema driven headless Content Management System (CMS) designed to efficiently manage and deliver content across diverse platforms and tenants, all from one centralized system.
 
-## Technical specifications
+- Publiz separates content creation from presentation, allowing developers to define custom content structures using a powerful meta-schema approach.
+- Build to support multi-tenancy allows multiple clients or organizations to operate independently within a single instance, each with custom content structures and configurations.
+- Use headless architecture enables seamless integration with any front-end technology.
 
-- API router framework is Hono
-- Database access with Kysely
-- Database system is PostgreSQL
-- Javascript runtime is Bun
-- MVP Authentication with Firebase
+## Getting Started
 
-## Quick start
+### Prepare the recommended environment
 
-1. Install bun
+- Bun v1.1.27
+- PostgreSQL v16
+- S3 Compatible Storage
 
-    ```sh
-    curl -fsSL https://bun.sh/install | bash
-    ```
+### Quick start
 
-2. Run dependent services
+```sh
+# install Bun
+curl -fsSL https://bun.sh/install | bash
+# use Docker Compose for Postgres and Minio
+docker compose up
+# create the local environment
+cp apps/api/.env.sample apps/api/.env
+# run the first initial migrations
+bun run migrate:dev:latest
+# run the dev server
+bun run dev
+```
 
-    ```sh
-    docker compose up
-    ```
+## Awesome Publiz
 
-3. Configure environment
+### Projects built with Publiz
 
-    ```sh
-    cp apps/api/.env.sample apps/api/.env
-    ```
+- [Techgoda](https://github.com/hieuhani/techgoda) - A social publishing platform
 
-4. Run migration
+### Apps using Publiz CMS
 
-    ```sh
-    bun run migrate:dev:latest
-    ```
+- [Fibotree](https://fibotree.com)
+- [Techgoda](https://techgoda.net)
+- [Greenpod](https://www.greenpod.vn)
 
-5. Run api service
-
-    ```sh
-    bun run dev
-    ```
 
 ## Contributing
 
