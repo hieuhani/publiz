@@ -1,0 +1,11 @@
+{
+  "name": "@publiz/vercel",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@publiz/api": "workspace:*"
+  },
+  "devDependencies": {
+    "@vercel/node": "^3.2.15"
+  }
+}

@@ -4,8 +4,10 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "strict": true,
-    "lib": ["esnext"]
+    "lib": ["esnext"],
+    "paths": {
+      "@publiz/sqldb": ["../../packages/sqldb/src"]
+    }
   },
   "exclude": ["./dist"]
 }

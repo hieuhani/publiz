@@ -8,6 +8,10 @@
     "lib": ["esnext"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "types": ["@cloudflare/workers-types"]
+    "types": ["@cloudflare/workers-types"],
+    "paths": {
+      "@publiz/core": ["../../packages/core/src"],
+      "@publiz/sqldb": ["../../packages/sqldb/src"]
+    }
   }
 }

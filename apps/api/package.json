@@ -1,5 +1,8 @@
 {
   "name": "@publiz/api",
+  "type": "module",
+  "version": "0.0.0",
+  "main": "dist/app.js",
   "dependencies": {
     "@cfworker/base64url": "^1.12.5",
     "@fiboup/google-identify-toolkit": "^1.0.1",
@@ -17,7 +20,7 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "start": "bun run src/index.ts",
-    "build": "bun build --target=bun --minify --outdir=./dist src/index.ts && bun build --target=bun --minify --outdir=./dist migrate.ts",
+    "build": "bun build --target=node --format=esm  --minify --outdir=./dist src/app.ts",
     "migrate:dev:latest": "bun run ./migrate.ts dev latest"
   },
   "devDependencies": {
