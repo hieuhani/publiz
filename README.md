@@ -46,6 +46,13 @@ bun run dev
 - [Techgoda](https://techgoda.net)
 - [Greenpod](https://www.greenpod.vn)
 
+### One-Click Deploy
+
+Deploy the example using [Vercel](https://vercel.com):
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhieuhani%2Fpubliz&env=FIREBASE_API_KEY,FIREBASE_PROJECT_ID,S3_BUCKET,S3_ACCESS_KEY_ID,S3_SECRET_ACCESS_KEY&project-name=publiz&repository-name=publiz&demo-title=Publiz&demo-description=Open%20meta-schema%20driven%20publishing%20platform&stores=%5B%7B"type"%3A"postgres"%7D%5D&build-command=cd%20..%2F..%20%26%26%20bun%20run%20build&install-command=bun%20install&root-directory=apps%2Fvercel)
+
+After the deployment success, run the initial database migation by hitting the API: GET <your_vercel_url>/api/run_initial_migration
 
 ## Contributing
 
