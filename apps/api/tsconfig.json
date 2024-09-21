@@ -8,6 +8,10 @@
     "lib": ["esnext"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "types": ["@cloudflare/workers-types"]
+    "types": ["@cloudflare/workers-types"],
+    "isolatedDeclarations": false,
+    "paths": {
+      "@publiz/core": ["../../packages/core/src"]
+    }
   }
 }

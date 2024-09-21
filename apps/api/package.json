@@ -1,5 +1,8 @@
 {
   "name": "@publiz/api",
+  "main": "dist/app.mjs",
+  "types": "dist/app.d.ts",
+  "version": "0.0.1",
   "dependencies": {
     "@cfworker/base64url": "^1.12.5",
     "@fiboup/google-identify-toolkit": "^1.0.1",
@@ -15,13 +18,15 @@
     "zod": "^3.23.8"
   },
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
+    "dev": "bun run --env-file=.env --hot src/index.ts",
     "start": "bun run src/index.ts",
-    "build": "bun build --target=bun --minify --outdir=./dist src/index.ts && bun build --target=bun --minify --outdir=./dist migrate.ts",
+    "build": "unbuild",
     "migrate:dev:latest": "bun run ./migrate.ts dev latest"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240329.0",
-    "@types/pg": "^8.11.4"
+    "@types/pg": "^8.11.4",
+    "typescript": "^5.6.2",
+    "unbuild": "^2.0.0"
   }
 }

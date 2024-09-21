@@ -15,23 +15,20 @@ Publiz is a cutting-edge, open-source, meta-schema driven headless Content Manag
 
 ### Prepare the recommended environment
 
-- Bun v1.1.27
 - PostgreSQL v16
 - S3 Compatible Storage
 
 ### Quick start
 
 ```sh
-# install Bun
-curl -fsSL https://bun.sh/install | bash
 # use Docker Compose for Postgres and Minio
 docker compose up
 # create the local environment
 cp apps/api/.env.sample apps/api/.env
 # run the first initial migrations
-bun run migrate:dev:latest
+pnpm run migrate:dev:latest
 # run the dev server
-bun run dev
+pnpm run dev
 ```
 
 ## Awesome Publiz
