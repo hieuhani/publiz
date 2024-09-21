@@ -4,9 +4,13 @@ import { env } from "hono/adapter";
 import { AppEnv } from "../global";
 import { type Config } from "../config";
 import { Pool } from "pg";
-import { PostgresDialect } from "kysely";
+import { Kysely, PostgresDialect } from "kysely";
 
-export const useDi = (): MiddlewareHandler => {
+type DiOptions = {
+  sqlDb?: Kysely<any>;
+};
+
+export const useDi = ({ sqlDb }: DiOptions = {}): MiddlewareHandler => {
   return async (c, next) => {
     const {
       DB_HOST,
@@ -77,7 +81,7 @@ export const useDi = (): MiddlewareHandler => {
     });
     c.set("config", config);
     c.set("container", {
-      sqlDb: createSqlDb(dialect),
+      sqlDb: sqlDb ? sqlDb : createSqlDb(dialect),
       s3: new S3Client({
         endpoint: config.s3.endpoint,
         region: config.s3.region,

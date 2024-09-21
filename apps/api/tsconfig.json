@@ -11,7 +11,8 @@
     "types": ["@cloudflare/workers-types"],
     "paths": {
       "@publiz/core": ["../../packages/core/src"],
-      "@publiz/sqldb": ["../../packages/sqldb/src"]
+      "@publiz/sqldb": ["../../packages/sqldb/src"],
+      "@publiz/dbmigration": ["../../packages/dbmigration/src"]
     }
   }
 }

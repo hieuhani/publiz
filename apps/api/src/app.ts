@@ -30,12 +30,20 @@ import { collectionRouter } from "./collection/router";
 import { adminReactionPackRouter } from "./admin/reaction-pack-router";
 import { moderatingPostRouter } from "./post/moderating-post-router";
 
-const createApp = () => {
+export type AppConfig = {
+  db?: any;
+};
+const createApp = ({ db }: AppConfig = {}) => {
   const app = new Hono<AppEnv>();
 
   app.use(timing());
   app.use(logger());
-  app.use("*", useDi());
+  app.use(
+    "*",
+    useDi({
+      sqlDb: db,
+    })
+  );
 
   app.use("*", (c, next) =>
     validateFirebaseAuth({
@@ -89,15 +97,15 @@ const createApp = () => {
   app.route("/api/v1/collections", collectionRouter);
 
   // admin api
-  app.use("/admin/*", requireAdmin());
-  app.route("/admin/api/v1/tags", adminTagRouter);
-  app.route("/admin/api/v1/organizations", adminOrganizationRouter);
-  app.route("/admin/api/v1/meta_schemas", adminMetaSchemaRouter);
-  app.route("/admin/api/v1/users", adminUserRouter);
-  app.route("/admin/api/v1/posts", adminPostRouter);
-  app.route("/admin/api/v1/taxonomies", adminTaxonomyRouter);
-  app.route("/admin/api/v1/collections", adminCollectionRouter);
-  app.route("/admin/api/v1/reaction_packs", adminReactionPackRouter);
+  app.use("/api/admin/*", requireAdmin());
+  app.route("/api/admin/v1/tags", adminTagRouter);
+  app.route("/api/admin/v1/organizations", adminOrganizationRouter);
+  app.route("/api/admin/v1/meta_schemas", adminMetaSchemaRouter);
+  app.route("/api/admin/v1/users", adminUserRouter);
+  app.route("/api/admin/v1/posts", adminPostRouter);
+  app.route("/api/admin/v1/taxonomies", adminTaxonomyRouter);
+  app.route("/api/admin/v1/collections", adminCollectionRouter);
+  app.route("/api/admin/v1/reaction_packs", adminReactionPackRouter);
 
   app.onError(globalErrorHandler);
 

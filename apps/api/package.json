@@ -10,6 +10,7 @@
     "@hono/zod-validator": "^0.2.2",
     "@publiz/core": "workspace:0.0.0",
     "@publiz/dbmigration": "workspace:0.0.0",
+    "@vercel/postgres-kysely": "^0.10.0",
     "hono": "^4.4.13",
     "kysely": "^0.27.1",
     "lru-cache": "^11.0.0",
