@@ -29,6 +29,7 @@ import { taxonomyRouter } from "./taxonomy";
 import { collectionRouter } from "./collection/router";
 import { adminReactionPackRouter } from "./admin/reaction-pack-router";
 import { moderatingPostRouter } from "./post/moderating-post-router";
+import { systemRouter } from "./system/router";
 
 export type AppConfig = {
   db?: any;
@@ -106,6 +107,8 @@ const createApp = ({ db }: AppConfig = {}) => {
   app.route("/api/admin/v1/taxonomies", adminTaxonomyRouter);
   app.route("/api/admin/v1/collections", adminCollectionRouter);
   app.route("/api/admin/v1/reaction_packs", adminReactionPackRouter);
+
+  app.route("/api/system", systemRouter);
 
   app.onError(globalErrorHandler);
 

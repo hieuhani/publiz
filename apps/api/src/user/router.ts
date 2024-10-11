@@ -58,6 +58,7 @@ userRouter.get("/my_profile", useCurrentAppUser(), async (c) => {
   if (currentAppUser.updatedAt) {
     c.header("Last-Modified", currentAppUser.updatedAt);
   }
+  c.header("Vary", "Authorization");
   return c.json({ data: currentAppUser });
 });
 

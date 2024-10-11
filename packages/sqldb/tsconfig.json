@@ -5,7 +5,10 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "strict": true,
-    "lib": ["esnext"]
+    "lib": ["esnext"],
+    "paths": {
+      "@publiz/dbmigration": ["../../packages/dbmigration/src"]
+    }
   },
   "exclude": ["./dist"]
 }
