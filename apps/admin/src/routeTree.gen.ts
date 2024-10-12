@@ -14,6 +14,14 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as WelcomeImport } from './routes/welcome'
 import { Route as SignInImport } from './routes/sign-in'
 import { Route as IndexImport } from './routes/index'
+import { Route as UsersIndexImport } from './routes/users/index'
+import { Route as TaxonomiesIndexImport } from './routes/taxonomies/index'
+import { Route as TagsIndexImport } from './routes/tags/index'
+import { Route as ReactionPacksIndexImport } from './routes/reaction-packs/index'
+import { Route as PostsIndexImport } from './routes/posts/index'
+import { Route as OrganizationsIndexImport } from './routes/organizations/index'
+import { Route as MetaSchemasIndexImport } from './routes/meta-schemas/index'
+import { Route as FilesIndexImport } from './routes/files/index'
 
 // Create/Update Routes
 
@@ -29,6 +37,46 @@ const SignInRoute = SignInImport.update({
 
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UsersIndexRoute = UsersIndexImport.update({
+  path: '/users/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TaxonomiesIndexRoute = TaxonomiesIndexImport.update({
+  path: '/taxonomies/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TagsIndexRoute = TagsIndexImport.update({
+  path: '/tags/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ReactionPacksIndexRoute = ReactionPacksIndexImport.update({
+  path: '/reaction-packs/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PostsIndexRoute = PostsIndexImport.update({
+  path: '/posts/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const OrganizationsIndexRoute = OrganizationsIndexImport.update({
+  path: '/organizations/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const MetaSchemasIndexRoute = MetaSchemasIndexImport.update({
+  path: '/meta-schemas/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const FilesIndexRoute = FilesIndexImport.update({
+  path: '/files/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -57,6 +105,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WelcomeImport
       parentRoute: typeof rootRoute
     }
+    '/files/': {
+      id: '/files/'
+      path: '/files'
+      fullPath: '/files'
+      preLoaderRoute: typeof FilesIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/meta-schemas/': {
+      id: '/meta-schemas/'
+      path: '/meta-schemas'
+      fullPath: '/meta-schemas'
+      preLoaderRoute: typeof MetaSchemasIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/organizations/': {
+      id: '/organizations/'
+      path: '/organizations'
+      fullPath: '/organizations'
+      preLoaderRoute: typeof OrganizationsIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/posts/': {
+      id: '/posts/'
+      path: '/posts'
+      fullPath: '/posts'
+      preLoaderRoute: typeof PostsIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/reaction-packs/': {
+      id: '/reaction-packs/'
+      path: '/reaction-packs'
+      fullPath: '/reaction-packs'
+      preLoaderRoute: typeof ReactionPacksIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/tags/': {
+      id: '/tags/'
+      path: '/tags'
+      fullPath: '/tags'
+      preLoaderRoute: typeof TagsIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/taxonomies/': {
+      id: '/taxonomies/'
+      path: '/taxonomies'
+      fullPath: '/taxonomies'
+      preLoaderRoute: typeof TaxonomiesIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/users/': {
+      id: '/users/'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof UsersIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -66,12 +170,28 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sign-in': typeof SignInRoute
   '/welcome': typeof WelcomeRoute
+  '/files': typeof FilesIndexRoute
+  '/meta-schemas': typeof MetaSchemasIndexRoute
+  '/organizations': typeof OrganizationsIndexRoute
+  '/posts': typeof PostsIndexRoute
+  '/reaction-packs': typeof ReactionPacksIndexRoute
+  '/tags': typeof TagsIndexRoute
+  '/taxonomies': typeof TaxonomiesIndexRoute
+  '/users': typeof UsersIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sign-in': typeof SignInRoute
   '/welcome': typeof WelcomeRoute
+  '/files': typeof FilesIndexRoute
+  '/meta-schemas': typeof MetaSchemasIndexRoute
+  '/organizations': typeof OrganizationsIndexRoute
+  '/posts': typeof PostsIndexRoute
+  '/reaction-packs': typeof ReactionPacksIndexRoute
+  '/tags': typeof TagsIndexRoute
+  '/taxonomies': typeof TaxonomiesIndexRoute
+  '/users': typeof UsersIndexRoute
 }
 
 export interface FileRoutesById {
@@ -79,14 +199,56 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/sign-in': typeof SignInRoute
   '/welcome': typeof WelcomeRoute
+  '/files/': typeof FilesIndexRoute
+  '/meta-schemas/': typeof MetaSchemasIndexRoute
+  '/organizations/': typeof OrganizationsIndexRoute
+  '/posts/': typeof PostsIndexRoute
+  '/reaction-packs/': typeof ReactionPacksIndexRoute
+  '/tags/': typeof TagsIndexRoute
+  '/taxonomies/': typeof TaxonomiesIndexRoute
+  '/users/': typeof UsersIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in' | '/welcome'
+  fullPaths:
+    | '/'
+    | '/sign-in'
+    | '/welcome'
+    | '/files'
+    | '/meta-schemas'
+    | '/organizations'
+    | '/posts'
+    | '/reaction-packs'
+    | '/tags'
+    | '/taxonomies'
+    | '/users'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sign-in' | '/welcome'
-  id: '__root__' | '/' | '/sign-in' | '/welcome'
+  to:
+    | '/'
+    | '/sign-in'
+    | '/welcome'
+    | '/files'
+    | '/meta-schemas'
+    | '/organizations'
+    | '/posts'
+    | '/reaction-packs'
+    | '/tags'
+    | '/taxonomies'
+    | '/users'
+  id:
+    | '__root__'
+    | '/'
+    | '/sign-in'
+    | '/welcome'
+    | '/files/'
+    | '/meta-schemas/'
+    | '/organizations/'
+    | '/posts/'
+    | '/reaction-packs/'
+    | '/tags/'
+    | '/taxonomies/'
+    | '/users/'
   fileRoutesById: FileRoutesById
 }
 
@@ -94,12 +256,28 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SignInRoute: typeof SignInRoute
   WelcomeRoute: typeof WelcomeRoute
+  FilesIndexRoute: typeof FilesIndexRoute
+  MetaSchemasIndexRoute: typeof MetaSchemasIndexRoute
+  OrganizationsIndexRoute: typeof OrganizationsIndexRoute
+  PostsIndexRoute: typeof PostsIndexRoute
+  ReactionPacksIndexRoute: typeof ReactionPacksIndexRoute
+  TagsIndexRoute: typeof TagsIndexRoute
+  TaxonomiesIndexRoute: typeof TaxonomiesIndexRoute
+  UsersIndexRoute: typeof UsersIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SignInRoute: SignInRoute,
   WelcomeRoute: WelcomeRoute,
+  FilesIndexRoute: FilesIndexRoute,
+  MetaSchemasIndexRoute: MetaSchemasIndexRoute,
+  OrganizationsIndexRoute: OrganizationsIndexRoute,
+  PostsIndexRoute: PostsIndexRoute,
+  ReactionPacksIndexRoute: ReactionPacksIndexRoute,
+  TagsIndexRoute: TagsIndexRoute,
+  TaxonomiesIndexRoute: TaxonomiesIndexRoute,
+  UsersIndexRoute: UsersIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -116,7 +294,15 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/sign-in",
-        "/welcome"
+        "/welcome",
+        "/files/",
+        "/meta-schemas/",
+        "/organizations/",
+        "/posts/",
+        "/reaction-packs/",
+        "/tags/",
+        "/taxonomies/",
+        "/users/"
       ]
     },
     "/": {
@@ -127,6 +313,30 @@ export const routeTree = rootRoute
     },
     "/welcome": {
       "filePath": "welcome.tsx"
+    },
+    "/files/": {
+      "filePath": "files/index.tsx"
+    },
+    "/meta-schemas/": {
+      "filePath": "meta-schemas/index.tsx"
+    },
+    "/organizations/": {
+      "filePath": "organizations/index.tsx"
+    },
+    "/posts/": {
+      "filePath": "posts/index.tsx"
+    },
+    "/reaction-packs/": {
+      "filePath": "reaction-packs/index.tsx"
+    },
+    "/tags/": {
+      "filePath": "tags/index.tsx"
+    },
+    "/taxonomies/": {
+      "filePath": "taxonomies/index.tsx"
+    },
+    "/users/": {
+      "filePath": "users/index.tsx"
     }
   }
 }

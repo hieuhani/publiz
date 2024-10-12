@@ -9,11 +9,15 @@ import {
 
 export interface AuthContextState {
   checkAuth: () => Promise<boolean>;
+  signOut: () => void;
 }
 
 export const initialState: AuthContextState = {
   checkAuth: async () => {
     throw new Error("checkAuth is not implemented");
+  },
+  signOut: () => {
+    throw new Error("signOut is not implemented");
   },
 };
 
@@ -23,6 +27,7 @@ export const AuthProvider: React.FunctionComponent<PropsWithChildren> = ({
   children,
 }) => {
   const checkAuth = useCallback(async () => {
+    console.log("xxxx");
     if (!authService.idToken && !authService.refreshToken) {
       return false;
     }
@@ -39,8 +44,13 @@ export const AuthProvider: React.FunctionComponent<PropsWithChildren> = ({
     }
   }, []);
 
+  const signOut = useCallback(() => {
+    authService.signOut();
+    window.location.reload();
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ checkAuth }}>
+    <AuthContext.Provider value={{ checkAuth, signOut }}>
       {children}
     </AuthContext.Provider>
   );

@@ -85,7 +85,7 @@ export type CreateOrganizationInput = {
 
 export const createOrganization = (input: CreateOrganizationInput) => {
   return publizClient
-    .post("admin/api/v1/organizations", { json: input })
+    .post("api/admin/v1/organizations", { json: input })
     .json<BaseResponse<Organization>>();
 };
 
@@ -98,7 +98,7 @@ export type CreateTagInput = {
 };
 export const createTag = (input: CreateTagInput) => {
   return publizClient
-    .post("admin/api/v1/tags", { json: input })
+    .post("api/admin/v1/tags", { json: input })
     .json<BaseResponse<Tag>>();
 };
 
@@ -107,7 +107,7 @@ export const updateOrganization = (
   input: CreateOrganizationInput
 ) => {
   return publizClient
-    .put(`admin/api/v1/organizations/${id}`, { json: input })
+    .put(`api/admin/v1/organizations/${id}`, { json: input })
     .json<BaseResponse<Organization>>();
 };
 

@@ -11,8 +11,9 @@ export const authService = {
     authService.saveToken(data);
   },
   saveToken: (payload: AuthResponse) => {
+    const expires = new Date(Date.now() + +payload.expiresIn * 1000);
     Cookies.set("idToken", payload.idToken, {
-      expires: +payload.expiresIn,
+      expires,
     });
     Cookies.set("refreshToken", payload.refreshToken);
   },
