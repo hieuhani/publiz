@@ -32,6 +32,16 @@ export type Tag = {
   organizationId?: number;
   userId: number;
 };
+export type TaxonomyType = "SYSTEM" | "DEFAULT";
+
+export type Taxonomy = {
+  id: number;
+  name: string;
+  slug: string;
+  type: TaxonomyType;
+  organizationId?: number;
+};
+
 export const publizClient = ky.extend({
   prefixUrl: import.meta.env.VITE_BASE_PUBLIZ_URL,
   retry: {
@@ -68,6 +78,9 @@ export const getOrganizations = () =>
 export const getTags = () =>
   publizClient.get("api/v1/tags").json<BaseResponse<Tag[]>>();
 
+export const getTaxonomies = () =>
+  publizClient.get("api/v1/taxonomies").json<BaseResponse<Taxonomy[]>>();
+
 export const getOrganizationById = (id: number) =>
   publizClient
     .get(`api/v1/organizations/${id}`)
@@ -96,10 +109,34 @@ export type CreateTagInput = {
   organizationId?: number;
   userId: number;
 };
-export const createTag = (input: CreateTagInput) => {
+
+export const createTag = (input: CreateTagInput[]) => {
   return publizClient
     .post("api/admin/v1/tags", { json: input })
     .json<BaseResponse<Tag>>();
+};
+
+export const updateTag = (id: number, input: CreateTagInput) => {
+  return publizClient
+    .put(`api/admin/v1/tags/${id}`, { json: input })
+    .json<BaseResponse<Tag>>();
+};
+
+export type CreateTaxonomyInput = {
+  name: string;
+  slug: string;
+};
+
+export const createTaxonomy = (input: CreateTaxonomyInput) => {
+  return publizClient
+    .post("api/admin/v1/taxonomies", { json: input })
+    .json<BaseResponse<Taxonomy>>();
+};
+
+export const updateTaxonomy = (id: number, input: CreateTaxonomyInput) => {
+  return publizClient
+    .put(`api/admin/v1/taxonomies/${id}`, { json: input })
+    .json<BaseResponse<Taxonomy>>();
 };
 
 export const updateOrganization = (

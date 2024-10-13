@@ -9,7 +9,7 @@
     "build:types": "turbo build",
     "dev": "bun run --cwd apps/api dev",
     "start": "bun run --cwd apps/api start",
-    "build": "bun run --cwd apps/api build",
+    "build": "bun run --cwd apps/api build && bun run --cwd apps/admin build && cp -r apps/admin/dist/* apps/vercel/public",
     "migrate:dev:latest": "bun run --cwd apps/api migrate:dev:latest",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""

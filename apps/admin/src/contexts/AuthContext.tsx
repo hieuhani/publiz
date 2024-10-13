@@ -27,7 +27,6 @@ export const AuthProvider: React.FunctionComponent<PropsWithChildren> = ({
   children,
 }) => {
   const checkAuth = useCallback(async () => {
-    console.log("xxxx");
     if (!authService.idToken && !authService.refreshToken) {
       return false;
     }

@@ -1,5 +1,5 @@
 import { Toaster } from "react-hot-toast";
-import { Outlet, redirect, useLocation } from "@tanstack/react-router";
+import { Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { SideBar } from "./SideBar";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,17 +8,18 @@ export const RootEntry: React.FunctionComponent = () => {
   const location = useLocation();
   const hideSideBar = location.pathname === "/sign-in";
   const auth = useAuth();
+  const navigate = useNavigate();
   const [bootstrapping, setBootstrapping] = useState(true);
   useEffect(() => {
     const bootstrap = async () => {
       const isAuthenticated = await auth.checkAuth();
       setBootstrapping(false);
       if (!isAuthenticated && location.pathname !== "/sign-in") {
-        redirect({ to: "/sign-in" });
+        navigate({ to: "/sign-in" });
       }
     };
     bootstrap();
-  }, []);
+  }, [location, auth, navigate]);
 
   if (bootstrapping) {
     return null;

@@ -8,7 +8,7 @@ import { ChevronRight, Plus } from "lucide-react";
 
 const Organizations: React.FunctionComponent = () => {
   const {
-    data: { data: organizations = [] },
+    data: { data: records = [] },
     refetch,
   } = useSuspenseQuery(buildQueryOptions(getOrganizations));
   return (
@@ -33,12 +33,12 @@ const Organizations: React.FunctionComponent = () => {
         </ButtonDrawer>
       </div>
       <div className="bg-zinc-800 rounded-xl overflow-hidden flex flex-col">
-        {organizations.map((organization) => (
+        {records.map((record) => (
           <ButtonDrawer
-            key={organization.id}
+            key={record.id}
             content={(close) => (
               <CreateOrganizationForm
-                organization={organization}
+                organization={record}
                 onCreated={() => {
                   refetch();
                   close();
@@ -48,12 +48,12 @@ const Organizations: React.FunctionComponent = () => {
             title="Update organization"
           >
             <button
-              key={organization.id}
+              key={record.id}
               className="px-4 py-2 text-left flex items-center justify-between hover:bg-zinc-700"
             >
               <div>
-                <h4 className="font-medium">{organization.name}</h4>
-                <p className="text-sm">{organization.description}</p>
+                <h4 className="font-medium">{record.name}</h4>
+                <p className="text-sm">{record.description}</p>
               </div>
               <div>
                 <ChevronRight />
