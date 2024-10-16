@@ -1,10 +1,15 @@
-import { getOrganizations } from "@/api";
+import {
+  createOrganization,
+  getOrganizations,
+  updateOrganization,
+} from "@/api";
 import { ButtonDrawer } from "@/components/ButtonDrawer";
-import { CreateOrganizationForm } from "@/components/CreateOrganizationForm";
+import { CreateForm } from "@/components/crud/CreateForm";
 import { buildQueryOptions } from "@/lib/query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronRight, Plus } from "lucide-react";
+import { z } from "zod";
 
 const Organizations: React.FunctionComponent = () => {
   const {
@@ -18,11 +23,20 @@ const Organizations: React.FunctionComponent = () => {
 
         <ButtonDrawer
           content={(close) => (
-            <CreateOrganizationForm
+            <CreateForm
               onCreated={() => {
                 refetch();
                 close();
               }}
+              schema={z.object({
+                name: z.string().min(1).max(100),
+                slug: z.string().min(1).max(100),
+                description: z.string(),
+                verified: z.boolean(),
+                ownerId: z.number(),
+              })}
+              createFn={createOrganization}
+              updateFn={updateOrganization}
             />
           )}
           title="Create a new organization"
@@ -37,12 +51,21 @@ const Organizations: React.FunctionComponent = () => {
           <ButtonDrawer
             key={record.id}
             content={(close) => (
-              <CreateOrganizationForm
-                organization={record}
+              <CreateForm
+                currentData={record}
                 onCreated={() => {
                   refetch();
                   close();
                 }}
+                schema={z.object({
+                  name: z.string().min(1).max(100),
+                  slug: z.string().min(1).max(100),
+                  description: z.string(),
+                  verified: z.boolean(),
+                  ownerId: z.number(),
+                })}
+                createFn={createOrganization}
+                updateFn={updateOrganization}
               />
             )}
             title="Update organization"
