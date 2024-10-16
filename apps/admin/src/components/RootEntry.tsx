@@ -6,7 +6,8 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export const RootEntry: React.FunctionComponent = () => {
   const location = useLocation();
-  const hideSideBar = location.pathname === "/sign-in";
+  const hideSideBar =
+    location.pathname === "/sign-in" || location.pathname === "/welcome";
   const auth = useAuth();
   const navigate = useNavigate();
   const [bootstrapping, setBootstrapping] = useState(true);
@@ -14,7 +15,11 @@ export const RootEntry: React.FunctionComponent = () => {
     const bootstrap = async () => {
       const isAuthenticated = await auth.checkAuth();
       setBootstrapping(false);
-      if (!isAuthenticated && location.pathname !== "/sign-in") {
+      if (
+        !isAuthenticated &&
+        location.pathname !== "/sign-in" &&
+        location.pathname !== "/welcome"
+      ) {
         navigate({ to: "/sign-in" });
       }
     };
