@@ -22,7 +22,6 @@ export const useDi = ({ sqlDb }: DiOptions = {}): MiddlewareHandler => {
       DB_SSL_REJECT_UNAUTHORIZED,
       FIREBASE_API_KEY,
       FIREBASE_PROJECT_ID,
-      ADMIN_AUTH_IDS = "",
       S3_BUCKET,
       S3_ACCESS_KEY_ID,
       S3_SECRET_ACCESS_KEY,
@@ -52,9 +51,6 @@ export const useDi = ({ sqlDb }: DiOptions = {}): MiddlewareHandler => {
       firebase: {
         apiKey: FIREBASE_API_KEY,
         projectId: FIREBASE_PROJECT_ID,
-      },
-      admin: {
-        authIds: ADMIN_AUTH_IDS.split(","),
       },
       s3: {
         bucket: S3_BUCKET,

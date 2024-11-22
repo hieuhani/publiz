@@ -18,9 +18,6 @@ export const zConfig = z.object({
     apiKey: z.string(),
     projectId: z.string(),
   }),
-  admin: z.object({
-    authIds: z.array(z.string()),
-  }),
   s3: z.object({
     bucket: z.string(),
     accessKeyId: z.string(),

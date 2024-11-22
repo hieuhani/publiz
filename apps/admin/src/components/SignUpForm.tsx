@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { redirect } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import toast from "react-hot-toast";
 import { authService } from "@/services/auth";
 import { HTTPError } from "ky";
@@ -27,6 +27,7 @@ const signUpSchema = z.object({
 type SignUpSchemaPayload = z.infer<typeof signUpSchema>;
 
 export const SignUpForm: React.FunctionComponent = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -45,10 +46,10 @@ export const SignUpForm: React.FunctionComponent = () => {
 
   const mutationSignUp = useMutation({
     mutationFn: ({ email, password }: SignUpSchemaPayload) => {
-      return authService.signUpWithEmail(email, password);
+      return authService.signUpAdminUser(email, password);
     },
     onSuccess: () => {
-      redirect({ to: "/" });
+      navigate({ to: "/" });
       toast.success("Welcome to the admin dashboard!");
     },
     onError: async (exception) => {

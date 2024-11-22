@@ -25,9 +25,6 @@ export const config: Config = {
     apiKey: getEnvVar("FIREBASE_API_KEY"),
     projectId: getEnvVar("FIREBASE_PROJECT_ID"),
   },
-  admin: {
-    authIds: getEnvVar("ADMIN_AUTH_IDS", "").split(","),
-  },
   s3: {
     bucket: getEnvVar("S3_BUCKET"),
     accessKeyId: getEnvVar("S3_ACCESS_KEY_ID"),

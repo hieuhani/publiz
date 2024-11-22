@@ -18,7 +18,6 @@ type Env = {
   DB_PREPARE?: string;
   FIREBASE_API_KEY: string;
   FIREBASE_PROJECT_ID: string;
-  ADMIN_AUTH_IDS?: string;
   S3_BUCKET: string;
   S3_ACCESS_KEY_ID: string;
   S3_SECRET_ACCESS_KEY: string;

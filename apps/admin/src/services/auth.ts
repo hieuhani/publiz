@@ -1,9 +1,14 @@
-import { AuthResponse, signIn, signUpWithEmail } from "@/api";
+import { AuthResponse, signIn, signUpAdminUser, signUpWithEmail } from "@/api";
 import Cookies from "js-cookie";
 
 export const authService = {
   signUpWithEmail: async (email: string, password: string) => {
     const { data } = await signUpWithEmail({ email, password });
+    authService.saveToken(data);
+  },
+  signUpAdminUser: async (email: string, password: string) => {
+    const { data } = await signUpAdminUser({ email, password });
+    console.log({ data });
     authService.saveToken(data);
   },
   signIn: async (email: string, password: string) => {

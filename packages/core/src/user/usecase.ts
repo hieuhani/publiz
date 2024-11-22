@@ -8,6 +8,7 @@ import { Validator } from "@cfworker/json-schema";
 import { Container } from "../container";
 import { getMetaSchemaById } from "../meta-schema";
 import { AppError } from "../error";
+import { User, UserRoleBit } from "./model";
 
 type GetMyProfileInput = {
   authId: string;
@@ -72,4 +73,17 @@ export const patchUserMetadataById = async (
   return createUserCrudRepository(container.sqlDb).update(userId, {
     metadata: newMetadata,
   });
+};
+
+export const getUsersCount = async (container: Container) =>
+  createUserCrudRepository(container.sqlDb).count();
+
+export const verifyUserRoleOrThrow = async (
+  _container: Container,
+  user: User,
+  role: UserRoleBit
+) => {
+  if ((user.rolesMask & role) === 0) {
+    throw new AppError(403_002, "You are not authorized");
+  }
 };

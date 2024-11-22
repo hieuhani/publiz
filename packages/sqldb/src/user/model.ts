@@ -5,6 +5,7 @@ export type UserTable = {
   authId: string;
   displayName: string;
   metadata: any;
+  rolesMask?: number;
   updatedAt?: string;
 };
 

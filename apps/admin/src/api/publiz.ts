@@ -183,6 +183,12 @@ export const signUpWithEmail = (input: SignUpWithEmailInput) => {
     .json<BaseResponse<AuthResponse>>();
 };
 
+export const signUpAdminUser = (input: SignUpWithEmailInput) => {
+  return publizClient
+    .post("api/system/sign_up_admin_user", { json: input })
+    .json<BaseResponse<AuthResponse>>();
+};
+
 export type SignInInput = {
   email: string;
   password: string;

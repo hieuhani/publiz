@@ -69,5 +69,13 @@ export const createCrudRepository = <T extends keyof Database>(
     async find() {
       return db.selectFrom(table).selectAll().execute();
     },
+    async count() {
+      const { count } = await db
+        .selectFrom(table)
+        .select(db.fn.countAll<number>().as("count"))
+        .executeTakeFirstOrThrow();
+
+      return +count;
+    },
   };
 };

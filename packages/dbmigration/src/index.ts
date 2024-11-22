@@ -412,7 +412,8 @@ export const initialMigrationSql = sql`
       display_name character varying(100) NOT NULL,
       metadata jsonb,
       created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-      updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+      updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      roles_mask smallint default 1 not null
   );
 
   CREATE SEQUENCE public.users_id_seq
@@ -726,6 +727,7 @@ export const initialMigrationSql = sql`
   INSERT INTO public.kysely_migration VALUES ('202407150858_add_public_id_to_posts_table', '2024-09-21T11:18:10.209Z');
   INSERT INTO public.kysely_migration VALUES ('202407251622_add_metadata_to_meta_schemas_table', '2024-09-21T11:18:10.210Z');
   INSERT INTO public.kysely_migration VALUES ('202407252127_alter_content_type_length_files_table', '2024-09-21T11:18:10.211Z');
+  INSERT INTO public.kysely_migration VALUES ('202411221609_add_roles_mask_to_users_table', '2024-11-22T09:20:32.271Z');
 
   INSERT INTO public.kysely_migration_lock VALUES ('migration_lock', 0);
   `;

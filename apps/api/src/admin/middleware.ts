@@ -1,6 +1,11 @@
-import { AppError } from "@publiz/core";
+import {
+  AppError,
+  Container,
+  getMyProfile,
+  RoleAdministrator,
+  verifyUserRoleOrThrow,
+} from "@publiz/core";
 import { MiddlewareHandler } from "hono";
-import { Config } from "../config";
 
 export const requireAdmin = (): MiddlewareHandler => {
   return async (c, next) => {
@@ -8,10 +13,16 @@ export const requireAdmin = (): MiddlewareHandler => {
     if (!currentUser) {
       throw new AppError(401_001, "Unauthorized user");
     }
-    const config = c.get("config") as Config;
-    if (!config.admin.authIds.includes(currentUser.sub)) {
-      throw new AppError(403_002, "You are not an admin");
+    const container = c.get("container") as Container;
+
+    const appUser = await getMyProfile(container, { authId: currentUser.sub });
+
+    if (!appUser) {
+      throw new AppError(403_002, "Not found user");
     }
+
+    await verifyUserRoleOrThrow(container, appUser, RoleAdministrator);
+
     await next();
   };
 };
