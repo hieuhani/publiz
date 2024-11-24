@@ -1,4 +1,4 @@
-import { getMyProfile } from "@/api";
+import { getMyProfile, User } from "@/api";
 import { authService } from "@/services/auth";
 import {
   createContext,
@@ -8,7 +8,7 @@ import {
 } from "react";
 
 export interface AuthContextState {
-  checkAuth: () => Promise<boolean>;
+  checkAuth: () => Promise<User | null>;
   signOut: () => void;
 }
 
@@ -28,18 +28,19 @@ export const AuthProvider: React.FunctionComponent<PropsWithChildren> = ({
 }) => {
   const checkAuth = useCallback(async () => {
     if (!authService.idToken && !authService.refreshToken) {
-      return false;
+      return null;
     }
 
     if (!authService.refreshToken) {
-      return false;
+      return null;
     }
 
     try {
-      await getMyProfile();
-      return true;
+      const myProfileResponse = await getMyProfile();
+
+      return myProfileResponse.data;
     } catch {
-      return false;
+      return null;
     }
   }, []);
 

@@ -1,21 +1,17 @@
-import {
-  createOrganization,
-  getOrganizations,
-  updateOrganization,
-} from "@/api";
-import { ButtonDrawer } from "@/components/ButtonDrawer";
-import { CreateForm } from "@/components/crud/CreateForm";
-import { buildQueryOptions } from "@/lib/query";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { ChevronRight, Plus } from "lucide-react";
-import { z } from "zod";
+import { createOrganization, getOrganizations, updateOrganization } from '@/api'
+import { ButtonDrawer } from '@/components/ButtonDrawer'
+import { CreateForm } from '@/components/crud/CreateForm'
+import { buildQueryOptions } from '@/lib/query'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { createFileRoute } from '@tanstack/react-router'
+import { ChevronRight, Plus } from 'lucide-react'
+import { z } from 'zod'
 
 const Organizations: React.FunctionComponent = () => {
   const {
     data: { data: records = [] },
     refetch,
-  } = useSuspenseQuery(buildQueryOptions(getOrganizations));
+  } = useSuspenseQuery(buildQueryOptions(getOrganizations))
   return (
     <div className="mx-auto max-w-xl pt-4">
       <div className="items-center justify-between flex mb-4">
@@ -25,8 +21,8 @@ const Organizations: React.FunctionComponent = () => {
           content={(close) => (
             <CreateForm
               onCreated={() => {
-                refetch();
-                close();
+                refetch()
+                close()
               }}
               schema={z.object({
                 name: z.string().min(1).max(100),
@@ -54,8 +50,8 @@ const Organizations: React.FunctionComponent = () => {
               <CreateForm
                 currentData={record}
                 onCreated={() => {
-                  refetch();
-                  close();
+                  refetch()
+                  close()
                 }}
                 schema={z.object({
                   name: z.string().min(1).max(100),
@@ -86,11 +82,11 @@ const Organizations: React.FunctionComponent = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export const Route = createFileRoute("/organizations/")({
+export const Route = createFileRoute('/$organization/organizations/')({
   component: Organizations,
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(buildQueryOptions(getOrganizations)),
-});
+})

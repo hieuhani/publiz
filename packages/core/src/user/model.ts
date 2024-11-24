@@ -8,3 +8,12 @@ export const RoleNormal: UserRoleBit = 0b0000000000000000000000000000001;
 export const RoleAdministrator: UserRoleBit = 0b0000000000000000000000001000000;
 
 export const UserRoleAdministrator = RoleNormal | RoleAdministrator;
+
+export const getLabelForRole = (role: UserRoleBit): string => {
+  if (role & RoleAdministrator) {
+    return "Administrator";
+  }
+  if (role & RoleNormal) {
+    return "Normal";
+  }
+};

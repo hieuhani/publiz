@@ -1,17 +1,20 @@
 import { createTag, getTags, updateTag } from "@/api";
 import { ButtonDrawer } from "@/components/ButtonDrawer";
 import { CreateForm } from "@/components/crud/CreateForm";
-import { buildQueryOptions } from "@/lib/query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronRight, Plus } from "lucide-react";
+import { ChevronRight, Plus, Tag } from "lucide-react";
 import { z } from "zod";
 
 const Tags: React.FunctionComponent = () => {
+  const params = Route.useParams();
   const {
     data: { data: records = [] },
     refetch,
-  } = useSuspenseQuery(buildQueryOptions(getTags));
+  } = useSuspenseQuery({
+    queryKey: ["getTags", params.organization],
+    queryFn: () => getTags(params.organization),
+  });
 
   return (
     <div className="mx-auto max-w-xl pt-4">
@@ -30,8 +33,8 @@ const Tags: React.FunctionComponent = () => {
                 parentId: z.number().optional(),
                 taxonomyId: z.number().optional(),
               })}
-              createFn={(tag) => createTag([tag])}
-              updateFn={updateTag}
+              createFn={(tag) => createTag(tag, params.organization)}
+              updateFn={(id, tag) => updateTag(id, tag, params.organization)}
             />
           )}
           title="Create a new tag"
@@ -58,8 +61,8 @@ const Tags: React.FunctionComponent = () => {
                   parentId: z.number().optional(),
                   taxonomyId: z.number().optional(),
                 })}
-                createFn={(tag) => createTag([tag])}
-                updateFn={updateTag}
+                createFn={(tag) => createTag(tag, params.organization)}
+                updateFn={(id, tag) => updateTag(id, tag, params.organization)}
               />
             )}
             title="Update tag"
@@ -83,8 +86,11 @@ const Tags: React.FunctionComponent = () => {
   );
 };
 
-export const Route = createFileRoute("/tags/")({
+export const Route = createFileRoute("/$organization/tags/")({
   component: Tags,
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(buildQueryOptions(getTags)),
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData({
+      queryKey: ["getTags", params.organization],
+      queryFn: () => getTags(params.organization),
+    }),
 });

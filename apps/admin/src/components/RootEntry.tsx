@@ -1,22 +1,25 @@
 import { Toaster } from "react-hot-toast";
 import { Outlet, useLocation, useNavigate } from "@tanstack/react-router";
-import { SideBar } from "./SideBar";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { User } from "@/api";
+import { CurrentUserContextProvider } from "@/contexts/CurrentUserContext";
 
 export const RootEntry: React.FunctionComponent = () => {
   const location = useLocation();
-  const hideSideBar =
-    location.pathname === "/sign-in" || location.pathname === "/welcome";
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
   const auth = useAuth();
   const navigate = useNavigate();
   const [bootstrapping, setBootstrapping] = useState(true);
+
   useEffect(() => {
     const bootstrap = async () => {
-      const isAuthenticated = await auth.checkAuth();
+      const authenticatedUser = await auth.checkAuth();
       setBootstrapping(false);
+      setCurrentUser(authenticatedUser);
       if (
-        !isAuthenticated &&
+        !authenticatedUser &&
         location.pathname !== "/sign-in" &&
         location.pathname !== "/welcome"
       ) {
@@ -31,14 +34,9 @@ export const RootEntry: React.FunctionComponent = () => {
   }
 
   return (
-    <>
+    <CurrentUserContextProvider value={currentUser}>
       <Toaster />
-      <div className="flex h-screen w-full">
-        {!hideSideBar && <SideBar />}
-        <div className="flex-1">
-          <Outlet />
-        </div>
-      </div>
-    </>
+      <Outlet />
+    </CurrentUserContextProvider>
   );
 };

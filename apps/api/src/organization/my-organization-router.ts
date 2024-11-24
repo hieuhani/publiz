@@ -33,6 +33,9 @@ import {
   createComment,
   findCommentsByTargetAndTargetId,
   findByModelNameAndModelId,
+  getOrganizationId,
+  getOrganizationBySlug,
+  getOrganizationById,
 } from "@publiz/core";
 import { useCurrentAppUser } from "../user";
 import { useCheckOrganizationUser } from "./middleware";
@@ -78,6 +81,23 @@ myOrganizationRouter.get(
       organizationId: organizationId,
     });
     return c.json({ data: organizationRoles });
+  }
+);
+
+myOrganizationRouter.get(
+  "/:organization_id",
+  useCurrentAppUser({ required: true }),
+  useCheckOrganizationUser(),
+  async (c) => {
+    const container = c.get("container");
+
+    const organizationId = await getOrganizationIdFromCache(
+      container,
+      c.req.param("organization_id")
+    );
+
+    const organization = await getOrganizationById(container, organizationId);
+    return c.json({ data: organization });
   }
 );
 
@@ -466,11 +486,11 @@ myOrganizationRouter.get(
       container,
       c.req.param("organization_id")
     );
-    const tags = await findTaxonomiesByOrganizationId(
+    const taxonomies = await findTaxonomiesByOrganizationId(
       container,
       +organizationId
     );
-    return c.json({ data: tags });
+    return c.json({ data: taxonomies });
   }
 );
 

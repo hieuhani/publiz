@@ -62,7 +62,12 @@ const routes = [
     icon: <Files />,
   },
 ];
-export const SideBar: React.FunctionComponent = () => {
+
+type Props = {
+  organization: string;
+};
+
+export const SideBar: React.FunctionComponent<Props> = ({ organization }) => {
   const auth = useAuth();
   return (
     <div className="px-2 py-2 flex flex-col h-full w-60 bg-zinc-950">
@@ -76,10 +81,13 @@ export const SideBar: React.FunctionComponent = () => {
             {routes.map((route) => (
               <li key={route.link}>
                 <Link
-                  to={route.link}
+                  to={`/${organization}/${route.link}`}
                   className="py-3 flex px-3 space-x-3 items-center"
                   activeProps={{
                     className: "bg-zinc-800 rounded-md",
+                  }}
+                  activeOptions={{
+                    exact: true,
                   }}
                 >
                   {route.icon}

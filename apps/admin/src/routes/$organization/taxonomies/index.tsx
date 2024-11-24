@@ -1,17 +1,21 @@
 import { createTaxonomy, getTaxonomies, updateTaxonomy } from "@/api";
 import { ButtonDrawer } from "@/components/ButtonDrawer";
 import { CreateForm } from "@/components/crud/CreateForm";
-import { buildQueryOptions } from "@/lib/query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronRight, Plus } from "lucide-react";
 import { z } from "zod";
 
 const Taxonomies: React.FunctionComponent = () => {
+  const params = Route.useParams();
+
   const {
     data: { data: records = [] },
     refetch,
-  } = useSuspenseQuery(buildQueryOptions(getTaxonomies));
+  } = useSuspenseQuery({
+    queryKey: ["getTaxonomies", params.organization],
+    queryFn: () => getTaxonomies(params.organization),
+  });
 
   return (
     <div className="mx-auto max-w-xl pt-4">
@@ -28,8 +32,10 @@ const Taxonomies: React.FunctionComponent = () => {
                 name: z.string().min(1).max(100),
                 slug: z.string().min(1).max(100),
               })}
-              createFn={createTaxonomy}
-              updateFn={updateTaxonomy}
+              createFn={(input) => createTaxonomy(input, params.organization)}
+              updateFn={(id, input) =>
+                updateTaxonomy(id, input, params.organization)
+              }
             />
           )}
           title="Create a new taxonomy"
@@ -54,8 +60,10 @@ const Taxonomies: React.FunctionComponent = () => {
                   name: z.string().min(1).max(100),
                   slug: z.string().min(1).max(100),
                 })}
-                createFn={createTaxonomy}
-                updateFn={updateTaxonomy}
+                createFn={(input) => createTaxonomy(input, params.organization)}
+                updateFn={(id, input) =>
+                  updateTaxonomy(id, input, params.organization)
+                }
               />
             )}
             title="Update taxonomy"
@@ -79,8 +87,11 @@ const Taxonomies: React.FunctionComponent = () => {
   );
 };
 
-export const Route = createFileRoute("/taxonomies/")({
+export const Route = createFileRoute("/$organization/taxonomies/")({
   component: Taxonomies,
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(buildQueryOptions(getTaxonomies)),
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData({
+      queryKey: ["getTaxonomies", params.organization],
+      queryFn: () => getTaxonomies(params.organization),
+    }),
 });

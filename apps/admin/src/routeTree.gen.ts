@@ -13,15 +13,17 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as WelcomeImport } from './routes/welcome'
 import { Route as SignInImport } from './routes/sign-in'
+import { Route as OrganizationImport } from './routes/$organization'
 import { Route as IndexImport } from './routes/index'
-import { Route as UsersIndexImport } from './routes/users/index'
-import { Route as TaxonomiesIndexImport } from './routes/taxonomies/index'
-import { Route as TagsIndexImport } from './routes/tags/index'
-import { Route as ReactionPacksIndexImport } from './routes/reaction-packs/index'
-import { Route as PostsIndexImport } from './routes/posts/index'
-import { Route as OrganizationsIndexImport } from './routes/organizations/index'
-import { Route as MetaSchemasIndexImport } from './routes/meta-schemas/index'
-import { Route as FilesIndexImport } from './routes/files/index'
+import { Route as OrganizationIndexImport } from './routes/$organization/index'
+import { Route as OrganizationUsersIndexImport } from './routes/$organization/users/index'
+import { Route as OrganizationTaxonomiesIndexImport } from './routes/$organization/taxonomies/index'
+import { Route as OrganizationTagsIndexImport } from './routes/$organization/tags/index'
+import { Route as OrganizationReactionPacksIndexImport } from './routes/$organization/reaction-packs/index'
+import { Route as OrganizationPostsIndexImport } from './routes/$organization/posts/index'
+import { Route as OrganizationOrganizationsIndexImport } from './routes/$organization/organizations/index'
+import { Route as OrganizationMetaSchemasIndexImport } from './routes/$organization/meta-schemas/index'
+import { Route as OrganizationFilesIndexImport } from './routes/$organization/files/index'
 
 // Create/Update Routes
 
@@ -35,49 +37,63 @@ const SignInRoute = SignInImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const OrganizationRoute = OrganizationImport.update({
+  path: '/$organization',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const UsersIndexRoute = UsersIndexImport.update({
+const OrganizationIndexRoute = OrganizationIndexImport.update({
+  path: '/',
+  getParentRoute: () => OrganizationRoute,
+} as any)
+
+const OrganizationUsersIndexRoute = OrganizationUsersIndexImport.update({
   path: '/users/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => OrganizationRoute,
 } as any)
 
-const TaxonomiesIndexRoute = TaxonomiesIndexImport.update({
-  path: '/taxonomies/',
-  getParentRoute: () => rootRoute,
-} as any)
+const OrganizationTaxonomiesIndexRoute =
+  OrganizationTaxonomiesIndexImport.update({
+    path: '/taxonomies/',
+    getParentRoute: () => OrganizationRoute,
+  } as any)
 
-const TagsIndexRoute = TagsIndexImport.update({
+const OrganizationTagsIndexRoute = OrganizationTagsIndexImport.update({
   path: '/tags/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => OrganizationRoute,
 } as any)
 
-const ReactionPacksIndexRoute = ReactionPacksIndexImport.update({
-  path: '/reaction-packs/',
-  getParentRoute: () => rootRoute,
-} as any)
+const OrganizationReactionPacksIndexRoute =
+  OrganizationReactionPacksIndexImport.update({
+    path: '/reaction-packs/',
+    getParentRoute: () => OrganizationRoute,
+  } as any)
 
-const PostsIndexRoute = PostsIndexImport.update({
+const OrganizationPostsIndexRoute = OrganizationPostsIndexImport.update({
   path: '/posts/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => OrganizationRoute,
 } as any)
 
-const OrganizationsIndexRoute = OrganizationsIndexImport.update({
-  path: '/organizations/',
-  getParentRoute: () => rootRoute,
-} as any)
+const OrganizationOrganizationsIndexRoute =
+  OrganizationOrganizationsIndexImport.update({
+    path: '/organizations/',
+    getParentRoute: () => OrganizationRoute,
+  } as any)
 
-const MetaSchemasIndexRoute = MetaSchemasIndexImport.update({
-  path: '/meta-schemas/',
-  getParentRoute: () => rootRoute,
-} as any)
+const OrganizationMetaSchemasIndexRoute =
+  OrganizationMetaSchemasIndexImport.update({
+    path: '/meta-schemas/',
+    getParentRoute: () => OrganizationRoute,
+  } as any)
 
-const FilesIndexRoute = FilesIndexImport.update({
+const OrganizationFilesIndexRoute = OrganizationFilesIndexImport.update({
   path: '/files/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => OrganizationRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -89,6 +105,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/$organization': {
+      id: '/$organization'
+      path: '/$organization'
+      fullPath: '/$organization'
+      preLoaderRoute: typeof OrganizationImport
       parentRoute: typeof rootRoute
     }
     '/sign-in': {
@@ -105,179 +128,210 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WelcomeImport
       parentRoute: typeof rootRoute
     }
-    '/files/': {
-      id: '/files/'
+    '/$organization/': {
+      id: '/$organization/'
+      path: '/'
+      fullPath: '/$organization/'
+      preLoaderRoute: typeof OrganizationIndexImport
+      parentRoute: typeof OrganizationImport
+    }
+    '/$organization/files/': {
+      id: '/$organization/files/'
       path: '/files'
-      fullPath: '/files'
-      preLoaderRoute: typeof FilesIndexImport
-      parentRoute: typeof rootRoute
+      fullPath: '/$organization/files'
+      preLoaderRoute: typeof OrganizationFilesIndexImport
+      parentRoute: typeof OrganizationImport
     }
-    '/meta-schemas/': {
-      id: '/meta-schemas/'
+    '/$organization/meta-schemas/': {
+      id: '/$organization/meta-schemas/'
       path: '/meta-schemas'
-      fullPath: '/meta-schemas'
-      preLoaderRoute: typeof MetaSchemasIndexImport
-      parentRoute: typeof rootRoute
+      fullPath: '/$organization/meta-schemas'
+      preLoaderRoute: typeof OrganizationMetaSchemasIndexImport
+      parentRoute: typeof OrganizationImport
     }
-    '/organizations/': {
-      id: '/organizations/'
+    '/$organization/organizations/': {
+      id: '/$organization/organizations/'
       path: '/organizations'
-      fullPath: '/organizations'
-      preLoaderRoute: typeof OrganizationsIndexImport
-      parentRoute: typeof rootRoute
+      fullPath: '/$organization/organizations'
+      preLoaderRoute: typeof OrganizationOrganizationsIndexImport
+      parentRoute: typeof OrganizationImport
     }
-    '/posts/': {
-      id: '/posts/'
+    '/$organization/posts/': {
+      id: '/$organization/posts/'
       path: '/posts'
-      fullPath: '/posts'
-      preLoaderRoute: typeof PostsIndexImport
-      parentRoute: typeof rootRoute
+      fullPath: '/$organization/posts'
+      preLoaderRoute: typeof OrganizationPostsIndexImport
+      parentRoute: typeof OrganizationImport
     }
-    '/reaction-packs/': {
-      id: '/reaction-packs/'
+    '/$organization/reaction-packs/': {
+      id: '/$organization/reaction-packs/'
       path: '/reaction-packs'
-      fullPath: '/reaction-packs'
-      preLoaderRoute: typeof ReactionPacksIndexImport
-      parentRoute: typeof rootRoute
+      fullPath: '/$organization/reaction-packs'
+      preLoaderRoute: typeof OrganizationReactionPacksIndexImport
+      parentRoute: typeof OrganizationImport
     }
-    '/tags/': {
-      id: '/tags/'
+    '/$organization/tags/': {
+      id: '/$organization/tags/'
       path: '/tags'
-      fullPath: '/tags'
-      preLoaderRoute: typeof TagsIndexImport
-      parentRoute: typeof rootRoute
+      fullPath: '/$organization/tags'
+      preLoaderRoute: typeof OrganizationTagsIndexImport
+      parentRoute: typeof OrganizationImport
     }
-    '/taxonomies/': {
-      id: '/taxonomies/'
+    '/$organization/taxonomies/': {
+      id: '/$organization/taxonomies/'
       path: '/taxonomies'
-      fullPath: '/taxonomies'
-      preLoaderRoute: typeof TaxonomiesIndexImport
-      parentRoute: typeof rootRoute
+      fullPath: '/$organization/taxonomies'
+      preLoaderRoute: typeof OrganizationTaxonomiesIndexImport
+      parentRoute: typeof OrganizationImport
     }
-    '/users/': {
-      id: '/users/'
+    '/$organization/users/': {
+      id: '/$organization/users/'
       path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof UsersIndexImport
-      parentRoute: typeof rootRoute
+      fullPath: '/$organization/users'
+      preLoaderRoute: typeof OrganizationUsersIndexImport
+      parentRoute: typeof OrganizationImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface OrganizationRouteChildren {
+  OrganizationIndexRoute: typeof OrganizationIndexRoute
+  OrganizationFilesIndexRoute: typeof OrganizationFilesIndexRoute
+  OrganizationMetaSchemasIndexRoute: typeof OrganizationMetaSchemasIndexRoute
+  OrganizationOrganizationsIndexRoute: typeof OrganizationOrganizationsIndexRoute
+  OrganizationPostsIndexRoute: typeof OrganizationPostsIndexRoute
+  OrganizationReactionPacksIndexRoute: typeof OrganizationReactionPacksIndexRoute
+  OrganizationTagsIndexRoute: typeof OrganizationTagsIndexRoute
+  OrganizationTaxonomiesIndexRoute: typeof OrganizationTaxonomiesIndexRoute
+  OrganizationUsersIndexRoute: typeof OrganizationUsersIndexRoute
+}
+
+const OrganizationRouteChildren: OrganizationRouteChildren = {
+  OrganizationIndexRoute: OrganizationIndexRoute,
+  OrganizationFilesIndexRoute: OrganizationFilesIndexRoute,
+  OrganizationMetaSchemasIndexRoute: OrganizationMetaSchemasIndexRoute,
+  OrganizationOrganizationsIndexRoute: OrganizationOrganizationsIndexRoute,
+  OrganizationPostsIndexRoute: OrganizationPostsIndexRoute,
+  OrganizationReactionPacksIndexRoute: OrganizationReactionPacksIndexRoute,
+  OrganizationTagsIndexRoute: OrganizationTagsIndexRoute,
+  OrganizationTaxonomiesIndexRoute: OrganizationTaxonomiesIndexRoute,
+  OrganizationUsersIndexRoute: OrganizationUsersIndexRoute,
+}
+
+const OrganizationRouteWithChildren = OrganizationRoute._addFileChildren(
+  OrganizationRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$organization': typeof OrganizationRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/welcome': typeof WelcomeRoute
-  '/files': typeof FilesIndexRoute
-  '/meta-schemas': typeof MetaSchemasIndexRoute
-  '/organizations': typeof OrganizationsIndexRoute
-  '/posts': typeof PostsIndexRoute
-  '/reaction-packs': typeof ReactionPacksIndexRoute
-  '/tags': typeof TagsIndexRoute
-  '/taxonomies': typeof TaxonomiesIndexRoute
-  '/users': typeof UsersIndexRoute
+  '/$organization/': typeof OrganizationIndexRoute
+  '/$organization/files': typeof OrganizationFilesIndexRoute
+  '/$organization/meta-schemas': typeof OrganizationMetaSchemasIndexRoute
+  '/$organization/organizations': typeof OrganizationOrganizationsIndexRoute
+  '/$organization/posts': typeof OrganizationPostsIndexRoute
+  '/$organization/reaction-packs': typeof OrganizationReactionPacksIndexRoute
+  '/$organization/tags': typeof OrganizationTagsIndexRoute
+  '/$organization/taxonomies': typeof OrganizationTaxonomiesIndexRoute
+  '/$organization/users': typeof OrganizationUsersIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sign-in': typeof SignInRoute
   '/welcome': typeof WelcomeRoute
-  '/files': typeof FilesIndexRoute
-  '/meta-schemas': typeof MetaSchemasIndexRoute
-  '/organizations': typeof OrganizationsIndexRoute
-  '/posts': typeof PostsIndexRoute
-  '/reaction-packs': typeof ReactionPacksIndexRoute
-  '/tags': typeof TagsIndexRoute
-  '/taxonomies': typeof TaxonomiesIndexRoute
-  '/users': typeof UsersIndexRoute
+  '/$organization': typeof OrganizationIndexRoute
+  '/$organization/files': typeof OrganizationFilesIndexRoute
+  '/$organization/meta-schemas': typeof OrganizationMetaSchemasIndexRoute
+  '/$organization/organizations': typeof OrganizationOrganizationsIndexRoute
+  '/$organization/posts': typeof OrganizationPostsIndexRoute
+  '/$organization/reaction-packs': typeof OrganizationReactionPacksIndexRoute
+  '/$organization/tags': typeof OrganizationTagsIndexRoute
+  '/$organization/taxonomies': typeof OrganizationTaxonomiesIndexRoute
+  '/$organization/users': typeof OrganizationUsersIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/$organization': typeof OrganizationRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/welcome': typeof WelcomeRoute
-  '/files/': typeof FilesIndexRoute
-  '/meta-schemas/': typeof MetaSchemasIndexRoute
-  '/organizations/': typeof OrganizationsIndexRoute
-  '/posts/': typeof PostsIndexRoute
-  '/reaction-packs/': typeof ReactionPacksIndexRoute
-  '/tags/': typeof TagsIndexRoute
-  '/taxonomies/': typeof TaxonomiesIndexRoute
-  '/users/': typeof UsersIndexRoute
+  '/$organization/': typeof OrganizationIndexRoute
+  '/$organization/files/': typeof OrganizationFilesIndexRoute
+  '/$organization/meta-schemas/': typeof OrganizationMetaSchemasIndexRoute
+  '/$organization/organizations/': typeof OrganizationOrganizationsIndexRoute
+  '/$organization/posts/': typeof OrganizationPostsIndexRoute
+  '/$organization/reaction-packs/': typeof OrganizationReactionPacksIndexRoute
+  '/$organization/tags/': typeof OrganizationTagsIndexRoute
+  '/$organization/taxonomies/': typeof OrganizationTaxonomiesIndexRoute
+  '/$organization/users/': typeof OrganizationUsersIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$organization'
     | '/sign-in'
     | '/welcome'
-    | '/files'
-    | '/meta-schemas'
-    | '/organizations'
-    | '/posts'
-    | '/reaction-packs'
-    | '/tags'
-    | '/taxonomies'
-    | '/users'
+    | '/$organization/'
+    | '/$organization/files'
+    | '/$organization/meta-schemas'
+    | '/$organization/organizations'
+    | '/$organization/posts'
+    | '/$organization/reaction-packs'
+    | '/$organization/tags'
+    | '/$organization/taxonomies'
+    | '/$organization/users'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/sign-in'
     | '/welcome'
-    | '/files'
-    | '/meta-schemas'
-    | '/organizations'
-    | '/posts'
-    | '/reaction-packs'
-    | '/tags'
-    | '/taxonomies'
-    | '/users'
+    | '/$organization'
+    | '/$organization/files'
+    | '/$organization/meta-schemas'
+    | '/$organization/organizations'
+    | '/$organization/posts'
+    | '/$organization/reaction-packs'
+    | '/$organization/tags'
+    | '/$organization/taxonomies'
+    | '/$organization/users'
   id:
     | '__root__'
     | '/'
+    | '/$organization'
     | '/sign-in'
     | '/welcome'
-    | '/files/'
-    | '/meta-schemas/'
-    | '/organizations/'
-    | '/posts/'
-    | '/reaction-packs/'
-    | '/tags/'
-    | '/taxonomies/'
-    | '/users/'
+    | '/$organization/'
+    | '/$organization/files/'
+    | '/$organization/meta-schemas/'
+    | '/$organization/organizations/'
+    | '/$organization/posts/'
+    | '/$organization/reaction-packs/'
+    | '/$organization/tags/'
+    | '/$organization/taxonomies/'
+    | '/$organization/users/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  OrganizationRoute: typeof OrganizationRouteWithChildren
   SignInRoute: typeof SignInRoute
   WelcomeRoute: typeof WelcomeRoute
-  FilesIndexRoute: typeof FilesIndexRoute
-  MetaSchemasIndexRoute: typeof MetaSchemasIndexRoute
-  OrganizationsIndexRoute: typeof OrganizationsIndexRoute
-  PostsIndexRoute: typeof PostsIndexRoute
-  ReactionPacksIndexRoute: typeof ReactionPacksIndexRoute
-  TagsIndexRoute: typeof TagsIndexRoute
-  TaxonomiesIndexRoute: typeof TaxonomiesIndexRoute
-  UsersIndexRoute: typeof UsersIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  OrganizationRoute: OrganizationRouteWithChildren,
   SignInRoute: SignInRoute,
   WelcomeRoute: WelcomeRoute,
-  FilesIndexRoute: FilesIndexRoute,
-  MetaSchemasIndexRoute: MetaSchemasIndexRoute,
-  OrganizationsIndexRoute: OrganizationsIndexRoute,
-  PostsIndexRoute: PostsIndexRoute,
-  ReactionPacksIndexRoute: ReactionPacksIndexRoute,
-  TagsIndexRoute: TagsIndexRoute,
-  TaxonomiesIndexRoute: TaxonomiesIndexRoute,
-  UsersIndexRoute: UsersIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -293,20 +347,27 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/$organization",
         "/sign-in",
-        "/welcome",
-        "/files/",
-        "/meta-schemas/",
-        "/organizations/",
-        "/posts/",
-        "/reaction-packs/",
-        "/tags/",
-        "/taxonomies/",
-        "/users/"
+        "/welcome"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/$organization": {
+      "filePath": "$organization.tsx",
+      "children": [
+        "/$organization/",
+        "/$organization/files/",
+        "/$organization/meta-schemas/",
+        "/$organization/organizations/",
+        "/$organization/posts/",
+        "/$organization/reaction-packs/",
+        "/$organization/tags/",
+        "/$organization/taxonomies/",
+        "/$organization/users/"
+      ]
     },
     "/sign-in": {
       "filePath": "sign-in.tsx"
@@ -314,29 +375,41 @@ export const routeTree = rootRoute
     "/welcome": {
       "filePath": "welcome.tsx"
     },
-    "/files/": {
-      "filePath": "files/index.tsx"
+    "/$organization/": {
+      "filePath": "$organization/index.tsx",
+      "parent": "/$organization"
     },
-    "/meta-schemas/": {
-      "filePath": "meta-schemas/index.tsx"
+    "/$organization/files/": {
+      "filePath": "$organization/files/index.tsx",
+      "parent": "/$organization"
     },
-    "/organizations/": {
-      "filePath": "organizations/index.tsx"
+    "/$organization/meta-schemas/": {
+      "filePath": "$organization/meta-schemas/index.tsx",
+      "parent": "/$organization"
     },
-    "/posts/": {
-      "filePath": "posts/index.tsx"
+    "/$organization/organizations/": {
+      "filePath": "$organization/organizations/index.tsx",
+      "parent": "/$organization"
     },
-    "/reaction-packs/": {
-      "filePath": "reaction-packs/index.tsx"
+    "/$organization/posts/": {
+      "filePath": "$organization/posts/index.tsx",
+      "parent": "/$organization"
     },
-    "/tags/": {
-      "filePath": "tags/index.tsx"
+    "/$organization/reaction-packs/": {
+      "filePath": "$organization/reaction-packs/index.tsx",
+      "parent": "/$organization"
     },
-    "/taxonomies/": {
-      "filePath": "taxonomies/index.tsx"
+    "/$organization/tags/": {
+      "filePath": "$organization/tags/index.tsx",
+      "parent": "/$organization"
     },
-    "/users/": {
-      "filePath": "users/index.tsx"
+    "/$organization/taxonomies/": {
+      "filePath": "$organization/taxonomies/index.tsx",
+      "parent": "/$organization"
+    },
+    "/$organization/users/": {
+      "filePath": "$organization/users/index.tsx",
+      "parent": "/$organization"
     }
   }
 }

@@ -7,6 +7,7 @@ import {
   AppError,
   findPosts,
   getOrganizationMetaSchemaByIdentifier,
+  findTaxonomiesByOrganizationId,
 } from "@publiz/core";
 import { parseContext } from "../lib/object";
 import { getOrganizationIdFromCache } from "./lib";
@@ -17,6 +18,20 @@ organizationRouter.get("/", async (c) => {
   const container = c.get("container");
   const tags = await getOrganizations(container);
   return c.json({ data: tags }); // reserved for pagination
+});
+
+organizationRouter.get("/:organization_id/taxonomies", async (c) => {
+  const container = c.get("container");
+
+  const organizationId = await getOrganizationIdFromCache(
+    container,
+    c.req.param("organization_id")
+  );
+  const taxonomies = await findTaxonomiesByOrganizationId(
+    container,
+    +organizationId
+  );
+  return c.json({ data: taxonomies });
 });
 
 organizationRouter.get("/:organization_id/posts", async (c) => {

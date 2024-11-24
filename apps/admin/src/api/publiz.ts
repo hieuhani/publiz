@@ -10,6 +10,7 @@ export type User = {
   displayName: string;
   avatarUrl?: string;
   coverUrl?: string;
+  rolesMask?: number;
 };
 
 export type Organization = {
@@ -75,11 +76,27 @@ export const getMyProfile = () =>
 export const getOrganizations = () =>
   publizClient.get("api/v1/organizations").json<BaseResponse<Organization[]>>();
 
-export const getTags = () =>
-  publizClient.get("api/v1/tags").json<BaseResponse<Tag[]>>();
+export const getTags = (tenant = "-") => {
+  if (tenant === "-") {
+    return publizClient.get("api/v1/tags").json<BaseResponse<Tag[]>>();
+  }
 
-export const getTaxonomies = () =>
-  publizClient.get("api/v1/taxonomies").json<BaseResponse<Taxonomy[]>>();
+  return publizClient
+    .get(`api/v1/my_organizations/${tenant}/tags`)
+    .json<BaseResponse<Tag[]>>();
+};
+
+export const getTaxonomies = (tenant = "-") => {
+  if (tenant === "-") {
+    return publizClient
+      .get("api/v1/taxonomies")
+      .json<BaseResponse<Taxonomy[]>>();
+  }
+
+  return publizClient
+    .get(`api/v1/organizations/${tenant}/taxonomies`)
+    .json<BaseResponse<Taxonomy[]>>();
+};
 
 export const getOrganizationById = (id: number) =>
   publizClient
@@ -110,15 +127,27 @@ export type CreateTagInput = {
   userId: number;
 };
 
-export const createTag = (input: CreateTagInput[]) => {
+export const createTag = (input: CreateTagInput, tenant = "-") => {
+  if (tenant === "-") {
+    return publizClient
+      .post("api/admin/v1/tags", { json: [input] })
+      .json<BaseResponse<Tag>>();
+  }
+
   return publizClient
-    .post("api/admin/v1/tags", { json: input })
+    .post(`api/v1/my_organizations/${tenant}/tags`, { json: input })
     .json<BaseResponse<Tag>>();
 };
 
-export const updateTag = (id: number, input: CreateTagInput) => {
+export const updateTag = (id: number, input: CreateTagInput, tenant = "-") => {
+  if (tenant === "-") {
+    return publizClient
+      .put(`api/admin/v1/tags/${id}`, { json: input })
+      .json<BaseResponse<Tag>>();
+  }
+
   return publizClient
-    .put(`api/admin/v1/tags/${id}`, { json: input })
+    .put(`api/v1/my_organizations/${tenant}/tags/${id}`, { json: input })
     .json<BaseResponse<Tag>>();
 };
 
@@ -127,15 +156,29 @@ export type CreateTaxonomyInput = {
   slug: string;
 };
 
-export const createTaxonomy = (input: CreateTaxonomyInput) => {
+export const createTaxonomy = (input: CreateTaxonomyInput, tenant = "-") => {
+  if (tenant === "-") {
+    return publizClient
+      .post("api/admin/v1/taxonomies", { json: input })
+      .json<BaseResponse<Taxonomy>>();
+  }
   return publizClient
-    .post("api/admin/v1/taxonomies", { json: input })
+    .post(`api/v1/my_organizations/${tenant}/taxonomies`, { json: input })
     .json<BaseResponse<Taxonomy>>();
 };
 
-export const updateTaxonomy = (id: number, input: CreateTaxonomyInput) => {
+export const updateTaxonomy = (
+  id: number,
+  input: CreateTaxonomyInput,
+  tenant = "-"
+) => {
+  if (tenant === "-") {
+    return publizClient
+      .put(`api/admin/v1/taxonomies/${id}`, { json: input })
+      .json<BaseResponse<Taxonomy>>();
+  }
   return publizClient
-    .put(`api/admin/v1/taxonomies/${id}`, { json: input })
+    .put(`api/v1/my_organizations/${tenant}/taxonomies/${id}`, { json: input })
     .json<BaseResponse<Taxonomy>>();
 };
 
@@ -145,6 +188,18 @@ export const updateOrganization = (
 ) => {
   return publizClient
     .put(`api/admin/v1/organizations/${id}`, { json: input })
+    .json<BaseResponse<Organization>>();
+};
+
+export const getMyOrganizations = () => {
+  return publizClient
+    .get(`api/v1/my_organizations`)
+    .json<BaseResponse<Organization[]>>();
+};
+
+export const getMyOrganization = (organizationId: number | string) => {
+  return publizClient
+    .get(`api/v1/my_organizations/${organizationId}`)
     .json<BaseResponse<Organization>>();
 };
 
