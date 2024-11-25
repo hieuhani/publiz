@@ -48,6 +48,7 @@ import { normalizeMetadata } from "../lib/object";
 import { getOrganizationIdFromCache } from "./lib";
 import { getPostIdFromCache } from "../post/lib";
 import { createCommentSchema } from "../comment/schema";
+import { AppError } from "@publiz/core";
 
 export const myOrganizationRouter = new Hono<AppEnv>();
 
@@ -381,7 +382,9 @@ myOrganizationRouter.get(
 
 const createTagSchema = z.object({
   name: z.string().min(1).max(100),
+  slug: z.string().min(1).max(100),
   parentId: z.number().optional(),
+  taxonomyId: z.number().optional(),
 });
 
 myOrganizationRouter.post(
@@ -394,21 +397,31 @@ myOrganizationRouter.post(
     let parentTag = undefined;
     const container = c.get("container");
 
-    if (payload.parentId) {
-      parentTag = await getTagById(container, payload.parentId);
-    }
-
-    const currentUser = c.get("currentAppUser");
-
     const organizationId = await getOrganizationIdFromCache(
       container,
       c.req.param("organization_id")
     );
+
+    if (payload.parentId) {
+      parentTag = await getOrganizationTagById(
+        container,
+        organizationId,
+        payload.parentId
+      );
+      // force taxonomyId to be the same as parent tag
+      payload.taxonomyId = parentTag.taxonomyId;
+    } else if (payload.taxonomyId) {
+      const _verifyOrganizationTaxonomy = await getOrganizationTaxonomyById(
+        container,
+        organizationId,
+        payload.taxonomyId
+      );
+    }
+
+    const currentUser = c.get("currentAppUser");
+
     const tag = await createTag(container, {
       ...payload,
-      parentId: parentTag?.id,
-      taxonomyId: parentTag?.taxonomyId,
-      slug: slugify(payload.name),
       type: "DEFAULT",
       userId: currentUser.id,
       organizationId: +organizationId,
@@ -441,7 +454,9 @@ myOrganizationRouter.delete(
 
 const updateTagSchema = z.object({
   name: z.string().min(1).max(100),
+  slug: z.string().min(1).max(100),
   parentId: z.number().optional(),
+  taxonomyId: z.number().optional(),
 });
 
 myOrganizationRouter.put(
@@ -465,12 +480,21 @@ myOrganizationRouter.put(
     );
     let parentTag = undefined;
     if (payload.parentId) {
-      parentTag = await getTagById(container, payload.parentId);
+      parentTag = await getOrganizationTagById(
+        container,
+        organizationId,
+        payload.parentId
+      );
+      // force taxonomyId to be the same as parent tag
+      payload.taxonomyId = parentTag.taxonomyId;
+    } else if (payload.taxonomyId) {
+      const _verifyOrganizationTaxonomy = await getOrganizationTaxonomyById(
+        container,
+        organizationId,
+        payload.taxonomyId
+      );
     }
-    const updatedTag = await updateTag(container, organizationTag.id, {
-      ...payload,
-      taxonomyId: parentTag?.taxonomyId,
-    });
+    const updatedTag = await updateTag(container, organizationTag.id, payload);
     return c.json({ data: updatedTag });
   }
 );

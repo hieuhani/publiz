@@ -21,7 +21,7 @@ const OrganizationLayout: React.FunctionComponent = () => {
       }}
     >
       <div className="flex h-screen w-full">
-        <SideBar organization={organization} />
+        <SideBar />
         <div className="flex-1">
           <Outlet />
         </div>

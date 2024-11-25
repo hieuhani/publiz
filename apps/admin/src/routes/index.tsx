@@ -40,7 +40,7 @@ function Index() {
               >
                 <div>
                   <h4 className="font-medium">System</h4>
-                  <p className="text-sm">System admin permission required</p>
+                  <p className="text-sm">System management</p>
                 </div>
 
                 <div>
