@@ -59,9 +59,6 @@ const createApp = ({ db }: AppConfig = {}) => {
       weak: true,
     })
   );
-  app.use("/admin/api/*", (c, next) =>
-    cors(c.get("config").cors as any)(c, next)
-  );
 
   app.get("/api", (c) => c.json({ data: "ok" }));
 

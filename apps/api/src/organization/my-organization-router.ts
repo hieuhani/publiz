@@ -15,7 +15,6 @@ import {
   patchOrganizationMetadataById,
   deletePost,
   createTag,
-  getTagById,
   getOrganizationTagById,
   deleteTagById,
   updateTag,
@@ -33,8 +32,6 @@ import {
   createComment,
   findCommentsByTargetAndTargetId,
   findByModelNameAndModelId,
-  getOrganizationId,
-  getOrganizationBySlug,
   getOrganizationById,
 } from "@publiz/core";
 import { useCurrentAppUser } from "../user";
@@ -48,7 +45,6 @@ import { normalizeMetadata } from "../lib/object";
 import { getOrganizationIdFromCache } from "./lib";
 import { getPostIdFromCache } from "../post/lib";
 import { createCommentSchema } from "../comment/schema";
-import { AppError } from "@publiz/core";
 
 export const myOrganizationRouter = new Hono<AppEnv>();
 
@@ -383,6 +379,7 @@ myOrganizationRouter.get(
 const createTagSchema = z.object({
   name: z.string().min(1).max(100),
   slug: z.string().min(1).max(100),
+  description: z.string().optional(),
   parentId: z.number().optional(),
   taxonomyId: z.number().optional(),
 });
@@ -455,6 +452,7 @@ myOrganizationRouter.delete(
 const updateTagSchema = z.object({
   name: z.string().min(1).max(100),
   slug: z.string().min(1).max(100),
+  description: z.string().optional(),
   parentId: z.number().optional(),
   taxonomyId: z.number().optional(),
 });

@@ -11,6 +11,7 @@ const createTagSchema = z.object({
   name: z.string().min(1).max(100),
   slug: z.string().min(1).max(100),
   parentId: z.number().optional(),
+  description: z.string().optional(),
   taxonomyId: z.number().optional(),
 });
 const bulkCreateTagSchema = z.array(createTagSchema);

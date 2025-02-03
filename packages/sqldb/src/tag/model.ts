@@ -5,6 +5,7 @@ export type TagTable = {
   id: Generated<number>;
   name: string;
   slug: string;
+  description?: string;
   type: TagType;
   organizationId?: number;
   parentId?: number;
