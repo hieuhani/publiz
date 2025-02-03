@@ -8,6 +8,7 @@ import {
   findPosts,
   getOrganizationMetaSchemaByIdentifier,
   findTaxonomiesByOrganizationId,
+  findTagsByOrganizationId,
 } from "@publiz/core";
 import { parseContext } from "../lib/object";
 import { getOrganizationIdFromCache } from "./lib";
@@ -90,10 +91,14 @@ organizationRouter.get("/:organization_id", async (c) => {
   return c.json({ data: organization });
 });
 
-organizationRouter.get("/:organization_id_or_slug/tags", async (c) => {
-  const idOrSlug = c.req.param("organization_id_or_slug");
+organizationRouter.get("/:organization_id/tags", async (c) => {
   const container = c.get("container");
-  const tags = await findOrganizationRelatedTags(container, idOrSlug);
+
+  const organizationId = await getOrganizationIdFromCache(
+    container,
+    c.req.param("organization_id")
+  );
+  const tags = await findTagsByOrganizationId(container, organizationId);
   return c.json({ data: tags });
 });
 
