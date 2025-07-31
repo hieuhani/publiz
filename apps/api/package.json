@@ -6,17 +6,14 @@
   "dependencies": {
     "@cfworker/base64url": "^1.12.5",
     "@fiboup/google-identify-toolkit": "^1.0.4",
-    "@fiboup/hono-firebase-auth": "^1.0.4",
+    "@fiboup/hono-firebase-auth": "^1.0.6",
     "@hono/zod-validator": "^0.2.2",
-    "@publiz/core": "workspace:0.0.0",
-    "@publiz/dbmigration": "workspace:0.0.0",
     "@vercel/postgres-kysely": "^0.10.0",
-    "hono": "^4.4.13",
-    "kysely": "^0.27.1",
-    "lru-cache": "^11.0.0",
-    "nanoid": "^5.0.7",
-    "pg": "^8.11.5",
-    "zod": "^3.23.8"
+    "hono": "^4.8.10",
+    "lru-cache": "^11.1.0",
+    "nanoid": "^5.1.5",
+    "pg": "^8.16.3",
+    "zod": "^3.25.76"
   },
   "scripts": {
     "dev": "bun run --hot src/index.ts",
@@ -25,7 +22,7 @@
     "migrate:dev:latest": "bun run ./migrate.ts dev latest"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240329.0",
-    "@types/pg": "^8.11.4"
+    "@cloudflare/workers-types": "^4.20250731.0",
+    "@types/pg": "^8.15.5"
   }
 }

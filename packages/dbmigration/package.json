@@ -7,12 +7,10 @@
     "build": "unbuild"
   },
   "dependencies": {
-    "kysely": "^0.27.1",
     "sqids": "^0.3.0"
   },
   "devDependencies": {
-    "@types/node": "^20.10.6",
-    "unbuild": "^2.0.0"
+    "@types/node": "^20.10.6"
   },
   "types": "dist/index.d.ts",
   "exports": {

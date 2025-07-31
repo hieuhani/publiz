@@ -13,10 +13,7 @@
   },
   "dependencies": {
     "@cfworker/base64url": "^1.12.5",
-    "@publiz/dbmigration": "workspace:*",
-    "kysely": "^0.27.1"
+    "@publiz/dbmigration": "workspace:*"
   },
-  "devDependencies": {
-    "unbuild": "^2.0.0"
-  }
+  "devDependencies": {}
 }
