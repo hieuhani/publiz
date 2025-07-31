@@ -11,7 +11,7 @@ export const zConfig = z.object({
       .object({
         rejectUnauthorized: z.boolean(),
       })
-      .optional(),
+      .or(z.boolean()),
     prepare: z.boolean().optional(),
   }),
   firebase: z.object({

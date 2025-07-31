@@ -34,16 +34,14 @@ import { systemRouter } from "./system/router";
 export type AppConfig = {
   db?: any;
 };
-const createApp = ({ db }: AppConfig = {}) => {
+const createApp = () => {
   const app = new Hono<AppEnv>();
 
   app.use(timing());
   app.use(logger());
   app.use(
     "*",
-    useDi({
-      sqlDb: db,
-    })
+    useDi()
   );
 
   app.use("*", (c, next) =>

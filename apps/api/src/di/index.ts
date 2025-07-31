@@ -6,11 +6,39 @@ import { type Config } from "../config";
 import { Pool } from "pg";
 import { Kysely, PostgresDialect } from "kysely";
 
-type DiOptions = {
-  sqlDb?: Kysely<any>;
+
+let globalSqlDb: Kysely<any> | null = null;
+let globalS3Client: S3Client | null = null;
+
+const createGlobalSqlDb = (config: Config) => {
+  if (!globalSqlDb) {
+    const dialect = new PostgresDialect({
+      pool: new Pool({
+        ...config.db,
+        maxUses: 1,
+      }),
+    });
+    globalSqlDb = createSqlDb(dialect);
+  }
+  return globalSqlDb;
 };
 
-export const useDi = ({ sqlDb }: DiOptions = {}): MiddlewareHandler => {
+const createGlobalS3Client = (config: Config) => {
+  if (!globalS3Client) {
+    globalS3Client = new S3Client({
+      endpoint: config.s3.endpoint,
+      region: config.s3.region,
+      credentials: {
+        accessKeyId: config.s3.accessKeyId,
+        secretAccessKey: config.s3.secretAccessKey,
+      },
+      forcePathStyle: true,
+    });
+  }
+  return globalS3Client;
+};
+
+export const useDi = (): MiddlewareHandler => {
   return async (c, next) => {
     const {
       DB_HOST,
@@ -36,13 +64,13 @@ export const useDi = ({ sqlDb }: DiOptions = {}): MiddlewareHandler => {
       HYPERDRIVE,
     } = env<AppEnv["Bindings"]>(c);
 
-    const config = {
+    const config: Config = {
       db: {
-        host: HYPERDRIVE ? HYPERDRIVE.host : DB_HOST,
+        host: HYPERDRIVE ? HYPERDRIVE.host : DB_HOST || "",
         port: (HYPERDRIVE ? HYPERDRIVE.port : DB_PORT) || 5432,
-        user: HYPERDRIVE ? HYPERDRIVE.user : DB_USER,
-        password: HYPERDRIVE ? HYPERDRIVE.password : DB_PASSWORD,
-        database: HYPERDRIVE ? HYPERDRIVE.database : DB_DATABASE,
+        user: HYPERDRIVE ? HYPERDRIVE.user : DB_USER || "",
+        password: HYPERDRIVE ? HYPERDRIVE.password : DB_PASSWORD || "",
+        database: HYPERDRIVE ? HYPERDRIVE.database : DB_DATABASE || "",
         ssl:
           DB_SSL === "true"
             ? { rejectUnauthorized: DB_SSL_REJECT_UNAUTHORIZED === "true" }
@@ -69,24 +97,10 @@ export const useDi = ({ sqlDb }: DiOptions = {}): MiddlewareHandler => {
       },
     };
 
-    const dialect = new PostgresDialect({
-      pool: new Pool({
-        ...config.db,
-        maxUses: 1,
-      }),
-    });
     c.set("config", config);
     c.set("container", {
-      sqlDb: sqlDb ? sqlDb : createSqlDb(dialect),
-      s3: new S3Client({
-        endpoint: config.s3.endpoint,
-        region: config.s3.region,
-        credentials: {
-          accessKeyId: config.s3.accessKeyId,
-          secretAccessKey: config.s3.secretAccessKey,
-        },
-        forcePathStyle: true,
-      }),
+      sqlDb: createGlobalSqlDb(config),
+      s3: createGlobalS3Client(config),
     });
     await next();
   };

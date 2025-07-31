@@ -7,13 +7,13 @@
     "@cfworker/base64url": "^1.12.5",
     "@fiboup/google-identify-toolkit": "^1.0.4",
     "@fiboup/hono-firebase-auth": "^1.0.6",
-    "@hono/zod-validator": "^0.2.2",
+    "@hono/zod-validator": "^0.7.2",
     "@vercel/postgres-kysely": "^0.10.0",
     "hono": "^4.8.10",
     "lru-cache": "^11.1.0",
     "nanoid": "^5.1.5",
     "pg": "^8.16.3",
-    "zod": "^3.25.76"
+    "zod": "^4.0.14"
   },
   "scripts": {
     "dev": "bun run --hot src/index.ts",
