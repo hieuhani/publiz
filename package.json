@@ -14,6 +14,7 @@
     "dev": "bun run --cwd apps/api dev",
     "start": "bun run --cwd apps/api start",
     "build": "bun run --cwd apps/api build && bun run --cwd apps/admin build && cp -r apps/admin/dist/* apps/vercel/public",
+    "build:api": "bun run --cwd apps/api build",
     "migrate:dev:latest": "bun run --cwd apps/api migrate:dev:latest",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""

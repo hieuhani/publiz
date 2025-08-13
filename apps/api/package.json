@@ -9,7 +9,7 @@
     "@fiboup/hono-firebase-auth": "^1.0.6",
     "@hono/zod-validator": "^0.7.2",
     "@vercel/postgres-kysely": "^0.10.0",
-    "hono": "^4.8.10",
+    "hono": "^4.9.1",
     "lru-cache": "^11.1.0",
     "nanoid": "^5.1.5",
     "pg": "^8.16.3",
@@ -18,7 +18,7 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "start": "bun run src/index.ts",
-    "build": "bun build --target=node --format=esm  --minify --outdir=./dist src/app.ts",
+    "build": "bun build --target=node --format=esm --minify --outdir=./dist src/index.ts",
     "migrate:dev:latest": "bun run ./migrate.ts dev latest"
   },
   "devDependencies": {

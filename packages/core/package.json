@@ -12,7 +12,6 @@
     "@aws-sdk/client-s3": "^3.490.0",
     "@aws-sdk/s3-request-presigner": "^3.490.0",
     "@cfworker/json-schema": "^1.12.8",
-    "@publiz/sqldb": "workspace:0.0.0",
     "nanoid": "^5.0.7"
   }
 }

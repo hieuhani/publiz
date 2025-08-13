@@ -1,17 +1,14 @@
-FROM oven/bun:1 as base
+FROM oven/bun:1 AS base
 WORKDIR /usr/src/app
 
-FROM base as builder
+FROM base AS builder
 COPY . .
-RUN bun install --frozen-lockfile
-RUN bun run build
+RUN bun install --frozen-lockfile --production
+RUN bun run build:api
 
-FROM base as release
+FROM base AS release
 COPY --from=builder /usr/src/app/apps/api/dist/index.js .
-COPY --from=builder /usr/src/app/apps/api/dist/migrate.js .
-COPY --from=builder /usr/src/app/packages/dbmigration/src/sql.ts .
-COPY --from=builder /usr/src/app/packages/dbmigration/src/migrations ./migrations
 
 USER bun
 EXPOSE 3000/tcp
-ENTRYPOINT [ "bun", "run" ]
+ENTRYPOINT [ "bun", "run", "index.js" ]

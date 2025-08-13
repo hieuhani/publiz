@@ -12,8 +12,7 @@
     "build": "unbuild"
   },
   "dependencies": {
-    "@cfworker/base64url": "^1.12.5",
-    "@publiz/dbmigration": "workspace:*"
+    "@cfworker/base64url": "^1.12.5"
   },
   "devDependencies": {}
 }
