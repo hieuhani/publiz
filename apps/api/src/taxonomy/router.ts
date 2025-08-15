@@ -40,6 +40,7 @@ taxonomyRouter.get("/:identity/posts", async (c) => {
   }
   const taxonomy = await getTaxonomyById(container, identity);
   let tagId: number | undefined = undefined;
+
   if (tag) {
     const tagEntity = await getTagById(container, tag);
     tagId = tagEntity.id;
@@ -59,7 +60,10 @@ taxonomyRouter.get("/:identity/posts", async (c) => {
       after,
       size,
     },
-    context
+    {
+      ...context,
+      moderationRequired: false,
+    }
   );
 
   return c.json({

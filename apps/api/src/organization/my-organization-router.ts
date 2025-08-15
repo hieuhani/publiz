@@ -134,6 +134,7 @@ myOrganizationRouter.get(
   }
 );
 
+/** deprecated */
 myOrganizationRouter.get(
   "/:organization_id/applicable_meta_schemas",
   useCurrentAppUser({ required: true }),

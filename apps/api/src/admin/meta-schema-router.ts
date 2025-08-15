@@ -14,7 +14,7 @@ export const adminMetaSchemaRouter = new Hono<AppEnv>();
 
 const createMetaSchemaSchema = z.object({
   name: z.string().min(1).max(100),
-  schema: z.object({}).passthrough(),
+  schema: z.object({}).loose(),
   target: z.enum(["post", "user", "organization", "file", "comment"]),
   organizationId: z.number().optional(),
   version: z.number(),

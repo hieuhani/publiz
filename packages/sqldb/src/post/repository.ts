@@ -62,8 +62,8 @@ export const getPostById = async (
   context: {
     withOrganization?: boolean;
   } = {
-    withOrganization: false,
-  }
+      withOrganization: false,
+    }
 ) => {
   let query = db
     .selectFrom("posts")
@@ -113,8 +113,8 @@ export const findPosts = async (
   context: {
     withOrganization?: boolean;
   } = {
-    withOrganization: false,
-  }
+      withOrganization: false,
+    }
 ) => {
   let query = db
     .selectFrom("posts")

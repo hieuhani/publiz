@@ -63,7 +63,6 @@ export const useDi = (): MiddlewareHandler => {
       CORS_CREDENTIALS = "true",
       HYPERDRIVE,
     } = env<AppEnv["Bindings"]>(c);
-
     const config: Config = {
       db: {
         host: HYPERDRIVE ? HYPERDRIVE.host : DB_HOST || "",
@@ -89,14 +88,13 @@ export const useDi = (): MiddlewareHandler => {
         getGcsImageServingEndpoint: S3_GET_GCS_IMAGE_SERVING_ENDPOINT,
       },
       cors: {
-        origin: CORS_ORIGIN.split(","),
+        origin: CORS_ORIGIN !== "*" ? CORS_ORIGIN.split(",") : "*",
         allowHeaders: CORS_ALLOW_HEADERS.split(","),
         allowMethods: CORS_ALLOW_METHODS.split(","),
         maxAge: parseInt(CORS_MAX_AGE, 10),
         credentials: CORS_CREDENTIALS === "true",
       },
     };
-
     c.set("config", config);
     c.set("container", {
       sqlDb: createGlobalSqlDb(config),

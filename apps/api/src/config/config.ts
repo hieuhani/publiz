@@ -27,7 +27,7 @@ export const zConfig = z.object({
     getGcsImageServingEndpoint: z.string().optional(),
   }),
   cors: z.object({
-    origin: z.array(z.string()),
+    origin: z.array(z.string()).or(z.literal("*")),
     allowHeaders: z.array(z.string()),
     allowMethods: z.array(z.string()),
     maxAge: z.number(),
